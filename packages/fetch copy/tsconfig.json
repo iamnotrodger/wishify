@@ -1,0 +1,9 @@
+{
+  "extends": "@repo/typescript-config/base.json",
+  "compilerOptions": {
+    "outDir": "../scrape/dist",
+    "rootDir": "../scrape/src"
+  },
+  "include": ["../scrape/src"],
+  "exclude": ["../scrape/node_modules", "../scrape/dist"]
+}
