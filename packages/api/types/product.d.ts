@@ -1,4 +1,4 @@
-interface Image {
+export interface Image {
   url: string;
   dimension?: {
     width: number;
@@ -6,7 +6,7 @@ interface Image {
   };
 }
 
-interface Product {
+export interface Product {
   id: string;
   url: string;
   price: number;
@@ -14,4 +14,5 @@ interface Product {
   image?: Image[];
   // OpenGraph data, or whatever else dont ask me lol
   metadata?: Record<string, string>;
+  is_deleted?: boolean;
 }
