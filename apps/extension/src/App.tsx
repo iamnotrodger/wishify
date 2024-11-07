@@ -1,11 +1,11 @@
-import { Button } from '@repo/ui/components/button';
+import { Button } from '@repo/ui/button';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@repo/ui/components/select';
+} from '@repo/ui/select';
 import '@repo/ui/globals.css';
 
 function App() {

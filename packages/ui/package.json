@@ -30,6 +30,8 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "exports": {
+    "./button": "./src/components/button.tsx",
+    "./select": "./src/components/select.tsx",
     "./globals.css": "./src/globals.css",
     "./postcss.config": "./postcss.config.mjs",
     "./tailwind.config": "./tailwind.config.ts",
@@ -37,7 +39,6 @@
     "./hooks/*": [
       "./src/hooks/*.ts",
       "./src/hooks/*.tsx"
-    ],
-    "./components/*": "./src/components/ui/*.tsx"
+    ]
   }
 }
