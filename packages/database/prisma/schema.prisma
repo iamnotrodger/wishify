@@ -30,7 +30,7 @@ model Product {
   name     String
   price    Float
   images   Image[]
-  category String
+  category String?
   folderId String? @db.ObjectId
   metadata Json?
   html     String?
