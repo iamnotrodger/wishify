@@ -1,9 +1,12 @@
+export interface Folder {
+  id: string;
+  name: string;
+}
+
 export interface Image {
   url: string;
-  dimension?: {
-    width: number;
-    height: number;
-  };
+  width: number;
+  height: number;
 }
 
 export interface Product {
@@ -11,8 +14,10 @@ export interface Product {
   url: string;
   price: number;
   name?: string;
-  image?: Image[];
+  images?: Image[];
+  folderId?: string;
+  category?: string;
   // OpenGraph data, or whatever else dont ask me lol
   metadata?: Record<string, string>;
-  is_deleted?: boolean;
+  createdAt: string;
 }

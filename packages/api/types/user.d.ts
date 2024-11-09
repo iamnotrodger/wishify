@@ -1,13 +1,8 @@
-export interface Category {
-  id: string;
-  name: string;
-}
-
 export interface User {
   id: string;
   name?: string;
   avatar_url?: string;
   email?: string;
-  categories?: Category[];
+  folders?: Folder[];
   is_deleted?: boolean;
 }

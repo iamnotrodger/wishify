@@ -13,36 +13,49 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Product {
-  id      String @id @default(auto()) @map("_id") @db.ObjectId
-  slug    String @unique
-  name    String
-  body    String
-  user    User   @relation(fields: [user_id], references: [id])
-  user_id String @db.ObjectId
+type Folder {
+  id   String @db.ObjectId
+  name String
 }
 
-model Category {
-  id     String  @id @default(auto()) @map("_id") @db.ObjectId
-  name   String
-  User   User?   @relation(fields: [userId], references: [id])
-  userId String? @db.ObjectId
+type Image {
+  url    String
+  width  Int
+  height Int
+}
+
+model Product {
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  slug     String  @unique
+  name     String
+  price    Float
+  images   Image[]
+  category String?
+  folderId String? @db.ObjectId
+  metadata Json?
+  html     String?
+  user     User    @relation(fields: [userId], references: [id])
+  userId   String  @db.ObjectId
+
+  @@map("product")
 }
 
 model User {
-  id            String     @id @default(auto()) @map("_id") @db.ObjectId
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
   name          String?
-  email         String?    @unique
+  email         String?   @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
-  categories    Category[]
+  folders       Folder[]
   products      Product[]
-  is_deleted    Boolean
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
+
+  @@map("user")
 }
 
 model Account {
@@ -65,6 +78,7 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@map("account")
 }
 
 model Session {
@@ -76,6 +90,8 @@ model Session {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("session")
 }
 
 model VerificationToken {
@@ -85,4 +101,5 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+  @@map("verificationToken")
 }
