@@ -1,9 +1,12 @@
-import { useEffect, useMemo, useState } from 'react';
-import cc from 'currency-codes';
 import { zodResolver } from '@hookform/resolvers/zod';
+import cc from 'currency-codes';
+import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 
+import { CreateProduct, CreateProductSchema, Folder } from '@repo/api';
+import { Button } from '@repo/ui/button';
+import { Form, FormControl, FormField, FormItem } from '@repo/ui/form';
+import { Input } from '@repo/ui/input';
 import {
   Select,
   SelectContent,
@@ -11,15 +14,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@repo/ui/select';
-import { Button } from '@repo/ui/button';
-import { Form, FormControl, FormField, FormItem } from '@repo/ui/form';
-import { Input } from '@repo/ui/input';
-import { CreateProductSchema } from '@repo/api';
 
-const testGroups = [{ name: 'list1' }, { name: 'list2' }];
+const testFolders = [
+  { id: '672d791a4b3f63ec36d0a345', name: 'list1' },
+  { id: '6730fd807e3d9e1937290b1c', name: 'list2' },
+];
 
 function ProductForm() {
-  const form = useForm<z.infer<typeof CreateProductSchema>>({
+  const form = useForm<CreateProduct>({
     resolver: zodResolver(CreateProductSchema),
     defaultValues: {
       name: '',
@@ -29,14 +31,14 @@ function ProductForm() {
       images: [{ url: '' }],
     },
   });
-  const [categories, setCategories] = useState<{ name: string }[]>([]);
+  const [folders, setFolders] = useState<Folder[]>([]);
   useEffect(() => {
-    setCategories(testGroups);
+    setFolders(testFolders);
   }, []);
 
   const currencyCodes = useMemo<string[]>(() => cc.codes(), []);
 
-  function onSubmit(values: z.infer<typeof CreateProductSchema>) {
+  function onSubmit(values: CreateProduct) {
     console.log(values);
   }
 
@@ -49,17 +51,17 @@ function ProductForm() {
         {/* TODO: add list creation inside Select */}
         <FormField
           control={form.control}
-          name='category'
+          name='folderId'
           render={({ field }) => (
             <FormItem className='w-full'>
               <Select defaultValue={field.value} onValueChange={field.onChange}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder='Select a category' />
+                    <SelectValue placeholder='Select a Folder' />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {categories.map(({ name }) => (
+                  {folders.map(({ name }) => (
                     <SelectItem key={name} value={name}>
                       {name}
                     </SelectItem>
