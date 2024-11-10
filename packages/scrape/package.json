@@ -26,5 +26,8 @@
   "devDependencies": {
     "@repo/typescript-config": "*",
     "typescript": "latest"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0"
   }
 }
