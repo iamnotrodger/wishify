@@ -1,4 +1,4 @@
-import { auth } from '@/auth';
+import { auth, isAuthenticated } from '@/auth';
 import {
   invalidRequestResponse,
   unauthorizedResponse,
@@ -12,11 +12,12 @@ import { NextResponse } from 'next/server';
 import { fromZodError } from 'zod-validation-error';
 
 export const GET = auth(async (req) => {
-  if (!req.auth) return unauthorizedResponse();
+  if (!isAuthenticated(req.auth)) return unauthorizedResponse();
 
+  const { id } = req.auth!.user!;
   const [user, error] = await safeAsync(
     prisma.user.findUnique({
-      where: { id: req.auth!.user?.id },
+      where: { id },
       select: {
         folders: true,
       },
@@ -32,9 +33,9 @@ export const GET = auth(async (req) => {
 });
 
 export const POST = auth(async (req) => {
-  if (!req.auth) return unauthorizedResponse();
+  if (!isAuthenticated(req.auth)) return unauthorizedResponse();
 
-  const { user } = req.auth;
+  const user = req.auth!.user!;
   const data = await req.json();
 
   const folderValidation = FolderSchema.safeParse(data);
@@ -46,7 +47,7 @@ export const POST = auth(async (req) => {
   const folder = { ...folderValidation.data, id: new ObjectId().toString() };
   const [, error] = await safeAsync(
     prisma.user.update({
-      where: { id: user!.id },
+      where: { id: user.id },
       data: {
         folders: {
           push: folder,

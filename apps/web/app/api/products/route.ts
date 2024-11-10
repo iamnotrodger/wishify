@@ -1,4 +1,4 @@
-import { auth } from '@/auth';
+import { auth, isAuthenticated } from '@/auth';
 import {
   invalidRequestResponse,
   unauthorizedResponse,
@@ -29,7 +29,7 @@ const GetProductQuerySchema = z.object({
 });
 
 export const GET = auth(async (req) => {
-  if (!req.auth || !req.auth.user) return unauthorizedResponse();
+  if (!isAuthenticated(req.auth)) return unauthorizedResponse();
 
   const searchParamsValidation = GetProductQuerySchema.safeParse(
     Object.fromEntries(req.nextUrl.searchParams)
@@ -39,7 +39,7 @@ export const GET = auth(async (req) => {
     return invalidRequestResponse(validationError);
   }
 
-  const { user } = req.auth;
+  const user = req.auth!.user!;
   const searchParams = searchParamsValidation.data;
 
   const [products, error] = await safeAsync(
@@ -62,9 +62,9 @@ export const GET = auth(async (req) => {
 });
 
 export const POST = auth(async (req) => {
-  if (!req.auth || !req.auth.user) return unauthorizedResponse();
+  if (!isAuthenticated(req.auth)) return unauthorizedResponse();
 
-  const { user } = req.auth;
+  const user = req.auth!.user!;
   const data = await req.json();
 
   const productValidation = CreateProductSchema.safeParse(data);
