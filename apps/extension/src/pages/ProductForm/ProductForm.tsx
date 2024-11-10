@@ -14,50 +14,29 @@ import {
 import { Button } from '@repo/ui/button';
 import { Form, FormControl, FormField, FormItem } from '@repo/ui/form';
 import { Input } from '@repo/ui/input';
-
-const formSchema = z.object({
-  username: z.string().min(2, {
-    message: 'Username must be at least 2 characters.',
-  }),
-  name: z.string().min(1, { message: 'Name cannot be empty' }),
-  description: z
-    .string()
-    .max(256, 'Description cannot be more than 256 characters')
-    .optional(),
-  url: z.string().url({ message: 'Invalid link' }),
-  price: z.number().min(0, { message: 'Invalid price' }),
-  category: z.string().optional(),
-  currency: z.string().length(3, { message: 'Must choose a valid currency' }),
-  image: z.object({
-    url: z.string().url(),
-    dimensions: z.object({
-      height: z.number().int().min(0),
-      width: z.number().int().min(0),
-    }),
-  }),
-});
+import { CreateProductSchema } from '@repo/api';
 
 const testGroups = [{ name: 'list1' }, { name: 'list2' }];
 
 function ProductForm() {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof CreateProductSchema>>({
+    resolver: zodResolver(CreateProductSchema),
     defaultValues: {
       name: '',
       description: '',
       url: '',
       currency: 'CAD',
-      image: { url: '' },
+      images: [{ url: '' }],
     },
   });
-  const [categories, setGroups] = useState<{ name: string }[]>([]);
+  const [categories, setCategories] = useState<{ name: string }[]>([]);
   useEffect(() => {
-    setGroups(testGroups);
+    setCategories(testGroups);
   }, []);
 
   const currencyCodes = useMemo<string[]>(() => cc.codes(), []);
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSubmit(values: z.infer<typeof CreateProductSchema>) {
     console.log(values);
   }
 
@@ -95,13 +74,13 @@ function ProductForm() {
             {/* TODO: add image uploading, fix aspect ratio */}
             <FormField
               control={form.control}
-              name='image'
+              name='images'
               render={({ field }) => (
                 <FormItem className='w-full'>
-                  {field.value.url ? (
+                  {field.value?.length && field.value[0]?.url ? (
                     <img
                       className='max-h-[150px] rounded-md'
-                      src={field.value.url}
+                      src={field.value[0].url}
                       alt='Image'
                     />
                   ) : null}
