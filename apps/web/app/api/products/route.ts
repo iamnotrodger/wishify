@@ -6,7 +6,7 @@ import {
 } from '@/lib/responses';
 import { safeAsync } from '@/lib/utils';
 import { prisma } from '@/prisma';
-import { ProductSchema } from '@repo/api';
+import { CreateProductSchema } from '@repo/api';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { fromZodError } from 'zod-validation-error';
@@ -59,12 +59,6 @@ export const GET = auth(async function GET(req) {
   return NextResponse.json({ products });
 });
 
-const CreateProductSchema = ProductSchema.omit({
-  id: true,
-  userId: true,
-  createdAt: true,
-  updatedAt: true,
-});
 
 export const POST = auth(async function GET(req) {
   if (!req.auth) return unauthorizedResponse();
