@@ -1,7 +1,7 @@
 import * as cheerio from 'cheerio';
 import { Scraper, Image } from './types';
 
-export class GeneralScraper implements Scraper {
+export default class ProductScraper implements Scraper {
   $: cheerio.CheerioAPI;
 
   constructor(html: string) {
