@@ -1,20 +1,7 @@
 import * as cheerio from 'cheerio';
+import { Scraper, Image } from './types';
 
-export interface Image {
-  url: string;
-  width?: string;
-  height?: string;
-}
-
-export interface ScraperContract {
-  getName(): string | null;
-  getPrice(): string | null;
-  getImages(): Image[] | null;
-  getCurrency(): string | null;
-  getMetadata(): Record<string, string> | null;
-}
-
-export default class Scrapper implements ScraperContract {
+export class GeneralScraper implements Scraper {
   $: cheerio.CheerioAPI;
 
   constructor(html: string) {

@@ -1,5 +1,5 @@
 {
-  "name": "@repo/scrape",
+  "name": "@repo/scraper",
   "type": "module",
   "scripts": {
     "dev": "tsc --watch",

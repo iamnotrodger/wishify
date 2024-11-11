@@ -1,10 +1,11 @@
-import Scrapper, { ScraperContract, Image } from './scrapper';
+import { GeneralScraper } from './scraper';
+import { Scraper, Image } from './types';
 
-export default class AmazonScrapper implements ScraperContract {
-  private scrapper: Scrapper;
+export default class AmazonScraper implements Scraper {
+  private scrapper: GeneralScraper;
 
   constructor(html: string) {
-    this.scrapper = new Scrapper(html);
+    this.scrapper = new GeneralScraper(html);
   }
 
   getName(): string | null {
