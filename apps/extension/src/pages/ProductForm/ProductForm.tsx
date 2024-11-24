@@ -1,23 +1,21 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import cc from 'currency-codes';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { CreateProduct, CreateProductSchema, Folder } from '@repo/api';
 import { Button } from '@repo/ui/button';
-import { Form, FormControl, FormField, FormItem } from '@repo/ui/form';
+import { Textarea } from '@repo/ui/textarea';
+import { Form, FormField, FormItem, FormLabel } from '@repo/ui/form';
 import { Input } from '@repo/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@repo/ui/select';
+import { Plus } from 'lucide-react';
 
 const testFolders = [
-  { id: '672d791a4b3f63ec36d0a345', name: 'list1' },
-  { id: '6730fd807e3d9e1937290b1c', name: 'list2' },
+  { id: '672d791a4b3f63ec36d0a345', name: '❤️ Favorites' },
+  { id: '6730fd807e3d9e1937290b1c', name: '🎁 Gifts' },
+  {
+    id: '6730fd807e3d9e1937290b2d',
+    name: '💰 Splurge',
+  },
 ];
 
 function ProductForm() {
@@ -36,43 +34,23 @@ function ProductForm() {
     setFolders(testFolders);
   }, []);
 
-  const currencyCodes = useMemo<string[]>(() => cc.codes(), []);
-
   function onSubmit(values: CreateProduct) {
     console.log(values);
   }
 
+  form.watch('folderId');
   return (
     <Form {...form}>
+      <div className='bg-slate-100 border-b-slate-200 border-b text-left p-4'>
+        <h1 className='font-semibold text-xl'>Save item</h1>
+      </div>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className='flex flex-col gap-4 p-5 w-full h-full items-center'
+        className='flex flex-col gap-4 p-4 w-full h-full'
       >
-        {/* TODO: add list creation inside Select */}
-        <FormField
-          control={form.control}
-          name='folderId'
-          render={({ field }) => (
-            <FormItem className='w-full'>
-              <Select defaultValue={field.value} onValueChange={field.onChange}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder='Select a Folder' />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {folders.map(({ name }) => (
-                    <SelectItem key={name} value={name}>
-                      {name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </FormItem>
-          )}
-        />
-        <div className='flex flex-col text-left pb-2 w-full'>
-          <div className='border min-h-[100px] bg-gray-100 rounded-md mb-1.5'>
+        {/* TODO: use Command, and add list creation inside Select */}
+        <div className='flex gap-4'>
+          <div className='border min-h-[116px] min-w-[116px] bg-gray-100 rounded-md'>
             {/* TODO: add image uploading, fix aspect ratio */}
             <FormField
               control={form.control}
@@ -90,83 +68,157 @@ function ProductForm() {
               )}
             />
           </div>
-          <FormField
-            control={form.control}
-            name='name'
-            render={({ field }) => (
-              <FormItem>
-                <Input
-                  className='font-semibold text-lg border-none focus-visible:ring-[none] p-0 focus:cursor-auto hover:cursor-pointer hover:underline focus:underline decoration-blue-500 decoration-2'
-                  onChange={field.onChange}
-                  value={field.value}
-                  placeholder='Product Name'
-                />
-              </FormItem>
-            )}
-          />
-          {/* TODO: Show urlParsed if unfocused */}
-          <FormField
-            control={form.control}
-            name='url'
-            render={({ field }) => (
-              <FormItem>
-                <Input
-                  type='url'
-                  className='text-xs bg-transparent mt-[-1rem] border-none focus-visible:ring-[none] shadow-transparent p-0 focus:cursor-auto hover:cursor-pointer hover:underline focus:underline decoration-blue-500 decoration-2'
-                  onChange={field.onChange}
-                  value={field.value}
-                  placeholder='Product URL'
-                />
-              </FormItem>
-            )}
-          />
+          <div>
+            <div className='flex flex-col text-left w-full'>
+              <FormField
+                control={form.control}
+                name='name'
+                render={({ field }) => (
+                  <FormItem>
+                    <Input
+                      className='font-bold text-md p-0 border-none h-[unset] mb-1.5
+                      focus-visible:ring-[none] focus:cursor-auto hover:cursor-pointer hover:underline focus:underline decoration-blue-500 decoration-2
+                      '
+                      onChange={field.onChange}
+                      value={field.value}
+                      placeholder='Brand'
+                    />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='name'
+                render={({ field }) => (
+                  <FormItem>
+                    <Textarea
+                      className='text-sm p-0 border-none resize-none min-h-[2.8rem] max-h-[2.8rem] overflow-ellipsis
+                      focus-visible:ring-[none] focus:cursor-auto hover:cursor-pointer hover:underline focus:underline decoration-blue-500 decoration-2'
+                      onChange={field.onChange}
+                      value={field.value}
+                      placeholder='Product Name'
+                      spellCheck={false}
+                    />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className='flex flex-row items-center gap-2'>
+              <p className='text-sm font-semibold'>
+                {form.getValues('currency')}
+              </p>
+              <FormField
+                control={form.control}
+                name='price'
+                render={({ field }) => (
+                  <FormItem>
+                    <Input
+                      type='number'
+                      min='1'
+                      step='any'
+                      className='text-sm font-semibold text-left border-none h-[unset] focus-visible:ring-transparent p-0 focus:cursor-auto hover:cursor-pointer hover:underline decoration-blue-500 decoration-2'
+                      onChange={(e) => {
+                        if (
+                          e.target.value === '.' ||
+                          typeof Number(e.target.value) === 'number'
+                        ) {
+                          field.onChange(e);
+                        } else {
+                          e.preventDefault();
+                        }
+                      }}
+                      value={field.value ? field.value : ''}
+                      placeholder='0.00'
+                    />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
         </div>
-        <div className='flex flex-row items-center justify-between w-full gap-2'>
-          <FormField
-            control={form.control}
-            name='currency'
-            render={({ field }) => (
-              <FormItem className='w-full'>
-                <Select
-                  defaultValue={field.value}
-                  onValueChange={field.onChange}
+        <FormField
+          control={form.control}
+          name='folderId'
+          render={({ field }) => (
+            <FormItem className='w-full text-left flex flex-col gap-2 justify-start'>
+              <h2 className='text-lg font-medium'>Add to List</h2>
+              <FormLabel className='w-full text-md font-normal '>
+                My lists
+              </FormLabel>
+              <div className='flex gap-2 flex-wrap'>
+                {folders.map(({ name, id }, i) =>
+                  i != null ? (
+                    <Button
+                      key={name}
+                      value={id}
+                      variant='outline'
+                      className={`w-fit text-sm font-normal rounded-lg max-w-[9rem]
+                        ${field.value === id && 'bg-slate-200 hover:bg-slate-300'}`}
+                      onClick={() => {
+                        if (field.value !== id) {
+                          field.onChange(id);
+                        } else {
+                          form.resetField('folderId');
+                        }
+                      }}
+                    >
+                      <p className='truncate' title={name}>
+                        {name}
+                      </p>
+                    </Button>
+                  ) : null
+                )}
+                <Button
+                  variant='outline'
+                  className='w-fit text-sm font-normal rounded-lg max-w-[9rem]'
                 >
-                  <FormControl>
-                    <SelectTrigger className='max-w-[100px]'>
-                      <SelectValue />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent className='max-h-[200px]'>
-                    {/* TODO: Fix render speed of long list here. using virutalization, react-window, or similar. */}
-                    {currencyCodes.map((code) => (
-                      <SelectItem key={code} value={code}>
-                        {code}
+                  <Plus size={16} className='mr-2' />
+                  Add new
+                </Button>
+              </div>
+              {/* <Select
+                defaultValue={field.value}
+                value={field.value}
+                onValueChange={field.onChange}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder='Select a Folder' />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {folders.map(({ name }, i) =>
+                    i != null ? (
+                      <SelectItem key={name} value={name}>
+                        {name}
                       </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name='price'
-            render={({ field }) => (
-              // TODO: Format input for currency-only values
-              <FormItem>
-                <Input
-                  type='text'
-                  className='text-xl font-semibold text-right border-none focus-visible:ring-transparent p-0 focus:cursor-auto hover:cursor-pointer hover:underline decoration-blue-500 decoration-2'
-                  onChange={field.onChange}
-                  value={field.value ? field.value : ''}
-                  placeholder='0.00'
-                />
-              </FormItem>
-            )}
-          />
-        </div>
+                    ) : null
+                  )}
+                </SelectContent>
+              </Select> */}
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name='description'
+          render={({ field }) => (
+            <FormItem className='text-left mb-5'>
+              <FormLabel className='w-full text-md font-normal'>
+                Notes
+              </FormLabel>
+              <Textarea
+                className='text-sm resize-none min-h-[6rem] max-h-[2.8rem] bg-slate-200 placeholder:text-slate-800'
+                onChange={field.onChange}
+                value={field.value}
+                placeholder='Add your notes here...'
+                spellCheck={false}
+              />
+            </FormItem>
+          )}
+        />
         <Button className='w-full' type='submit'>
-          Save
+          Save item to Wishify
         </Button>
       </form>
     </Form>

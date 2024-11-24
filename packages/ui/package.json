@@ -39,6 +39,7 @@
     "./form": "./src/components/form.tsx",
     "./label": "./src/components/label.tsx",
     "./input": "./src/components/input.tsx",
+    "./textarea": "./src/components/textarea.tsx",
     "./globals.css": "./src/globals.css",
     "./postcss.config": "./postcss.config.mjs",
     "./tailwind.config": "./tailwind.config.ts",
