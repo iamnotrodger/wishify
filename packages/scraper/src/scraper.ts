@@ -136,7 +136,55 @@ export default class ProductScraper implements Scraper {
   }
 
   getMicrodata(): Product {
-    return {};
+    const name = findBySelectors(this.$, [
+      {
+        selector: '[itemType*=Product] [itemProp=name]',
+        attribute: 'content',
+      },
+      {
+        selector: '[itemType*=Product] [itemProp=name]',
+      },
+    ]);
+
+    const price = findBySelectors(this.$, [
+      {
+        selector: '[itemType*=Product] [itemType*=ffer] [itemProp=price]',
+        attribute: 'content',
+      },
+      {
+        selector: '[itemType*=Product] [itemType*=ffer] [itemProp=price]',
+      },
+    ]);
+
+    const currency = findBySelectors(this.$, [
+      {
+        selector:
+          '[itemType*=Product] [itemType*=ffer] [itemProp=priceCurrency]',
+        attribute: 'content',
+      },
+      {
+        selector:
+          '[itemType*=Product] [itemType*=ffer] [itemProp=priceCurrency]',
+      },
+    ]);
+
+    const image = findBySelectors(this.$, [
+      {
+        selector: '[itemType*=Product] [itemProp=image]',
+        attribute: ['data-src', 'href', 'src', 'content', 'srcset'],
+      },
+    ]);
+
+    const imageURL = parseURL(image, this.hostname);
+
+    const product = {
+      name,
+      images: imageURL ? [{ url: imageURL }] : undefined,
+      price: parseNum(price) || undefined,
+      currency: parseCurrency(currency) || undefined,
+    };
+
+    return JSON.parse(JSON.stringify(product));
   }
 
   getMetaPixel(): Product {
