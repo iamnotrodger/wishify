@@ -1,4 +1,4 @@
-import { auth } from '@/auth';
+import { auth, isAuthenticated } from '@/auth';
 import {
   invalidRequestResponse,
   unauthorizedResponse,
@@ -28,8 +28,8 @@ const GetProductQuerySchema = z.object({
     ),
 });
 
-export const GET = auth(async function GET(req) {
-  if (!req.auth) return unauthorizedResponse();
+export const GET = auth(async (req) => {
+  if (!isAuthenticated(req.auth)) return unauthorizedResponse();
 
   const searchParamsValidation = GetProductQuerySchema.safeParse(
     Object.fromEntries(req.nextUrl.searchParams)
@@ -39,10 +39,12 @@ export const GET = auth(async function GET(req) {
     return invalidRequestResponse(validationError);
   }
 
+  const user = req.auth!.user!;
   const searchParams = searchParamsValidation.data;
+
   const [products, error] = await safeAsync(
     prisma.product.findMany({
-      where: { userId: req.auth!.user?.id },
+      where: { userId: user.id },
       orderBy: [
         {
           [searchParams.sort_by]: searchParams.sort_dir,
@@ -59,11 +61,10 @@ export const GET = auth(async function GET(req) {
   return NextResponse.json({ products });
 });
 
+export const POST = auth(async (req) => {
+  if (!isAuthenticated(req.auth)) return unauthorizedResponse();
 
-export const POST = auth(async function GET(req) {
-  if (!req.auth) return unauthorizedResponse();
-
-  const { user } = req.auth;
+  const user = req.auth!.user!;
   const data = await req.json();
 
   const productValidation = CreateProductSchema.safeParse(data);
@@ -77,11 +78,15 @@ export const POST = auth(async function GET(req) {
     prisma.product.create({
       data: {
         ...productRequest,
-        userId: user!.id as string,
+        userId: user.id!,
       },
     })
   );
-  if (error) return unknownErrorResponse(error);
 
-  return NextResponse.json({ product });
+  if (error) {
+    console.log(error);
+    return unknownErrorResponse(new Error('failed to save product'));
+  }
+
+  return NextResponse.json(product);
 });

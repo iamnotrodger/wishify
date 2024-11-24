@@ -1,6 +1,6 @@
 import { prisma } from '@/prisma';
 import { PrismaAdapter } from '@auth/prisma-adapter';
-import NextAuth from 'next-auth';
+import NextAuth, { Session } from 'next-auth';
 import authConfig from '@/auth.config';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
@@ -20,3 +20,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   ...authConfig,
 });
+
+export const isAuthenticated = (session: Session | null) => {
+  return session && session.user && session.user.id;
+};
