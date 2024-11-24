@@ -33,6 +33,7 @@ export default class ProductScraper implements Scraper {
       { selector: 'meta[property="og:description"]', attribute: 'content' },
       { selector: 'meta[name="twitter:description"]', attribute: 'content' },
       { selector: 'meta[property="description"]', attribute: 'content' },
+      { selector: 'meta[name="description"]', attribute: 'content' },
     ]);
 
     const image = findBySelectors(this.$, [
@@ -84,9 +85,9 @@ export default class ProductScraper implements Scraper {
     const product = {
       name,
       description,
-      images: imageURL ? [{ url: imageURL }] : null,
-      price: parseNum(price),
-      currency: parseCurrency(currency),
+      images: imageURL ? [{ url: imageURL }] : undefined,
+      price: parseNum(price) || undefined,
+      currency: parseCurrency(currency) || undefined,
       metadata: {
         url,
         favicon,
@@ -139,6 +140,72 @@ export default class ProductScraper implements Scraper {
   }
 
   getMetaPixel(): Product {
-    return {};
+    var data = {};
+
+    // this.$('script').each((_, element) => {
+    //   const sc = this.$(element).html();
+    //   if (!sc) return;
+
+    //   const matches = sc
+    //     .replace(/(\r\n|\n|\r)/gm, '')
+    //     .match(/fbq\((.[^\;]*)\);/g);
+
+    //   console.log(sc);
+    //   console.log('matches', matches);
+
+    //   if (matches) {
+    //     for (let j = 0; j < matches.length; j++) {
+    //       let m = matches[j];
+    //       if (!m) continue;
+
+    //       m = m.replace('fbq(', '').replace(');', '');
+    //       const parts = m.split(',');
+    //       if (parts[1]) {
+    //         const action = parts[1].trim().replace(/'/g, '').replace(/"/g, '');
+    //         if (action == 'ViewContent') {
+    //           const tdata: { [key: string]: string | number } = {};
+    //           for (let z = 0; z < parts.length; z++) {
+    //             const cpart = parts[z]?.split(':') || [];
+    //             if (cpart.length == 2 && cpart[0] && cpart[1]) {
+    //               const val = cpart[1]
+    //                 .trim()
+    //                 .replace(/'/g, '')
+    //                 .replace(/"/g, '')
+    //                 .replace(/{/g, '')
+    //                 .replace(/}/g, '');
+    //               const key = cpart[0]
+    //                 .trim()
+    //                 .replace(/{/g, '')
+    //                 .replace(/}/g, '')
+    //                 .replace(' ', '')
+    //                 .replaceAll('"', '');
+    //               const macro_check = val.match(
+    //                 /google_tag_manager\[GTM-(.*)\].macro\((\d*)\)/
+    //               );
+    //               if (!macro_check) {
+    //                 tdata[key] = val;
+    //               }
+    //             }
+    //           }
+    //           if (tdata.content_type) {
+    //             const check = tdata;
+    //             if (
+    //               check.content_type == 'product' ||
+    //               check.content_type == 'product_group'
+    //             ) {
+    //               data = {
+    //                 name: check.content_name,
+    //                 price: parseNum(check.value) || undefined,
+    //                 currency: parseCurrency(check.currency) || undefined,
+    //               };
+    //             }
+    //           }
+    //         }
+    //       }
+    //     }
+    //   }
+    // });
+
+    return data;
   }
 }
