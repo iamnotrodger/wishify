@@ -78,3 +78,19 @@ export const findBySelectors = (
   }
   return undefined;
 };
+
+export const removeNullAndUndefined = (obj: any): Object => {
+  const isValidValue = (value: any) =>
+    value !== null && value !== undefined && !Number.isNaN(value);
+
+  if (Array.isArray(obj)) {
+    return obj.map((item) => removeNullAndUndefined(item)).filter(isValidValue);
+  } else if (obj !== null && typeof obj === 'object') {
+    return Object.fromEntries(
+      Object.entries(obj)
+        .map(([k, v]) => [k, removeNullAndUndefined(v)])
+        .filter(([_, v]) => isValidValue(v))
+    );
+  }
+  return obj;
+};

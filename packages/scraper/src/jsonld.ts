@@ -1,6 +1,7 @@
 import * as cheerio from 'cheerio';
 import { parseCurrency, parseJson, parseNum, parseURL } from './lib/parse';
-import { Json, Scraper } from './types';
+import { removeNullAndUndefined } from './lib/utils';
+import { Json, Product, Scraper } from './types';
 
 export default class JsonLdScraper implements Scraper {
   $: cheerio.CheerioAPI;
@@ -11,7 +12,7 @@ export default class JsonLdScraper implements Scraper {
     this.url = new URL(url);
   }
 
-  getProduct() {
+  getProduct(): Product {
     let jsonLd: Json = {};
 
     this.$('[type="application/ld+json"]').each((_, element) => {
@@ -35,17 +36,17 @@ export default class JsonLdScraper implements Scraper {
     const product = {
       name,
       description,
-      images: imageURL ? [{ url: imageURL }] : undefined,
+      images: imageURL ? [{ url: imageURL }] : null,
       price: getJsonLdPrice(jsonLd),
       currency: getJsonLdCurrency(jsonLd),
       metadata: {
         brand: brand?.name,
-        url: parseURL(url, this.url.hostname) || undefined,
+        url: parseURL(url, this.url.hostname),
         ...metadata,
       },
     };
 
-    return JSON.parse(JSON.stringify(product));
+    return removeNullAndUndefined(product) as Product;
   }
 }
 

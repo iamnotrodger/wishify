@@ -1,6 +1,6 @@
 import * as cheerio from 'cheerio';
-import { findBySelectors } from './lib/utils';
-import { Scraper } from './types';
+import { findBySelectors, removeNullAndUndefined } from './lib/utils';
+import { Product, Scraper } from './types';
 import { parseCurrency, parseNum, parseURL } from './lib/parse';
 
 export default class MicrodataScraper implements Scraper {
@@ -12,7 +12,7 @@ export default class MicrodataScraper implements Scraper {
     this.url = new URL(url);
   }
 
-  getProduct() {
+  getProduct(): Product {
     const name = findBySelectors(this.$, [
       {
         selector: '[itemType*=Product] [itemProp=name]',
@@ -67,11 +67,11 @@ export default class MicrodataScraper implements Scraper {
     const product = {
       name,
       description,
-      images: imageURL ? [{ url: imageURL }] : undefined,
-      price: parseNum(price) || undefined,
-      currency: parseCurrency(currency) || undefined,
+      images: imageURL ? [{ url: imageURL }] : null,
+      price: parseNum(price),
+      currency: parseCurrency(currency),
     };
 
-    return JSON.parse(JSON.stringify(product));
+    return removeNullAndUndefined(product) as Product;
   }
 }

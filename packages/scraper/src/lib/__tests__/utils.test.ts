@@ -1,6 +1,11 @@
 import { Product } from '@/types';
 import * as cheerio from 'cheerio';
-import { findBySelectors, mergeProducts, normalizeText } from '../utils';
+import {
+  findBySelectors,
+  mergeProducts,
+  normalizeText,
+  removeNullAndUndefined,
+} from '../utils';
 
 describe('Utils Module', () => {
   describe('mergeProducts', () => {
@@ -77,6 +82,67 @@ describe('Utils Module', () => {
       const $ = cheerio.load(html);
       const selectors = [{ selector: 'img', attribute: ['data-src', 'src'] }];
       expect(findBySelectors($, selectors)).toEqual('src.jpg');
+    });
+  });
+
+  describe('sanitizeObject', () => {
+    it('should remove undefined and null values from an object', () => {
+      const obj = {
+        name: 'Product 1',
+        price: undefined,
+        description: null,
+        images: [{ url: 'img1' }, { url: 'img2' }],
+        metadata: { key1: 'value1', key2: null },
+      };
+      const sanitizedObj = removeNullAndUndefined(obj);
+      expect(sanitizedObj).toEqual({
+        name: 'Product 1',
+        images: [{ url: 'img1' }, { url: 'img2' }],
+        metadata: { key1: 'value1' },
+      });
+    });
+
+    it('should handle nested objects', () => {
+      const obj = {
+        name: 'Product 1',
+        details: {
+          price: undefined,
+          description: null,
+          metadata: { key1: 'value1', key2: null },
+        },
+      };
+      const sanitizedObj = removeNullAndUndefined(obj);
+      expect(sanitizedObj).toEqual({
+        name: 'Product 1',
+        details: {
+          metadata: { key1: 'value1' },
+        },
+      });
+    });
+
+    it('should handle arrays of objects', () => {
+      const obj = {
+        name: 'Product 1',
+        images: [
+          { url: 'img1', width: undefined },
+          { url: 'img2', height: null },
+        ],
+      };
+      const sanitizedObj = removeNullAndUndefined(obj);
+      expect(sanitizedObj).toEqual({
+        name: 'Product 1',
+        images: [{ url: 'img1' }, { url: 'img2' }],
+      });
+    });
+
+    it('should return an empty object if all values are undefined or null', () => {
+      const obj = {
+        name: undefined,
+        price: null,
+        description: null,
+      };
+      const sanitizedObj = removeNullAndUndefined(obj);
+      expect(sanitizedObj).toEqual({});
     });
   });
 });

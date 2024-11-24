@@ -1,6 +1,6 @@
 import * as cheerio from 'cheerio';
 import { parseCurrency, parseNum, parseURL } from './lib/parse';
-import { findBySelectors } from './lib/utils';
+import { findBySelectors, removeNullAndUndefined } from './lib/utils';
 import { Product, Scraper } from './types';
 
 export default class AmazonScraper implements Scraper {
@@ -63,14 +63,14 @@ export default class AmazonScraper implements Scraper {
 
     const product = {
       name,
-      images: imageURL ? [{ url: imageURL }] : undefined,
-      price: parseNum(price) || undefined,
-      currency: parseCurrency(currency) || undefined,
+      images: imageURL ? [{ url: imageURL }] : null,
+      price: parseNum(price),
+      currency: parseCurrency(currency),
       metadata: {
         category,
       },
     };
 
-    return JSON.parse(JSON.stringify(product));
+    return removeNullAndUndefined(product);
   }
 }

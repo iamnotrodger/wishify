@@ -1,7 +1,7 @@
 import * as cheerio from 'cheerio';
-import { parseCurrency, parseJson, parseNum, parseURL } from './lib/parse';
-import { Json, Scraper } from './types';
-import { findBySelectors } from './lib/utils';
+import { parseCurrency, parseNum, parseURL } from './lib/parse';
+import { findBySelectors, removeNullAndUndefined } from './lib/utils';
+import { Product, Scraper } from './types';
 
 export default class OpenGraphScraper implements Scraper {
   $: cheerio.CheerioAPI;
@@ -12,7 +12,7 @@ export default class OpenGraphScraper implements Scraper {
     this.url = new URL(url);
   }
 
-  getProduct() {
+  getProduct(): Product {
     const name = findBySelectors(this.$, [
       { selector: 'meta[property="og:title"]', attribute: 'content' },
       { selector: 'meta[name="twitter:title"]', attribute: 'content' },
@@ -75,9 +75,9 @@ export default class OpenGraphScraper implements Scraper {
     const product = {
       name,
       description,
-      images: imageURL ? [{ url: imageURL }] : undefined,
-      price: parseNum(price) || undefined,
-      currency: parseCurrency(currency) || undefined,
+      images: imageURL ? [{ url: imageURL }] : null,
+      price: parseNum(price),
+      currency: parseCurrency(currency),
       metadata: {
         url,
         favicon,
@@ -85,6 +85,6 @@ export default class OpenGraphScraper implements Scraper {
       },
     };
 
-    return JSON.parse(JSON.stringify(product));
+    return removeNullAndUndefined(product) as Product;
   }
 }
