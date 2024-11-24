@@ -1,13 +1,25 @@
-export interface Image {
-  url: string;
-  width?: string;
-  height?: string;
+export interface Scraper {
+  getJsonLd(): Product;
+  getMicrodata(): Product;
+  getMetadata(): Product;
+  getHTMLData(): Product;
+  getMetaPixel(): Product;
 }
 
-export interface Scraper {
-  getName(): string | null;
-  getPrice(): string | null;
-  getImages(): Image[] | null;
-  getCurrency(): string | null;
-  getMetadata(): Record<string, string> | null;
-}
+export type Product = {
+  url?: string | null;
+  name?: string | null;
+  price?: number | null;
+  currency?: string | null;
+  description?: string | null;
+  images?: Image[] | null;
+  metadata?: Json | null;
+};
+
+export type Image = {
+  url: string;
+  width?: number;
+  height?: number;
+};
+
+export type Json = Record<string, any>;

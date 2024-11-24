@@ -1,82 +1,144 @@
 import * as cheerio from 'cheerio';
-import { Scraper, Image } from './types';
+import { Json, Product, Scraper } from './types';
+import {
+  getJsonLdProduct,
+  getHostname,
+  getJsonLdCurrency,
+  getJsonLdPrice,
+  findBySelectors,
+} from './lib/utils';
+import { parseCurrency, parseJson, parseNum, parseURL } from './lib/parse';
 
 export default class ProductScraper implements Scraper {
   $: cheerio.CheerioAPI;
+  hostname: string;
 
-  constructor(html: string) {
+  constructor(url: string, html: string) {
     this.$ = cheerio.load(html);
+    this.hostname = getHostname(url);
   }
 
-  getName(): string | null {
-    throw new Error('Method not implemented.');
+  getHTMLData() {
+    return {};
   }
 
-  getPrice(): string | null {
-    throw new Error('Method not implemented.');
-  }
+  getMetadata(): Product {
+    const name = findBySelectors(this.$, [
+      { selector: 'meta[property="og:title"]', attribute: 'content' },
+      { selector: 'meta[name="twitter:title"]', attribute: 'content' },
+      { selector: 'title' },
+    ]);
 
-  getCurrency(): string | null {
-    throw new Error('Method not implemented.');
-  }
+    const description = findBySelectors(this.$, [
+      { selector: 'meta[property="og:description"]', attribute: 'content' },
+      { selector: 'meta[name="twitter:description"]', attribute: 'content' },
+      { selector: 'meta[property="description"]', attribute: 'content' },
+    ]);
 
-  getImages(): Image[] | null {
-    throw new Error('Method not implemented.');
-  }
+    const image = findBySelectors(this.$, [
+      {
+        selector: 'meta[property="og:image:secure_url"]',
+        attribute: 'content',
+      },
+      { selector: 'meta[property="og:image:url"]', attribute: 'content' },
+      { selector: 'meta[property="og:image"]', attribute: 'content' },
+      { selector: 'meta[name="twitter:image"]', attribute: 'content' },
+    ]);
 
-  getMetadata(): Record<string, string> | null {
-    const titleSelectors = [
-      'meta[property="og:title"]',
-      'meta[name="twitter:title"]',
-    ].join(',');
-    const title =
-      this.$(titleSelectors).attr('content') || this.$('title').text();
-
-    const descriptionSelectors = [
-      'meta[property="og:description"]',
-      'meta[name="twitter:description"]',
-      'meta[name="description"]',
-    ].join(',');
-    const description = this.$(descriptionSelectors).attr('content');
-
-    const url =
-      this.$('meta[property="og:url"]').attr('content') ||
-      this.$('link[rel="canonical"]').attr('href');
-
-    const imageSelectors = [
-      'meta[property="og:image:secure_url"]',
-      'meta[property="og:image:url"]',
-      'meta[property="og:image"]',
-      'meta[name="twitter:image"]',
-    ].join(',');
-    const image = this.$(imageSelectors).attr('content');
-
-    const priceSelectors = [
-      'meta[property="og:image:secure_url"]',
-      'meta[property="og:image:url"]',
-      'meta[property="og:image"]',
-      'meta[name="twitter:image"]',
-    ].join(',');
-    const price = this.$(priceSelectors).attr('content');
+    const price = findBySelectors(this.$, [
+      {
+        selector: 'meta[property="product:price:amount"]',
+        attribute: 'content',
+      },
+      {
+        selector: 'meta[property="product:sale_price:amount"]',
+        attribute: 'content',
+      },
+      {
+        selector: 'meta[property="og:product:price:amount"]',
+        attribute: 'content',
+      },
+    ]);
 
     const currency = this.$('meta[property="product:price:currency"]').attr(
       'content'
     );
 
-    const favicon =
-      this.$('link[rel*="icon" i]').attr('href') ||
-      this.$('meta[name*="msapplication"]').attr('content');
+    const url = findBySelectors(this.$, [
+      { selector: 'meta[property="og:url"]', attribute: 'content' },
+      { selector: 'link[rel="canonical"]', attribute: 'href' },
+    ]);
 
-    return Object.fromEntries(
-      Object.entries({
-        title,
-        description,
+    const brand = findBySelectors(this.$, [
+      { selector: 'meta[property="og:brand"]', attribute: 'content' },
+      { selector: 'meta[property="product:brand"]', attribute: 'content' },
+    ]);
+
+    const favicon = findBySelectors(this.$, [
+      { selector: 'link[rel*="icon"]', attribute: 'href' },
+      { selector: 'meta[name*="msapplication"]', attribute: 'content' },
+    ]);
+
+    const imageURL = parseURL(image, this.hostname);
+
+    const product = {
+      name,
+      description,
+      images: imageURL ? [{ url: imageURL }] : null,
+      price: parseNum(price),
+      currency: parseCurrency(currency),
+      metadata: {
         url,
-        image,
-        price,
-        currency,
         favicon,
-      }).filter(([_, value]) => value != null)
-    ) as Record<string, string>;
+        brand,
+      },
+    };
+
+    return JSON.parse(JSON.stringify(product));
+  }
+
+  getJsonLd(): Product {
+    let jsonLd: Json = {};
+
+    this.$('[type="application/ld+json"]').each((_, element) => {
+      const rawContent = this.$(element).html();
+      if (!rawContent) return;
+
+      const rawJsonLd = parseJson(rawContent);
+      if (!rawJsonLd) return;
+
+      const currentJsonLd = getJsonLdProduct(rawJsonLd);
+      if (!currentJsonLd) return;
+
+      if (!jsonLd['@id'] || jsonLd['@id'] == currentJsonLd['@id']) {
+        jsonLd = { ...jsonLd, ...currentJsonLd };
+      }
+    });
+
+    const { name, description, brand, image, url, ...metadata } = jsonLd;
+    const imageURL = parseURL(image, this.hostname);
+
+    const product = {
+      name,
+      description,
+      images: imageURL ? [{ url: imageURL }] : undefined,
+      price: getJsonLdPrice(jsonLd),
+      currency: getJsonLdCurrency(jsonLd),
+      metadata: {
+        brand: brand?.name,
+        url: parseURL(url, this.hostname) || undefined,
+        ...metadata,
+      },
+    };
+
+    return JSON.parse(JSON.stringify(product));
+  }
+
+  getMicrodata(): Product {
+    return {};
+  }
+
+  getMetaPixel(): Product {
+    return {};
   }
 }

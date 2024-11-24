@@ -1,35 +1,64 @@
+import { parseNum } from './lib/parse';
+import { findBySelectors } from './lib/utils';
 import ProductScraper from './scraper';
-import { Scraper, Image } from './types';
+import { Image, Product, Scraper } from './types';
 
 export default class AmazonScraper implements Scraper {
   private scrapper: ProductScraper;
 
-  constructor(html: string) {
-    this.scrapper = new ProductScraper(html);
+  constructor(url: string, html: string) {
+    this.scrapper = new ProductScraper(url, html);
   }
 
-  getName(): string | null {
-    return this.scrapper.$('span#productTitle').text().trim();
+  getName() {
+    return this.scrapper.$('#productTitle').text().trim();
   }
 
-  getPrice(): string | null {
+  getPrice() {
     return this.scrapper
-      .$('span#priceValue')
+      .$('span.a-offscreen')
       .first()
       .text()
       .replace(/[^\d.]+/g, '');
   }
 
   getCurrency(): string | null {
-    return this.scrapper.getCurrency();
+    return null;
   }
 
-  getImages(): Image[] | null {
-    const url = this.scrapper.$('img#landingImage').attr('src');
-    return url ? [{ url }] : null;
+  getImages(): Image[] | undefined {
+    const urlSelectors = ['img#landingImage', '#imgTagWrapperId img'].join(',');
+    const url = this.scrapper.$(urlSelectors).attr('src');
+    return url ? [{ url }] : undefined;
   }
 
-  getMetadata(): Record<string, string> | null {
+  getHTMLData(): Product {
+    const name = this.getName();
+    const price = this.getPrice();
+    const currency = this.getCurrency();
+    const images = this.getImages();
+
+    return {
+      name,
+      currency: currency || undefined,
+      images: images,
+      price: parseNum(price) || undefined,
+    };
+  }
+
+  getMetadata() {
     return this.scrapper.getMetadata();
+  }
+
+  getJsonLd() {
+    return this.scrapper.getJsonLd();
+  }
+
+  getMicrodata() {
+    return this.scrapper.getMicrodata();
+  }
+
+  getMetaPixel(): Product {
+    return this.scrapper.getMetaPixel();
   }
 }
