@@ -1,10 +1,5 @@
-import { Image, Json, Product } from '@/types';
+import { Image, Product } from '@/types';
 import * as cheerio from 'cheerio';
-import { parseCurrency, parseNum } from './parse';
-
-export const getHostname = (url: string): string => {
-  return new URL(url).hostname;
-};
 
 export const mergeProducts = (products: Product[]): Product => {
   const product: Product = {
@@ -82,40 +77,4 @@ export const findBySelectors = (
     if (value) return value.trim();
   }
   return undefined;
-};
-
-export const getJsonLdProduct = (jsonLd: Json): Json | undefined => {
-  const types = ['PRODUCT', 'CAR', 'HOTEL', 'BOOK'];
-  const json = jsonLd['@graph'] || jsonLd;
-
-  const isProductType = (item: Json) =>
-    types.some((type) => item['@type']?.toUpperCase().includes(type));
-
-  if (Array.isArray(json)) {
-    return json.find(isProductType);
-  }
-
-  return isProductType(json) ? json : undefined;
-};
-
-export const getJsonLdCurrency = (data: Json): string | undefined => {
-  if (!data.offers) return undefined;
-
-  const offer = Array.isArray(data.offers) ? data.offers[0] : data.offers;
-  const currency = parseCurrency(
-    offer.priceCurrency || offer.priceSpecification?.priceCurrency
-  );
-
-  return currency || undefined;
-};
-
-export const getJsonLdPrice = (data: Json): number | undefined => {
-  if (!data.offers) return undefined;
-
-  const offer = Array.isArray(data.offers) ? data.offers[0] : data.offers;
-  const price = parseNum(
-    offer.price || offer.highPrice || offer.priceSpecification?.price
-  );
-
-  return price || undefined;
 };

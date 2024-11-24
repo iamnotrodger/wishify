@@ -84,7 +84,7 @@ describe('Parse Module', () => {
     });
   });
 
-  describe('parseJsonLd', () => {
+  describe('parseJson', () => {
     const rawContent = `
       {
         "@context": "https://schema.org",
