@@ -1,13 +1,28 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
+
+import cc from 'currency-codes';
 
 import { CreateProduct, CreateProductSchema, Folder } from '@repo/api';
 import { Button } from '@repo/ui/button';
 import { Textarea } from '@repo/ui/textarea';
-import { Form, FormField, FormItem, FormLabel } from '@repo/ui/form';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from '@repo/ui/form';
 import { Input } from '@repo/ui/input';
 import { Plus } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectTrigger,
+  SelectValue,
+  SelectItem,
+} from '@repo/ui/select';
 
 const testFolders = [
   { id: '672d791a4b3f63ec36d0a345', name: '❤️ Favorites' },
@@ -34,11 +49,14 @@ function ProductForm() {
     setFolders(testFolders);
   }, []);
 
+  form.watch('folderId');
+
   function onSubmit(values: CreateProduct) {
     console.log(values);
   }
 
-  form.watch('folderId');
+  const currencyCodes = useMemo<string[]>(() => cc.codes(), []);
+
   return (
     <Form {...form}>
       <div className='bg-slate-100 border-b-slate-200 border-b text-left p-4'>
@@ -50,7 +68,7 @@ function ProductForm() {
       >
         {/* TODO: use Command, and add list creation inside Select */}
         <div className='flex gap-4'>
-          <div className='border min-h-[116px] min-w-[116px] bg-gray-100 rounded-md'>
+          <div className='border min-h-[122px] min-w-[122px] bg-gray-100 rounded-md'>
             {/* TODO: add image uploading, fix aspect ratio */}
             <FormField
               control={form.control}
@@ -76,8 +94,8 @@ function ProductForm() {
                 render={({ field }) => (
                   <FormItem>
                     <Input
-                      className='font-bold text-md p-0 border-none h-[unset] mb-1.5
-                      focus-visible:ring-[none] focus:cursor-auto hover:cursor-pointer hover:underline focus:underline decoration-blue-500 decoration-2
+                      className='font-bold text-base p-0 h-[unset]
+                       border-none mb-1.5 focus-visible:ring-[none] focus:cursor-auto hover:cursor-pointer hover:underline focus:underline decoration-blue-500 decoration-2
                       '
                       onChange={field.onChange}
                       value={field.value}
@@ -92,7 +110,7 @@ function ProductForm() {
                 render={({ field }) => (
                   <FormItem>
                     <Textarea
-                      className='text-sm p-0 border-none resize-none min-h-[2.8rem] max-h-[2.8rem] overflow-ellipsis
+                      className='text-sm p-0 border-none resize-none min-h-[2.8rem] max-h-[2.8rem] mb-2 overflow-ellipsis
                       focus-visible:ring-[none] focus:cursor-auto hover:cursor-pointer hover:underline focus:underline decoration-blue-500 decoration-2'
                       onChange={field.onChange}
                       value={field.value}
@@ -104,9 +122,32 @@ function ProductForm() {
               />
             </div>
             <div className='flex flex-row items-center gap-2'>
-              <p className='text-sm font-semibold'>
-                {form.getValues('currency')}
-              </p>
+              <FormField
+                control={form.control}
+                name='currency'
+                render={({ field }) => (
+                  <FormItem className='w-full'>
+                    <Select
+                      defaultValue={field.value}
+                      onValueChange={field.onChange}
+                    >
+                      <FormControl>
+                        <SelectTrigger className='max-w-[80px]'>
+                          <SelectValue />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className='max-h-[300px]'>
+                        {/* TODO: Fix render speed of long list here. using virutalization, react-window, or similar. */}
+                        {currencyCodes.map((code) => (
+                          <SelectItem key={code} value={code}>
+                            {code}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name='price'
@@ -116,7 +157,8 @@ function ProductForm() {
                       type='number'
                       min='1'
                       step='any'
-                      className='text-sm font-semibold text-left border-none h-[unset] focus-visible:ring-transparent p-0 focus:cursor-auto hover:cursor-pointer hover:underline decoration-blue-500 decoration-2'
+                      className='text-sm font-semibold text-left p-0 ml-[-1rem]
+                      border-none h-[unset] focus-visible:ring-transparent focus:cursor-auto hover:cursor-pointer hover:underline decoration-blue-500 decoration-2'
                       onChange={(e) => {
                         if (
                           e.target.value === '.' ||
@@ -142,7 +184,7 @@ function ProductForm() {
           render={({ field }) => (
             <FormItem className='w-full text-left flex flex-col gap-2 justify-start'>
               <h2 className='text-lg font-medium'>Add to List</h2>
-              <FormLabel className='w-full text-md font-normal '>
+              <FormLabel className='w-full text-base font-normal '>
                 My lists
               </FormLabel>
               <div className='flex gap-2 flex-wrap'>
@@ -204,7 +246,7 @@ function ProductForm() {
           name='description'
           render={({ field }) => (
             <FormItem className='text-left mb-5'>
-              <FormLabel className='w-full text-md font-normal'>
+              <FormLabel className='w-full text-base font-normal'>
                 Notes
               </FormLabel>
               <Textarea
