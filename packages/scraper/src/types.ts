@@ -3,7 +3,6 @@ export interface Scraper {
   getMicrodata(): Product;
   getMetadata(): Product;
   getHTMLData(): Product;
-  getMetaPixel(): Product;
 }
 
 export type Product = {

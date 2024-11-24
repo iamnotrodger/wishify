@@ -13,16 +13,9 @@ export const getProduct = (
     const jsonLd = scraper.getJsonLd();
     const microdata = scraper.getMicrodata();
     const metadata = scraper.getMetadata();
-    const metaPixel = scraper.getMetaPixel();
     const htmlData = scraper.getHTMLData();
 
-    const product = mergeProducts([
-      jsonLd,
-      microdata,
-      metadata,
-      metaPixel,
-      htmlData,
-    ]);
+    const product = mergeProducts([jsonLd, microdata, metadata, htmlData]);
     product.url = url;
 
     return [product, null];

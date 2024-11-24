@@ -83,8 +83,4 @@ export default class AmazonScraper implements Scraper {
   getMicrodata() {
     return this.scrapper.getMicrodata();
   }
-
-  getMetaPixel(): Product {
-    return this.scrapper.getMetaPixel();
-  }
 }
