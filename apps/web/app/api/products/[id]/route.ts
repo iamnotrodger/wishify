@@ -1,12 +1,34 @@
-import { type NextRequest, NextResponse } from 'next/server';
+import { auth } from '@/auth';
+import { productNotFoundResponse, unauthorizedResponse } from '@/lib/responses';
+import { safeAsync } from '@/lib/utils';
+import { prisma } from '@/prisma';
+import { NextResponse } from 'next/server';
 
-export async function POST(
-  req: NextRequest,
-  context: { params: { id: string } }
-): Promise<NextResponse> {
-  const { id } = context.params;
-  console.log(id);
-
-  // TODO: backend
-  return NextResponse.json({});
+interface Context {
+  params: {
+    id: string;
+  };
 }
+
+export const GET = auth(async (req, ctx) => {
+  if (!req.auth || !req.auth.user) return unauthorizedResponse();
+
+  const user = req.auth.user;
+  const { id } = (ctx as Context).params;
+
+  if (!id) return productNotFoundResponse(new Error('product id not found'));
+
+  const [product, error] = await safeAsync(
+    prisma.product.findUniqueOrThrow({
+      where: {
+        id,
+        userId: user.id,
+      },
+    })
+  );
+  if (error) {
+    return productNotFoundResponse(new Error('product does not exist'));
+  }
+
+  return NextResponse.json(product);
+});
