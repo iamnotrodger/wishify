@@ -1,4 +1,4 @@
-import { Product } from '@/types';
+import { Product } from '../../types';
 import * as cheerio from 'cheerio';
 import {
   findBySelectors,
