@@ -1,4 +1,4 @@
-import { Image, Product } from '@/types';
+import { Image, Product } from '../types';
 import * as cheerio from 'cheerio';
 
 export const mergeProducts = (products: Product[]): Product => {
