@@ -1,10 +1,5 @@
-import { Image, Json, Product } from '@/types';
+import { Image, Product } from '../types';
 import * as cheerio from 'cheerio';
-import { parseCurrency, parseNum } from './parse';
-
-export const getHostname = (url: string): string => {
-  return new URL(url).hostname;
-};
 
 export const mergeProducts = (products: Product[]): Product => {
   const product: Product = {
@@ -84,38 +79,18 @@ export const findBySelectors = (
   return undefined;
 };
 
-export const getJsonLdProduct = (jsonLd: Json): Json | undefined => {
-  const types = ['PRODUCT', 'CAR', 'HOTEL', 'BOOK'];
-  const json = jsonLd['@graph'] || jsonLd;
+export const removeNullAndUndefined = (obj: any): Object => {
+  const isValidValue = (value: any) =>
+    value !== null && value !== undefined && !Number.isNaN(value);
 
-  const isProductType = (item: Json) =>
-    types.some((type) => item['@type']?.toUpperCase().includes(type));
-
-  if (Array.isArray(json)) {
-    return json.find(isProductType);
+  if (Array.isArray(obj)) {
+    return obj.map((item) => removeNullAndUndefined(item)).filter(isValidValue);
+  } else if (obj !== null && typeof obj === 'object') {
+    return Object.fromEntries(
+      Object.entries(obj)
+        .map(([k, v]) => [k, removeNullAndUndefined(v)])
+        .filter(([_, v]) => isValidValue(v))
+    );
   }
-
-  return isProductType(json) ? json : undefined;
-};
-
-export const getJsonLdCurrency = (data: Json): string | undefined => {
-  if (!data.offers) return undefined;
-
-  const offer = Array.isArray(data.offers) ? data.offers[0] : data.offers;
-  const currency = parseCurrency(
-    offer.priceCurrency || offer.priceSpecification?.priceCurrency
-  );
-
-  return currency || undefined;
-};
-
-export const getJsonLdPrice = (data: Json): number | undefined => {
-  if (!data.offers) return undefined;
-
-  const offer = Array.isArray(data.offers) ? data.offers[0] : data.offers;
-  const price = parseNum(
-    offer.price || offer.highPrice || offer.priceSpecification?.price
-  );
-
-  return price || undefined;
+  return obj;
 };

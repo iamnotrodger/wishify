@@ -1,8 +1,5 @@
 export interface Scraper {
-  getJsonLd(): Product;
-  getMicrodata(): Product;
-  getMetadata(): Product;
-  getHTMLData(): Product;
+  getProduct(): Product;
 }
 
 export type Product = {

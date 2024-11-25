@@ -11,33 +11,12 @@ describe('AmazonScraper', () => {
   beforeAll(() => {
     const htmlFilePath = path.resolve(__dirname, 'data/amazon.html');
     html = fs.readFileSync(htmlFilePath, 'utf-8');
-    scraper = new AmazonScraper('https://www.amazon.com/dp/B08N5WRWNW', html);
+    scraper = new AmazonScraper(url, html);
   });
 
-  describe('getMetadata', () => {
-    it('should extract metadata correctly', () => {
-      const result = scraper.getMetadata();
-      expect(result).toEqual({
-        name: 'Tarcury WW2 F4U Corsair Fighter Bomber Building Bricks - 550 PCS Army Toy Set with 1 Toy Soldiers - Engaging WWII Toys for Kids and Adults, Building Sets - Amazon Canada',
-        description:
-          'Tarcury WW2 F4U Corsair Fighter Bomber Building Bricks - 550 PCS Army Toy Set with 1 Toy Soldiers - Engaging WWII Toys for Kids and Adults in Building Sets.',
-        metadata: {
-          url: 'https://www.amazon.ca/Tarcury-Corsair-Fighter-Bomber-Building/dp/B0CNT488KH',
-        },
-      });
-    });
-  });
-
-  describe('getJsonLd', () => {
-    it('should extract JSON-LD data correctly', () => {
-      const result = scraper.getJsonLd();
-      expect(result).toEqual({ metadata: {} });
-    });
-  });
-
-  describe('getHtmlData', () => {
+  describe('getProduct', () => {
     it('should extract HTML data correctly', () => {
-      const result = scraper.getHTMLData();
+      const result = scraper.getProduct();
       expect(result).toEqual({
         name: 'Tarcury WW2 F4U Corsair Fighter Bomber Building Bricks - 550 PCS Army Toy Set with 1 Toy Soldiers - Engaging WWII Toys for Kids and Adults',
         price: 29.99,
