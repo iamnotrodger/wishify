@@ -13,7 +13,7 @@ function App() {
 
   useEffect(() => {
     // Request data from the background script
-    chrome.runtime.sendMessage({ type: 'GET_PAGE_DATA' }, (response) => {
+    chrome?.runtime?.sendMessage({ type: 'GET_PAGE_DATA' }, (response) => {
       if (response?.payload) {
         setPageData(response.payload);
       }
