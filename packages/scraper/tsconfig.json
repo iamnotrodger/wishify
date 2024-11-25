@@ -4,9 +4,10 @@
   "compilerOptions": {
     "baseUrl": ".",
     "module": "ESNext",
-    "moduleResolution": "Bundler",
+    "esModuleInterop": true,
+    "moduleResolution": "node",
     "outDir": "dist",
-    "rootDir": ".",
+    "rootDir": "src",
     "paths": {
       "@/*": ["src/*"]
     }

@@ -5,9 +5,6 @@ import MicrodataScraper from './microdata';
 import OpenGraphScraper from './opengraph';
 import { Product, Scraper } from './types';
 
-export type { Product, Scraper };
-export { JsonLdScraper, MicrodataScraper, OpenGraphScraper, AmazonScraper };
-
 export const getProduct = (
   url: string,
   html: string
