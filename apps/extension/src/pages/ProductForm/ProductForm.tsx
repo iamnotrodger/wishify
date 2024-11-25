@@ -23,6 +23,7 @@ import {
   SelectValue,
   SelectItem,
 } from '@repo/ui/select';
+import { Product as ScrapedProduct } from '@repo/scraper/types';
 
 const testFolders = [
   { id: '672d791a4b3f63ec36d0a345', name: '❤️ Favorites' },
@@ -33,11 +34,12 @@ const testFolders = [
   },
 ];
 
-function ProductForm() {
+const ProductForm = ({ product }: { product: ScrapedProduct | null }) => {
   const form = useForm<CreateProduct>({
     resolver: zodResolver(CreateProductSchema),
     defaultValues: {
       name: '',
+      brand: '',
       description: '',
       url: '',
       currency: 'CAD',
@@ -49,6 +51,23 @@ function ProductForm() {
     setFolders(testFolders);
   }, []);
 
+  useEffect(() => {
+    console.log('xyzz', product);
+    if (product) {
+      form.reset((prev) => ({
+        ...prev,
+        name: product.name ?? '',
+        brand: product.metadata?.brand ?? '',
+        url: product.url ?? '',
+        currency: product.currency ?? 'CAD',
+        price: product.price ?? 0.0,
+        ...(product.images?.length && product.images[0]
+          ? { images: [product.images[0]] }
+          : {}),
+      }));
+    }
+  }, [form, product]);
+
   form.watch('folderId');
 
   function onSubmit(values: CreateProduct) {
@@ -59,7 +78,7 @@ function ProductForm() {
 
   return (
     <Form {...form}>
-      <div className='bg-slate-100 border-b-slate-200 border-b text-left p-4'>
+      <div className='bg-slate-100 border-b-slate-200 border-b text-left px-4 py-3'>
         <h1 className='font-semibold text-xl'>Save item</h1>
       </div>
       <form
@@ -68,8 +87,8 @@ function ProductForm() {
       >
         {/* TODO: use Command, and add list creation inside Select */}
         <div className='flex gap-4'>
-          <div className='border min-h-[122px] min-w-[122px] bg-gray-100 rounded-md'>
-            {/* TODO: add image uploading, fix aspect ratio */}
+          <div className='border min-h-[122px] max-h-[122px] min-w-[122px] bg-gray-100 rounded-md'>
+            {/* TODO: add image uploading */}
             <FormField
               control={form.control}
               name='images'
@@ -77,7 +96,7 @@ function ProductForm() {
                 <FormItem className='w-full'>
                   {field.value?.length && field.value[0]?.url ? (
                     <img
-                      className='max-h-[150px] rounded-md'
+                      className='max-h-[122px] min-w-[122px] object-cover rounded-md'
                       src={field.value[0].url}
                       alt='Image'
                     />
@@ -90,7 +109,7 @@ function ProductForm() {
             <div className='flex flex-col text-left w-full'>
               <FormField
                 control={form.control}
-                name='name'
+                name='brand'
                 render={({ field }) => (
                   <FormItem>
                     <Input
@@ -127,10 +146,7 @@ function ProductForm() {
                 name='currency'
                 render={({ field }) => (
                   <FormItem className='w-full'>
-                    <Select
-                      defaultValue={field.value}
-                      onValueChange={field.onChange}
-                    >
+                    <Select value={field.value} onValueChange={field.onChange}>
                       <FormControl>
                         <SelectTrigger className='max-w-[80px]'>
                           <SelectValue />
@@ -158,7 +174,7 @@ function ProductForm() {
                       min='1'
                       step='any'
                       className='text-sm font-semibold text-left p-0 ml-[-1rem]
-                      border-none h-[unset] focus-visible:ring-transparent focus:cursor-auto hover:cursor-pointer hover:underline decoration-blue-500 decoration-2'
+                      border-none h-[unset] focus-visible:ring-transparent focus:cursor-auto hover:cursor-pointer focus:underline hover:underline decoration-blue-500 decoration-2'
                       onChange={(e) => {
                         if (
                           e.target.value === '.' ||
@@ -169,7 +185,7 @@ function ProductForm() {
                           e.preventDefault();
                         }
                       }}
-                      value={field.value ? field.value : ''}
+                      value={field.value ? Number(field.value).toFixed(2) : ''}
                       placeholder='0.00'
                     />
                   </FormItem>
@@ -250,7 +266,7 @@ function ProductForm() {
                 Notes
               </FormLabel>
               <Textarea
-                className='text-sm resize-none min-h-[6rem] max-h-[2.8rem] bg-slate-200 placeholder:text-slate-800'
+                className='text-sm resize-none h-[5rem] bg-slate-200 placeholder:text-slate-800'
                 onChange={field.onChange}
                 value={field.value}
                 placeholder='Add your notes here...'
@@ -265,6 +281,6 @@ function ProductForm() {
       </form>
     </Form>
   );
-}
+};
 
 export default ProductForm;
