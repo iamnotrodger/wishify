@@ -1,7 +1,7 @@
 import { parseCurrency, parseNum, parseURL } from './lib/parse';
 import { findBySelectors } from './lib/utils';
 import ProductScraper from './scraper';
-import { Image, Product, Scraper } from './types';
+import { Product, Scraper } from './types';
 
 export default class AmazonScraper implements Scraper {
   private scrapper: ProductScraper;

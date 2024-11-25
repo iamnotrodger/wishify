@@ -1,4 +1,4 @@
-import { Image, Json, Product } from '@/types';
+import { Image, Json, Product } from '../types';
 import * as cheerio from 'cheerio';
 import { parseCurrency, parseNum } from './parse';
 
