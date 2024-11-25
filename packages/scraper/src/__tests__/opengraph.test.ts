@@ -1,10 +1,10 @@
 import fs from 'fs';
 import path from 'path';
-import ProductScraper from '../scraper';
-import { Product } from '../types';
+import { Product, Scraper } from '../types';
 import { normalizeText } from '../lib/utils';
+import OpenGraphScraper from '../opengraph';
 
-describe('ProductScraper', () => {
+describe('OpenGraphScraper', () => {
   const testUrl = 'https://example.com/product';
   const testHtml = `
     <html>
@@ -38,15 +38,15 @@ describe('ProductScraper', () => {
     </html>
   `;
 
-  let scraper: ProductScraper;
+  let scraper: OpenGraphScraper;
 
   beforeEach(() => {
-    scraper = new ProductScraper(testUrl, testHtml);
+    scraper = new OpenGraphScraper(testUrl, testHtml);
   });
 
-  describe('getMetadata', () => {
+  describe('getProduct', () => {
     it('should extract metadata correctly', () => {
-      const result = scraper.getMetadata();
+      const result = scraper.getProduct();
       expect(result).toEqual({
         name: 'Test Product OG',
         description: 'Product description',
@@ -60,59 +60,24 @@ describe('ProductScraper', () => {
       });
     });
   });
-
-  describe('getJsonLd', () => {
-    it('should extract JSON-LD data correctly', () => {
-      const result = scraper.getJsonLd();
-      expect(result).toEqual({
-        name: 'Test Product JSON-LD',
-        description: 'Product JSON-LD description',
-        images: [{ url: 'https://example.com/image.jpg' }],
-        price: 89.99,
-        currency: 'EUR',
-        metadata: {
-          brand: 'Test Brand',
-          '@context': 'https://schema.org/',
-          '@type': 'Product',
-          offers: {
-            price: '89.99',
-            priceCurrency: 'EUR',
-          },
-        },
-      });
-    });
-  });
-
-  describe('constructor', () => {
-    it('should set hostname correctly', () => {
-      expect(scraper.hostname).toBe('example.com');
-    });
-  });
 });
 
-describe('ProductScraper with SSENSE', () => {
+describe('OpenGraphScraper with SSENSE', () => {
   let html: string;
-  let scraper: ProductScraper;
+  let scraper: Scraper;
 
   beforeAll(() => {
     const htmlFilePath = path.resolve(__dirname, 'data/ssense.html');
     html = fs.readFileSync(htmlFilePath, 'utf-8');
-    scraper = new ProductScraper(
+    scraper = new OpenGraphScraper(
       'https://www.ssense.com/en-ca/men/product/essentials/black-jersey-crewneck-t-shirt/16693101',
       html
     );
   });
 
-  describe('getHTMLData', () => {
-    it('should return an empty object', () => {
-      const data = scraper.getHTMLData();
-      expect(data).toEqual({});
-    });
-  });
-
-  describe('getMetadata', () => {
+  describe('getProduct', () => {
     it('should extract metadata correctly', () => {
-      const metadata: Product = scraper.getMetadata();
+      const metadata: Product = scraper.getProduct();
       metadata.description = normalizeText(metadata.description);
 
       const expectedDescription = normalizeText(
@@ -138,41 +103,29 @@ describe('ProductScraper with SSENSE', () => {
       });
     });
   });
+});
 
-  describe('getJsonLd', () => {
-    it('should extract JSON-LD data correctly', () => {
-      const jsonLd = scraper.getJsonLd();
+describe('OpenGraphScraper with Amazon', () => {
+  const url =
+    'https://www.amazon.ca/Tarcury-Corsair-Fighter-Bomber-Building/dp/B0CNT488KH?pd_rd_w=QmenC&content-id=amzn1.sym.8eef7635-0ea1-468f-9bbf-a6c1163fd848&pf_rd_p=8eef7635-0ea1-468f-9bbf-a6c1163fd848&pf_rd_r=AN6A3DYMW5RSK3RCWZQN&pd_rd_wg=D3E9W&pd_rd_r=2d0f9aca-c2b3-4928-9b97-9e13695002f4&pd_rd_i=B0CNT488KH&ref_=pd_hp_d_btf_CACPN24_B0CNT488KH&th=1';
+  let html: string;
+  let scraper: Scraper;
 
-      jsonLd.description = normalizeText(jsonLd.description);
-      const expectedDescription = normalizeText(
-        'Relaxed-fit cotton jersey T-shirt.\r\n\r\n· Rib-knit crewneck\r\n· Logo bonded at chest and back\r\n· Dropped shoulders\r\n· Rubber logo patch at back collar\r\n\r\nSupplier color: Black'
-      );
+  beforeAll(() => {
+    const htmlFilePath = path.resolve(__dirname, 'data/amazon.html');
+    html = fs.readFileSync(htmlFilePath, 'utf-8');
+    scraper = new OpenGraphScraper(url, html);
+  });
 
-      expect(jsonLd).toEqual({
-        name: 'Black Jersey Crewneck T-shirt',
-        description: expectedDescription,
-        images: [
-          {
-            url: 'https://img.ssensemedia.com/images/251161M213015_1/essentials-black-jersey-crewneck-t-shirt.jpg',
-          },
-        ],
-        price: 85,
-        currency: 'CAD',
+  describe('getProduct', () => {
+    it('should extract metadata correctly', () => {
+      const result = scraper.getProduct();
+      expect(result).toEqual({
+        name: 'Tarcury WW2 F4U Corsair Fighter Bomber Building Bricks - 550 PCS Army Toy Set with 1 Toy Soldiers - Engaging WWII Toys for Kids and Adults, Building Sets - Amazon Canada',
+        description:
+          'Tarcury WW2 F4U Corsair Fighter Bomber Building Bricks - 550 PCS Army Toy Set with 1 Toy Soldiers - Engaging WWII Toys for Kids and Adults in Building Sets.',
         metadata: {
-          '@context': 'https://schema.org',
-          '@type': 'Product',
-          brand: 'Fear of God ESSENTIALS',
-          productID: 16693101,
-          sku: '251161M213015',
-          offers: {
-            '@type': 'Offer',
-            price: 85,
-            priceCurrency: 'CAD',
-
-            availability: 'https://schema.org/InStock',
-            url: '/en-ca/men/product/essentials/black-jersey-crewneck-t-shirt/16693101',
-          },
-          url: 'https://www.ssense.com/en-ca/men/product/essentials/black-jersey-crewneck-t-shirt/16693101',
+          url: 'https://www.amazon.ca/Tarcury-Corsair-Fighter-Bomber-Building/dp/B0CNT488KH',
         },
       });
     });

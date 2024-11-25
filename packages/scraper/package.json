@@ -12,13 +12,22 @@
       "default": "./dist/src/index.js"
     },
     "./amazon": {
-      "types": "./dist/src/amazon.d.ts",
-      "default": "./dist/src/amazon.js"
+      "types": "./src/amazon/index.ts",
+      "default": "./dist/amazon/index.js"
     },
-    "./types": {
-      "types": "./dist/src/types.d.ts",
-      "default": "./dist/src/types.js"
-    }
+    "./jsonld": {
+      "types": "./src/jsonld/index.ts",
+      "default": "./dist/jsonld/index.js"
+    },
+    "./microdata": {
+      "types": "./src/microdata/index.ts",
+      "default": "./dist/microdata/index.js"
+    },
+    "./opengraph": {
+      "types": "./src/opengraph/index.ts",
+      "default": "./dist/opengraph/index.js"
+    },
+    "./types": "./src/types.ts"
   },
   "devDependencies": {
     "@repo/typescript-config": "*",

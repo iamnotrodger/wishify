@@ -1,21 +1,26 @@
 import AmazonScraper from './amazon';
-import ProductScraper from './scraper';
-import { Product, Scraper } from './types';
+import JsonLdScraper from './jsonld';
 import { mergeProducts } from './lib/utils';
+import MicrodataScraper from './microdata';
+import OpenGraphScraper from './opengraph';
+import { Product, Scraper } from './types';
 
 export const getProduct = (
   url: string,
   html: string
 ): [Product | null, Error | null] => {
   try {
-    const scraper = useScraper(url, html);
+    const jsonLdProduct = new JsonLdScraper(url, html).getProduct();
+    const microdataProduct = new MicrodataScraper(url, html).getProduct();
+    const openGraphProduct = new OpenGraphScraper(url, html).getProduct();
+    const siteProduct = SiteScraper.create(url, html).getProduct();
 
-    const jsonLd = scraper.getJsonLd();
-    const microdata = scraper.getMicrodata();
-    const metadata = scraper.getMetadata();
-    const htmlData = scraper.getHTMLData();
-
-    const product = mergeProducts([jsonLd, microdata, metadata, htmlData]);
+    const product = mergeProducts([
+      jsonLdProduct,
+      microdataProduct,
+      openGraphProduct,
+      siteProduct,
+    ]);
     product.url = url;
 
     return [product, null];
@@ -27,9 +32,15 @@ export const getProduct = (
   }
 };
 
-export const useScraper = (url: string, html: string): Scraper => {
-  if (url.includes('amazon')) {
-    return new AmazonScraper(url, html);
+export class SiteScraper implements Scraper {
+  static create(url: string, html: string): Scraper {
+    if (url.includes('amazon')) {
+      return new AmazonScraper(url, html);
+    }
+    return new SiteScraper();
   }
-  return new ProductScraper(url, html);
-};
+
+  getProduct(): Product {
+    return {};
+  }
+}

@@ -1,23 +1,13 @@
-import { Product } from '@/types';
+import { Product } from '../../types';
+import * as cheerio from 'cheerio';
 import {
-  getHostname,
+  findBySelectors,
   mergeProducts,
   normalizeText,
-  findBySelectors,
-  getJsonLdProduct,
-  getJsonLdCurrency,
-  getJsonLdPrice,
+  removeNullAndUndefined,
 } from '../utils';
-import * as cheerio from 'cheerio';
 
 describe('Utils Module', () => {
-  describe('getHostname', () => {
-    it('should return the hostname without www', () => {
-      expect(getHostname('https://www.example.com')).toBe('www.example.com');
-      expect(getHostname('https://example.com')).toBe('example.com');
-    });
-  });
-
   describe('mergeProducts', () => {
     it('should combine product details', () => {
       const products: Product[] = [
@@ -95,42 +85,64 @@ describe('Utils Module', () => {
     });
   });
 
-  describe('getJsonLdProduct', () => {
-    it('should return the product from JSON-LD', () => {
-      const jsonLd = { '@graph': [{ '@type': 'Product', name: 'Product 1' }] };
-      expect(getJsonLdProduct(jsonLd)).toEqual({
-        '@type': 'Product',
+  describe('sanitizeObject', () => {
+    it('should remove undefined and null values from an object', () => {
+      const obj = {
         name: 'Product 1',
+        price: undefined,
+        description: null,
+        images: [{ url: 'img1' }, { url: 'img2' }],
+        metadata: { key1: 'value1', key2: null },
+      };
+      const sanitizedObj = removeNullAndUndefined(obj);
+      expect(sanitizedObj).toEqual({
+        name: 'Product 1',
+        images: [{ url: 'img1' }, { url: 'img2' }],
+        metadata: { key1: 'value1' },
       });
     });
 
-    it('should return undefined if no product is found', () => {
-      const jsonLd = { '@graph': [{ '@type': 'Person', name: 'John Doe' }] };
-      expect(getJsonLdProduct(jsonLd)).toBeUndefined();
-    });
-  });
-
-  describe('getJsonLdCurrency', () => {
-    it('should return the currency from JSON-LD', () => {
-      const data = { offers: { priceCurrency: 'USD' } };
-      expect(getJsonLdCurrency(data)).toBe('USD');
-    });
-
-    it('should return undefined if no currency is found', () => {
-      const data = { offers: {} };
-      expect(getJsonLdCurrency(data)).toBeUndefined();
-    });
-  });
-
-  describe('getJsonLdPrice', () => {
-    it('should return the price from JSON-LD', () => {
-      const data = { offers: { price: 100 } };
-      expect(getJsonLdPrice(data)).toBe(100);
+    it('should handle nested objects', () => {
+      const obj = {
+        name: 'Product 1',
+        details: {
+          price: undefined,
+          description: null,
+          metadata: { key1: 'value1', key2: null },
+        },
+      };
+      const sanitizedObj = removeNullAndUndefined(obj);
+      expect(sanitizedObj).toEqual({
+        name: 'Product 1',
+        details: {
+          metadata: { key1: 'value1' },
+        },
+      });
     });
 
-    it('should return undefined if no price is found', () => {
-      const data = { offers: {} };
-      expect(getJsonLdPrice(data)).toBeUndefined();
+    it('should handle arrays of objects', () => {
+      const obj = {
+        name: 'Product 1',
+        images: [
+          { url: 'img1', width: undefined },
+          { url: 'img2', height: null },
+        ],
+      };
+      const sanitizedObj = removeNullAndUndefined(obj);
+      expect(sanitizedObj).toEqual({
+        name: 'Product 1',
+        images: [{ url: 'img1' }, { url: 'img2' }],
+      });
+    });
+
+    it('should return an empty object if all values are undefined or null', () => {
+      const obj = {
+        name: undefined,
+        price: null,
+        description: null,
+      };
+      const sanitizedObj = removeNullAndUndefined(obj);
+      expect(sanitizedObj).toEqual({});
     });
   });
 });

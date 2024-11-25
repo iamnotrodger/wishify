@@ -1,4 +1,4 @@
-import { Json } from '@/types';
+import { Json } from '../../types';
 import {
   parseCurrency,
   parseJson,
@@ -84,7 +84,7 @@ describe('Parse Module', () => {
     });
   });
 
-  describe('parseJsonLd', () => {
+  describe('parseJson', () => {
     const rawContent = `
       {
         "@context": "https://schema.org",

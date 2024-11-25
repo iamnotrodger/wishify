@@ -1,17 +1,16 @@
 import fs from 'fs';
 import path from 'path';
 import AmazonScraper from '../amazon';
-import { getProduct, useScraper } from '../index';
-import ProductScraper from '../scraper';
+import { getProduct, SiteScraper } from '../index';
 import { normalizeText } from '../lib/utils';
 
 describe('Scraper Module', () => {
-  describe('useScraper', () => {
+  describe('SiteScraper', () => {
     it('should return an instance of AmazonScraper for Amazon URLs', () => {
       const url = 'https://www.amazon.com/example-product';
       const html = '<html></html>';
 
-      const scraper = useScraper(url, html);
+      const scraper = SiteScraper.create(url, html);
 
       expect(scraper).toBeInstanceOf(AmazonScraper);
     });
@@ -20,9 +19,9 @@ describe('Scraper Module', () => {
       const url = 'https://www.example.com/example-product';
       const html = '<html></html>';
 
-      const scraper = useScraper(url, html);
+      const scraper = SiteScraper.create(url, html);
 
-      expect(scraper).toBeInstanceOf(ProductScraper);
+      expect(scraper).toBeInstanceOf(SiteScraper);
     });
   });
 
