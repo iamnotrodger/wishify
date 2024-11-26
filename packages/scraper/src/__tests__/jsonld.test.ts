@@ -52,12 +52,12 @@ describe('ProductScraper', () => {
       const result = scraper.getProduct();
       expect(result).toEqual({
         name: 'Test Product JSON-LD',
+        brand: 'Test Brand',
         description: 'Product JSON-LD description',
         images: [{ url: 'https://example.com/image.jpg' }],
         price: 89.99,
         currency: 'EUR',
         metadata: {
-          brand: 'Test Brand',
           '@context': 'https://schema.org/',
           '@type': 'Product',
           offers: {
@@ -135,6 +135,7 @@ describe('JsonLdScraper with SSENSE', () => {
 
       expect(jsonLd).toEqual({
         name: 'Black Jersey Crewneck T-shirt',
+        brand: 'Fear of God ESSENTIALS',
         description: expectedDescription,
         images: [
           {
@@ -146,7 +147,6 @@ describe('JsonLdScraper with SSENSE', () => {
         metadata: {
           '@context': 'https://schema.org',
           '@type': 'Product',
-          brand: 'Fear of God ESSENTIALS',
           productID: 16693101,
           sku: '251161M213015',
           offers: {

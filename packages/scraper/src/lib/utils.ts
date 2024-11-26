@@ -13,6 +13,7 @@ export const mergeProducts = (products: Product[]): Product => {
 
   for (const p of products) {
     product.name = product.name ?? p.name;
+    product.brand = product.brand ?? p.brand;
     product.description = product.description ?? p.description;
     product.price = product.price ?? p.price;
     product.currency = product.currency ?? p.currency;

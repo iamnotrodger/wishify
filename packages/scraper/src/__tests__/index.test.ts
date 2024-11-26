@@ -75,12 +75,12 @@ describe('Scraper Module', () => {
       expect(product).toEqual({
         url: 'https://example.com/product',
         name: 'Test Product JSON-LD',
+        brand: 'Test Brand',
         description: 'Product JSON-LD description',
         images: [{ url: 'https://example.com/image.jpg' }],
         price: 89.99,
         currency: 'CAD',
         metadata: {
-          brand: 'Test Brand',
           '@context': 'https://schema.org/',
           '@type': 'Product',
           offers: {
@@ -106,7 +106,7 @@ describe('Scrapper Module with SSENSE', () => {
     html = fs.readFileSync(htmlFilePath, 'utf-8');
   });
 
-  describe('useScraper', () => {
+  describe('getProduct', () => {
     it('should return a product and no error for valid input', () => {
       const [product, error] = getProduct(url, html);
 
@@ -117,6 +117,7 @@ describe('Scrapper Module with SSENSE', () => {
 
       expect(product).toEqual({
         name: 'Black Jersey Crewneck T-shirt',
+        brand: 'Fear of God ESSENTIALS',
         description: expectedDescription,
         images: [
           {
@@ -132,7 +133,6 @@ describe('Scrapper Module with SSENSE', () => {
         metadata: {
           '@context': 'https://schema.org',
           '@type': 'Product',
-          brand: 'Fear of God ESSENTIALS',
           productID: 16693101,
           sku: '251161M213015',
           offers: {

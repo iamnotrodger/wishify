@@ -14,25 +14,10 @@ describe('OpenGraphScraper', () => {
         <meta property="og:description" content="Product description" />
         <meta property="og:url" content="https://example.com/product" />
         <meta property="og:image" content="https://example.com/image.jpg" />
+        <meta property="product:brand" content="Example Brand"/>
         <meta property="product:price:amount" content="99.99" />
         <meta property="product:price:currency" content="USD" />
         <link rel="icon" href="favicon.ico" />
-        <script type="application/ld+json">
-          {
-            "@context": "https://schema.org/",
-            "@type": "Product",
-            "name": "Test Product JSON-LD",
-            "description": "Product JSON-LD description",
-            "image": "https://example.com/image.jpg",
-            "brand": {
-              "name": "Test Brand"
-            },
-            "offers": {
-              "price": "89.99",
-              "priceCurrency": "EUR"
-            }
-          }
-        </script>
       </head>
       <body></body>
     </html>
@@ -49,6 +34,7 @@ describe('OpenGraphScraper', () => {
       const result = scraper.getProduct();
       expect(result).toEqual({
         name: 'Test Product OG',
+        brand: 'Example Brand',
         description: 'Product description',
         images: [{ url: 'https://example.com/image.jpg' }],
         price: 99.99,
@@ -86,6 +72,7 @@ describe('OpenGraphScraper with SSENSE', () => {
 
       expect(metadata).toEqual({
         name: 'Fear of God ESSENTIALS - Black Jersey Crewneck T-shirt',
+        brand: 'Fear of God ESSENTIALS',
         description: expectedDescription,
         images: [
           {
@@ -98,7 +85,6 @@ describe('OpenGraphScraper with SSENSE', () => {
           url: 'https://www.ssense.com/en-ca/en-ca/men/product/essentials/black-jersey-crewneck-t-shirt/16693101',
           favicon:
             'https://res.cloudinary.com/ssenseweb/image/upload/v1472005257/web/favicon.ico',
-          brand: 'Fear of God ESSENTIALS',
         },
       });
     });
