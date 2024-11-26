@@ -35,12 +35,12 @@ export default class JsonLdScraper implements Scraper {
 
     const product = {
       name,
+      brand: brand?.name,
       description,
       images: imageURL ? [{ url: imageURL }] : null,
       price: getJsonLdPrice(jsonLd),
       currency: getJsonLdCurrency(jsonLd),
       metadata: {
-        brand: brand?.name,
         url: parseURL(url, this.url.hostname),
         ...metadata,
       },

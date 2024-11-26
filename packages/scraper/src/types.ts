@@ -4,6 +4,7 @@ export interface Scraper {
 
 export type Product = {
   url?: string | null;
+  brand?: string | null;
   name?: string | null;
   price?: number | null;
   currency?: string | null;

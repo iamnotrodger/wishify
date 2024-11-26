@@ -23,6 +23,16 @@ export default class MicrodataScraper implements Scraper {
       },
     ]);
 
+    const brand = findBySelectors(this.$, [
+      {
+        selector: '[itemType*=Product] [itemProp=brand]',
+        attribute: 'content',
+      },
+      {
+        selector: '[itemType*=Product] [itemProp=brand]',
+      },
+    ]);
+
     const description = findBySelectors(this.$, [
       {
         selector: '[itemType*=Product] [itemProp=description]',
@@ -66,6 +76,7 @@ export default class MicrodataScraper implements Scraper {
 
     const product = {
       name,
+      brand,
       description,
       images: imageURL ? [{ url: imageURL }] : null,
       price: parseNum(price),

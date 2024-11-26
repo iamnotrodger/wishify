@@ -24,6 +24,13 @@ export default class AmazonScraper implements Scraper {
       },
     ]);
 
+    const brand = findBySelectors(this.$, [
+      {
+        selector:
+          '#productOverview_feature_div table tbody tr.po-brand td:nth-child(2) span',
+      },
+    ]);
+
     const price = findBySelectors(this.$, [
       {
         selector: '#priceValue',
@@ -63,6 +70,7 @@ export default class AmazonScraper implements Scraper {
 
     const product = {
       name,
+      brand,
       images: imageURL ? [{ url: imageURL }] : null,
       price: parseNum(price),
       currency: parseCurrency(currency),

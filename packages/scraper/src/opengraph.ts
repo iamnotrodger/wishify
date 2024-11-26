@@ -19,6 +19,11 @@ export default class OpenGraphScraper implements Scraper {
       { selector: 'title' },
     ]);
 
+    const brand = findBySelectors(this.$, [
+      { selector: 'meta[property="product:brand"]', attribute: 'content' },
+      { selector: 'meta[property="og:brand"]', attribute: 'content' },
+    ]);
+
     const description = findBySelectors(this.$, [
       { selector: 'meta[property="og:description"]', attribute: 'content' },
       { selector: 'meta[name="twitter:description"]', attribute: 'content' },
@@ -60,11 +65,6 @@ export default class OpenGraphScraper implements Scraper {
       { selector: 'link[rel="canonical"]', attribute: 'href' },
     ]);
 
-    const brand = findBySelectors(this.$, [
-      { selector: 'meta[property="og:brand"]', attribute: 'content' },
-      { selector: 'meta[property="product:brand"]', attribute: 'content' },
-    ]);
-
     const favicon = findBySelectors(this.$, [
       { selector: 'link[rel*="icon"]', attribute: 'href' },
       { selector: 'meta[name*="msapplication"]', attribute: 'content' },
@@ -74,6 +74,7 @@ export default class OpenGraphScraper implements Scraper {
 
     const product = {
       name,
+      brand,
       description,
       images: imageURL ? [{ url: imageURL }] : null,
       price: parseNum(price),
@@ -81,7 +82,6 @@ export default class OpenGraphScraper implements Scraper {
       metadata: {
         url,
         favicon,
-        brand,
       },
     };
 
