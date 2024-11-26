@@ -25,6 +25,7 @@ export const ProductSchema = z.object({
   images: z.array(ImageSchema).optional(),
   folderId: z.string().optional(),
   category: z.string().optional(),
+  brand: z.string().optional(),
   metadata: z.record(z.string()).optional(),
 
   createdAt: z.string().optional(),
