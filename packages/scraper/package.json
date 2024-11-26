@@ -8,24 +8,24 @@
   },
   "exports": {
     ".": {
-      "types": "./dist/src/index.d.ts",
+      "types": "./src/index.ts",
       "default": "./dist/src/index.js"
     },
     "./amazon": {
-      "types": "./src/amazon/index.ts",
-      "default": "./dist/amazon/index.js"
+      "types": "./src/amazon.ts",
+      "default": "./dist/amazon.js"
     },
     "./jsonld": {
-      "types": "./src/jsonld/index.ts",
-      "default": "./dist/jsonld/index.js"
+      "types": "./src/jsonld.ts",
+      "default": "./dist/jsonld.js"
     },
     "./microdata": {
-      "types": "./src/microdata/index.ts",
-      "default": "./dist/microdata/index.js"
+      "types": "./src/microdata.ts",
+      "default": "./dist/microdata.js"
     },
     "./opengraph": {
-      "types": "./src/opengraph/index.ts",
-      "default": "./dist/opengraph/index.js"
+      "types": "./src/opengraph.ts",
+      "default": "./dist/opengraph.js"
     },
     "./types": "./src/types.ts"
   },
