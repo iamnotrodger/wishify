@@ -52,7 +52,6 @@ const ProductForm = ({ product }: { product: ScrapedProduct | null }) => {
   }, []);
 
   useEffect(() => {
-    console.log('xyzz', product);
     if (product) {
       form.reset((prev) => ({
         ...prev,
