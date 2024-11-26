@@ -16,6 +16,7 @@ export const ProductSchema = z.object({
   userId: z.string().optional(),
   url: z.string().url({ message: 'Invalid link' }),
   name: z.string().min(1, { message: 'Name cannot be empty' }),
+  brand: z.string().optional(),
   price: z.number().min(0, { message: 'Invalid price' }),
   currency: z.string().length(3, { message: 'Must choose a valid currency' }),
   description: z
@@ -25,8 +26,7 @@ export const ProductSchema = z.object({
   images: z.array(ImageSchema).optional(),
   folderId: z.string().optional(),
   category: z.string().optional(),
-  brand: z.string().optional(),
-  metadata: z.record(z.string()).optional(),
+  metadata: z.record(z.any()).optional(),
 
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
