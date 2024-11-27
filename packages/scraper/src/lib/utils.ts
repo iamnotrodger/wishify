@@ -4,6 +4,7 @@ import * as cheerio from 'cheerio';
 export const mergeProducts = (products: Product[]): Product => {
   const product: Product = {
     name: null,
+    brand: null,
     price: null,
     currency: null,
     description: null,

@@ -7,26 +7,11 @@
     "test": "jest"
   },
   "exports": {
-    ".": {
-      "types": "./src/index.ts",
-      "default": "./dist/index.js"
-    },
-    "./amazon": {
-      "types": "./src/amazon.ts",
-      "default": "./dist/amazon.js"
-    },
-    "./jsonld": {
-      "types": "./src/jsonld.ts",
-      "default": "./dist/jsonld.js"
-    },
-    "./microdata": {
-      "types": "./src/microdata.ts",
-      "default": "./dist/microdata.js"
-    },
-    "./opengraph": {
-      "types": "./src/opengraph.ts",
-      "default": "./dist/opengraph.js"
-    },
+    ".": "./src/index.ts",
+    "./amazon": "./src/amazon.ts",
+    "./jsonld": "./src/jsonld.ts",
+    "./microdata": "./src/microdata.ts",
+    "./opengraph": "./src/opengraph.ts",
     "./types": "./src/types.ts"
   },
   "devDependencies": {

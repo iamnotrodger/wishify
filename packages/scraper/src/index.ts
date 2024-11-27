@@ -15,6 +15,11 @@ export const getProduct = (
     const openGraphProduct = new OpenGraphScraper(url, html).getProduct();
     const siteProduct = SiteScraper.create(url, html).getProduct();
 
+    console.log('jsonLdProduct', jsonLdProduct);
+    console.log('microdataProduct', microdataProduct);
+    console.log('openGraphProduct', openGraphProduct);
+    console.log('siteProduct', siteProduct);
+
     const product = mergeProducts([
       jsonLdProduct,
       microdataProduct,
