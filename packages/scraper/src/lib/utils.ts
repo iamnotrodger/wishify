@@ -1,5 +1,4 @@
 import { Image, Product } from '../types';
-import * as cheerio from 'cheerio';
 
 export const mergeProducts = (products: Product[]): Product => {
   const product: Product = {
@@ -57,28 +56,6 @@ const mergeImages = (baseImages: Image[], newImages: Image[]): Image[] => {
 export const normalizeText = (text?: string | null) => {
   if (!text) return text;
   return text.trim().replace(/\s+/g, ' ').trim();
-};
-
-type Selector = { selector: string; attribute?: string | string[] };
-
-export const findBySelectors = (
-  $: cheerio.CheerioAPI,
-  selectors: Selector[]
-) => {
-  for (const { selector, attribute } of selectors) {
-    const element = $(selector);
-    if (!element.length) continue;
-
-    let value: string | undefined;
-    if (Array.isArray(attribute)) {
-      value = attribute.map((attr) => element.attr(attr)).find(Boolean);
-    } else {
-      value = attribute ? element.attr(attribute) : element.text();
-    }
-
-    if (value) return value.trim();
-  }
-  return undefined;
 };
 
 export const removeNullAndUndefined = (obj: any): Object => {

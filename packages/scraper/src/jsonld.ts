@@ -33,7 +33,7 @@ export default class JsonLdScraper implements Scraper {
     const { name, description, brand, image, url, ...metadata } = jsonLd;
     const imageURL = parseURL(image, this.url.hostname);
 
-    const product = {
+    const product: Product = {
       name,
       brand: brand?.name,
       description,
@@ -46,7 +46,7 @@ export default class JsonLdScraper implements Scraper {
       },
     };
 
-    return removeNullAndUndefined(product) as Product;
+    return removeNullAndUndefined(product);
   }
 }
 

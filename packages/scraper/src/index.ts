@@ -1,31 +1,34 @@
-import AmazonScraper from './amazon';
+import * as cheerio from 'cheerio';
 import JsonLdScraper from './jsonld';
-import { mergeProducts } from './lib/utils';
+import { mergeProducts, removeNullAndUndefined } from './lib/utils';
 import MicrodataScraper from './microdata';
 import OpenGraphScraper from './opengraph';
+import { findBySelectors, Selector } from './selector';
 import { Product, Scraper } from './types';
+import { parseNum, parseURL } from './lib/parse';
+
+type Selectors = Record<string, Selector[]>;
 
 export const getProduct = (
   url: string,
-  html: string
+  html: string,
+  selectors?: Selectors
 ): [Product | null, Error | null] => {
   try {
-    const jsonLdProduct = new JsonLdScraper(url, html).getProduct();
-    const microdataProduct = new MicrodataScraper(url, html).getProduct();
-    const openGraphProduct = new OpenGraphScraper(url, html).getProduct();
-    const siteProduct = SiteScraper.create(url, html).getProduct();
+    let siteProduct = {};
 
-    console.log('jsonLdProduct', jsonLdProduct);
-    console.log('microdataProduct', microdataProduct);
-    console.log('openGraphProduct', openGraphProduct);
-    console.log('siteProduct', siteProduct);
+    if (selectors) {
+      const siteScraper = new SiteScraper(url, html, selectors);
+      siteProduct = siteScraper.getProduct();
+    }
 
     const product = mergeProducts([
-      jsonLdProduct,
-      microdataProduct,
-      openGraphProduct,
+      new JsonLdScraper(url, html).getProduct(),
+      new MicrodataScraper(url, html).getProduct(),
+      new OpenGraphScraper(url, html).getProduct(),
       siteProduct,
     ]);
+
     product.url = url;
 
     return [product, null];
@@ -38,14 +41,51 @@ export const getProduct = (
 };
 
 export class SiteScraper implements Scraper {
-  static create(url: string, html: string): Scraper {
-    if (url.includes('amazon')) {
-      return new AmazonScraper(url, html);
-    }
-    return new SiteScraper();
+  $: cheerio.CheerioAPI;
+  url: URL;
+  selectors: Selectors;
+
+  constructor(url: string, html: string, selectors: Selectors) {
+    this.$ = cheerio.load(html);
+    this.url = new URL(url);
+    this.selectors = selectors;
   }
 
   getProduct(): Product {
-    return {};
+    const {
+      name: nameSelectors,
+      brand: brandSelectors,
+      description: descriptionSelectors,
+      price: priceSelectors,
+      currency: currencySelectors,
+      image: imageSelectors,
+      ...metadataSelectors
+    } = this.selectors;
+
+    const name = findBySelectors(this.$, nameSelectors);
+    const brand = findBySelectors(this.$, brandSelectors);
+    const description = findBySelectors(this.$, descriptionSelectors);
+    const price = findBySelectors(this.$, priceSelectors);
+    const currency = findBySelectors(this.$, currencySelectors);
+    const image = findBySelectors(this.$, imageSelectors);
+
+    const metadata: Record<string, any> = {};
+    for (const [key, selectors] of Object.entries(metadataSelectors)) {
+      metadata[key] = findBySelectors(this.$, selectors);
+    }
+
+    const imageURL = parseURL(image, this.url.hostname);
+
+    const product: Product = {
+      name,
+      brand,
+      description,
+      price: parseNum(price),
+      currency,
+      images: imageURL ? [{ url: imageURL }] : null,
+      metadata: Object.keys(metadata).length ? metadata : null,
+    };
+
+    return removeNullAndUndefined(product);
   }
 }

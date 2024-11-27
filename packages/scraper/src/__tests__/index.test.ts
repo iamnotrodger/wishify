@@ -1,30 +1,10 @@
+import { amazonSelectors } from '../amazon';
 import fs from 'fs';
 import path from 'path';
-import AmazonScraper from '../amazon';
-import { getProduct, SiteScraper } from '../index';
+import { getProduct } from '../index';
 import { normalizeText } from '../lib/utils';
 
 describe('Scraper Module', () => {
-  describe('SiteScraper', () => {
-    it('should return an instance of AmazonScraper for Amazon URLs', () => {
-      const url = 'https://www.amazon.com/example-product';
-      const html = '<html></html>';
-
-      const scraper = SiteScraper.create(url, html);
-
-      expect(scraper).toBeInstanceOf(AmazonScraper);
-    });
-
-    it('should return an instance of ProductScraper for non-Amazon URLs', () => {
-      const url = 'https://www.example.com/example-product';
-      const html = '<html></html>';
-
-      const scraper = SiteScraper.create(url, html);
-
-      expect(scraper).toBeInstanceOf(SiteScraper);
-    });
-  });
-
   describe('getProduct', () => {
     it('should return a product and no error for valid input', () => {
       const url = 'https://www.amazon.com/example-product';
@@ -165,7 +145,7 @@ describe('Scrapper Module with Amazon', () => {
 
   describe('getProduct', () => {
     it('should return a product and no error for valid input', () => {
-      const [product, error] = getProduct(url, html);
+      const [product, error] = getProduct(url, html, amazonSelectors);
       product!.description = normalizeText(product?.description);
 
       expect(product).toEqual({

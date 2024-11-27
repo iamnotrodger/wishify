@@ -1,6 +1,7 @@
 import * as cheerio from 'cheerio';
 import { parseCurrency, parseNum, parseURL } from './lib/parse';
-import { findBySelectors, removeNullAndUndefined } from './lib/utils';
+import { removeNullAndUndefined } from './lib/utils';
+import { findBySelectors } from './selector';
 import { Product, Scraper } from './types';
 
 export default class OpenGraphScraper implements Scraper {
