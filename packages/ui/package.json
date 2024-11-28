@@ -37,17 +37,6 @@
     "zod": "^3.23.8"
   },
   "exports": {
-    "./button": "./src/components/button.tsx",
-    "./form": "./src/components/form.tsx",
-    "./input": "./src/components/input.tsx",
-    "./textarea": "./src/components/textarea.tsx",
-    "./label": "./src/components/label.tsx",
-    "./select": "./src/components/select.tsx",
-    "./separator": "./src/components/separator.tsx",
-    "./sheet": "./src/components/sheet.tsx",
-    "./sidebar": "./src/components/sidebar.tsx",
-    "./skeleton": "./src/components/skeleton.tsx",
-    "./tooltip": "./src/components/tooltip.tsx",
     "./globals.css": "./src/globals.css",
     "./postcss.config": "./postcss.config.mjs",
     "./tailwind.config": "./tailwind.config.ts",
@@ -55,6 +44,7 @@
     "./hooks/*": [
       "./src/hooks/*.ts",
       "./src/hooks/*.tsx"
-    ]
+    ],
+    "./components/*": "./src/components/*.tsx"
   }
 }

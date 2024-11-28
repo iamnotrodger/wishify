@@ -4,10 +4,10 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from '@repo/ui/sidebar';
+} from '@repo/ui/components/sidebar';
 import { Box, Plus } from 'lucide-react';
 import Link from 'next/link';
-import Icon, { IconName, iconNames } from './icon';
+// import Icon, { IconName, iconNames } from './icon';
 
 // TODO: create this to types, or use api types
 interface Category {
@@ -80,9 +80,9 @@ const getCategoryIcon = (icon: string) => {
     return <div className='w-4 h-4'>{icon}</div>;
   }
 
-  if (iconNames.includes(icon)) {
-    return <Icon name={icon as IconName} className='w-4 h-4' />;
-  }
+  // if (iconNames.includes(icon)) {
+  //   return <Icon name={icon as IconName} className='w-4 h-4' />;
+  // }
 
   return <Box className='w-4 h-4' />;
 };

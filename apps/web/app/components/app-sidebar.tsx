@@ -7,7 +7,7 @@ import {
   SidebarMenuItem,
   SidebarRail,
   SidebarSeparator,
-} from '@repo/ui/sidebar';
+} from '@repo/ui/components/sidebar';
 import { NavCategories } from './nav-categories';
 import { NavMenu } from './nav-menu';
 import Link from 'next/link';

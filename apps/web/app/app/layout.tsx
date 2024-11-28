@@ -2,7 +2,7 @@ import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
-} from '@repo/ui/sidebar';
+} from '@repo/ui/components/sidebar';
 import { AppSidebar } from '@components/app-sidebar';
 
 type Props = { children: React.ReactNode };

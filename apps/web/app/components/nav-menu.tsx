@@ -4,7 +4,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from '@repo/ui/sidebar';
+} from '@repo/ui/components/sidebar';
 import { Inbox, PieChart } from 'lucide-react';
 import Link from 'next/link';
 

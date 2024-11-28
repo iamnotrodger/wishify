@@ -5,16 +5,16 @@ import { useForm } from 'react-hook-form';
 import cc from 'currency-codes';
 
 import { CreateProduct, CreateProductSchema, Folder } from '@repo/api';
-import { Button } from '@repo/ui/button';
-import { Textarea } from '@repo/ui/textarea';
+import { Button } from '@repo/ui/components/button';
+import { Textarea } from '@repo/ui/components/textarea';
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-} from '@repo/ui/form';
-import { Input } from '@repo/ui/input';
+} from '@repo/ui/components/form';
+import { Input } from '@repo/ui/components/input';
 import { Plus } from 'lucide-react';
 import {
   Select,
@@ -22,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
   SelectItem,
-} from '@repo/ui/select';
+} from '@repo/ui/components/select';
 import { Product as ScrapedProduct } from '@repo/scraper/types';
 
 const testFolders = [
