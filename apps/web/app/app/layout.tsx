@@ -3,7 +3,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@repo/ui/components/sidebar';
-import { AppSidebar } from '@components/app-sidebar';
+import { AppSidebar } from '@/components/app-sidebar';
 
 type Props = { children: React.ReactNode };
 
