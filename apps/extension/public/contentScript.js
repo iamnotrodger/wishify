@@ -30,3 +30,5 @@ document.addEventListener('visibilitychange', () => {
 window.addEventListener('focus', () => {
   sendPageData();
 });
+
+window.addEventListener('pageshow', sendPageData, true);
