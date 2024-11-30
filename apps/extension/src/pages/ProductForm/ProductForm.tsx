@@ -91,13 +91,13 @@ const ProductForm = ({
 
   return (
     <Form {...form}>
-      <div className='border-b-slate-200 bg-slate-100 px-4 py-3 text-left'>
+      <div className='bg-brand-surface-layer px-4 py-3 text-left'>
         <h1 className='text-xl font-semibold'>Save item</h1>
       </div>
       {!isLoading ? (
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className='flex h-full w-full flex-col gap-4 p-4'
+          className='flex h-full w-full flex-col gap-4 p-4 pb-6'
         >
           {/* TODO: use Command, and add list creation inside Select */}
           <div className='flex gap-4'>
@@ -107,7 +107,7 @@ const ProductForm = ({
               render={({ field }) => (
                 <FormItem
                   className={cn(
-                    'max-h-[122px] min-h-[122px] min-w-[122px] max-w-[122px] rounded-md bg-gray-100',
+                    'bg-brand-surface-layer max-h-[116px] min-h-[116px] min-w-[116px] max-w-[116px] rounded-md shadow-sm',
                     !field.value?.length && 'border'
                   )}
                 >
@@ -121,54 +121,53 @@ const ProductForm = ({
                 </FormItem>
               )}
             />
-            <div>
-              <div className='flex w-full flex-col text-left'>
-                <FormField
-                  control={form.control}
-                  name='brand'
-                  render={({ field }) => (
-                    <FormItem>
-                      <Input
-                        className='mb-1.5 h-[unset] border-none p-0 text-base font-bold decoration-blue-500 decoration-2 hover:cursor-pointer hover:underline focus:cursor-auto focus:underline focus-visible:ring-[none]'
-                        onChange={field.onChange}
-                        value={field.value}
-                        placeholder='Brand'
-                      />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name='name'
-                  render={({ field }) => (
-                    <FormItem>
-                      <Textarea
-                        className='mb-2 max-h-[2.8rem] min-h-[2.8rem] resize-none overflow-ellipsis border-none p-0 text-sm decoration-blue-500 decoration-2 hover:cursor-pointer hover:underline focus:cursor-auto focus:underline focus-visible:ring-[none]'
-                        onChange={field.onChange}
-                        value={field.value}
-                        placeholder='Product Name'
-                        spellCheck={false}
-                      />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <div className='flex flex-row items-center gap-2'>
+            <div className='flex w-full flex-col gap-2 pt-1 text-left'>
+              <FormField
+                control={form.control}
+                name='brand'
+                render={({ field }) => (
+                  <FormItem>
+                    <Input
+                      className='h-[unset] border-none p-0 text-base font-bold decoration-blue-500 decoration-2 hover:cursor-pointer hover:underline focus:cursor-auto focus:underline focus-visible:ring-[none]'
+                      onChange={field.onChange}
+                      value={field.value}
+                      placeholder='Brand'
+                      spellCheck={false}
+                    />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='name'
+                render={({ field }) => (
+                  <FormItem>
+                    <Input
+                      className='text-secondary h-[unset] border-none p-0 text-sm decoration-blue-500 decoration-2 hover:cursor-pointer hover:underline focus:cursor-auto focus:underline focus-visible:ring-[none]'
+                      onChange={field.onChange}
+                      value={field.value}
+                      placeholder='Product Name'
+                      spellCheck={false}
+                    />
+                  </FormItem>
+                )}
+              />
+              <div className='mt-2 flex flex-row items-center justify-start'>
                 <FormField
                   control={form.control}
                   name='currency'
                   render={({ field }) => (
-                    <FormItem className='w-full'>
+                    <FormItem className='w-32'>
                       <Select
                         value={field.value}
                         onValueChange={field.onChange}
                       >
                         <FormControl>
-                          <SelectTrigger className='max-w-[80px]'>
+                          <SelectTrigger className='border-brand-border max-w-[80px]'>
                             <SelectValue />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className='max-h-[300px]'>
+                        <SelectContent className='border-brand-border max-h-[260px]'>
                           {/* TODO: Fix render speed of long list here. using virutalization, react-window, or similar. */}
                           {currencyCodes.map((code) => (
                             <SelectItem key={code} value={code}>
@@ -189,7 +188,7 @@ const ProductForm = ({
                         type='number'
                         min='1'
                         step='any'
-                        className='ml-[-1rem] h-[unset] border-none p-0 text-left text-sm font-semibold decoration-blue-500 decoration-2 hover:cursor-pointer hover:underline focus:cursor-auto focus:underline focus-visible:ring-transparent'
+                        className='h-[unset] border-none p-0 text-left text-sm font-medium decoration-blue-500 decoration-2 hover:cursor-pointer hover:underline focus:cursor-auto focus:underline focus-visible:ring-transparent'
                         onChange={(e) => {
                           if (
                             e.target.value === '.' ||
@@ -200,9 +199,7 @@ const ProductForm = ({
                             e.preventDefault();
                           }
                         }}
-                        value={
-                          field.value ? Number(field.value).toFixed(2) : ''
-                        }
+                        value={field.value ?? ''}
                         placeholder='0.00'
                       />
                     </FormItem>
@@ -216,9 +213,8 @@ const ProductForm = ({
             name='folderId'
             render={({ field }) => (
               <FormItem className='flex w-full flex-col justify-start gap-2 text-left'>
-                <h2 className='text-lg font-medium'>Add to List</h2>
-                <FormLabel className='w-full text-base font-normal'>
-                  My lists
+                <FormLabel className='text-secondary w-full text-sm font-semibold'>
+                  Assign to a category
                 </FormLabel>
                 <div className='flex min-h-[88px] flex-wrap gap-2'>
                   {folders.map(({ name, id }, i) =>
@@ -226,8 +222,13 @@ const ProductForm = ({
                       <Button
                         key={name}
                         value={id}
-                        variant='outline'
-                        className={`w-fit max-w-[9rem] rounded-lg text-sm font-normal ${field.value === id && 'bg-slate-200 hover:bg-slate-300'}`}
+                        variant={
+                          field.value !== id
+                            ? 'brand-outline'
+                            : 'brand-outline-selected'
+                        }
+                        className={`h-9 w-fit max-w-[9rem] truncate rounded-lg px-3 text-sm font-normal`}
+                        title={name}
                         onClick={() => {
                           if (field.value !== id) {
                             field.onChange(id);
@@ -236,17 +237,15 @@ const ProductForm = ({
                           }
                         }}
                       >
-                        <p className='truncate' title={name}>
-                          {name}
-                        </p>
+                        {name}
                       </Button>
                     ) : null
                   )}
                   <Button
-                    variant='outline'
-                    className='w-fit max-w-[9rem] rounded-lg text-sm font-normal'
+                    variant='brand-outline'
+                    className='h-9 w-fit max-w-[9rem] rounded-lg px-3 text-sm font-normal'
                   >
-                    <Plus size={16} className='mr-2' />
+                    <Plus size={16} className='mr-0.5' />
                     Add new
                   </Button>
                 </div>
@@ -277,12 +276,12 @@ const ProductForm = ({
             control={form.control}
             name='description'
             render={({ field }) => (
-              <FormItem className='mb-5 text-left'>
+              <FormItem className='text-left'>
                 <FormLabel className='w-full text-base font-normal'>
                   Notes
                 </FormLabel>
                 <Textarea
-                  className='h-[5rem] resize-none bg-slate-200 text-sm placeholder:text-slate-800'
+                  className='placeholder:text-secondary border-brand-border bg-brand-surface-layer h-[6rem] resize-none rounded-lg text-sm'
                   onChange={field.onChange}
                   value={field.value}
                   placeholder='Add your notes here...'
@@ -291,7 +290,7 @@ const ProductForm = ({
               </FormItem>
             )}
           />
-          <Button className='w-full' type='submit'>
+          <Button className='w-full' variant='brand' type='submit'>
             Save item to Wishify
           </Button>
         </form>
