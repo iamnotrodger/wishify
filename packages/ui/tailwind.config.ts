@@ -1,5 +1,6 @@
 import type { Config } from 'tailwindcss';
 import tailwindcssAnimate from 'tailwindcss-animate';
+import defaultTheme from 'tailwindcss/defaultTheme';
 
 const config = {
   darkMode: ['class'],
@@ -12,6 +13,9 @@ const config = {
   ],
   prefix: '',
   theme: {
+    fontFamily: {
+      sans: ['Inter', ...defaultTheme.fontFamily.sans],
+    },
     container: {
       center: true,
       padding: '2rem',
@@ -21,7 +25,7 @@ const config = {
     },
     extend: {
       colors: {
-        border: 'hsl(var(--border))',
+        border: 'hsl(var(--brand-border-gray))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
         background: 'hsl(var(--background))',
@@ -45,6 +49,15 @@ const config = {
         accent: {
           DEFAULT: 'hsl(var(--accent))',
           foreground: 'hsl(var(--accent-foreground))',
+        },
+        brand: {
+          purple: {
+            DEFAULT: 'hsl(var(--brand-purple))',
+            light: 'hsl(var(--brand-purple-light))',
+            lighter: 'hsl(var(--brand-purple-lighter))',
+          },
+          border: 'hsl(var(--brand-border))',
+          'surface-layer': 'hsl(var(--brand-surface-layer))',
         },
         popover: {
           DEFAULT: 'hsl(var(--popover))',
