@@ -1,24 +1,13 @@
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from '@repo/ui/components/sidebar';
 import { AppSidebar } from '@/components/app-sidebar';
+import { SidebarInset, SidebarProvider } from '@repo/ui/components/sidebar';
 
 type Props = { children: React.ReactNode };
 
 export default function AppLayout({ children }: Props) {
   return (
     <SidebarProvider>
-      <div className='flex'>
-        <AppSidebar />
-        <SidebarInset>
-          <main className='mx-auto w-full'>
-            <SidebarTrigger />
-            {children}
-          </main>
-        </SidebarInset>
-      </div>
+      <AppSidebar />
+      <SidebarInset>{children}</SidebarInset>
     </SidebarProvider>
   );
 }
