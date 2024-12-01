@@ -107,13 +107,13 @@ const ProductForm = ({
               render={({ field }) => (
                 <FormItem
                   className={cn(
-                    'bg-brand-surface-layer max-h-[116px] min-h-[116px] min-w-[116px] max-w-[116px] rounded-md shadow-sm',
-                    !field.value?.length && 'border'
+                    'bg-brand-surface-layer max-h-[116px] min-h-[116px] min-w-[116px] max-w-[116px] rounded-md border shadow-sm',
+                    field.value?.length && 'border-gray-200'
                   )}
                 >
                   {field.value?.length && field.value[0]?.url ? (
                     <img
-                      className='h-full w-full rounded-md border object-cover'
+                      className='h-full w-full rounded-md object-cover'
                       src={field.value[0].url}
                       alt='Image'
                     />
