@@ -5,9 +5,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@repo/ui/components/sidebar';
-import { Box, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import Link from 'next/link';
-import Icon, { IconName, isValidIcon } from './icon';
+import { CategoryIcon } from './category-icon';
 
 // TODO: create this to types, or use api types
 interface Category {
@@ -45,7 +45,7 @@ export const NavCategories = ({
     title: category.name,
     // url: `/categories/${category.id}`,
     url: `?category=${category.name}`,
-    icon: getCategoryIcon(category.icon),
+    icon: <CategoryIcon icon={category.icon} />,
   }));
 
   return (
@@ -65,30 +65,11 @@ export const NavCategories = ({
             </SidebarMenuItem>
           ))}
           <SidebarMenuButton>
-            <Plus className='w-4 h-4' />
+            <Plus className='h-4 w-4' />
             <span className='text-sm font-medium'>Add new category</span>
           </SidebarMenuButton>
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>
   );
-};
-
-// TODO: move this somewhere else, perchance `lib/utils.ts`
-const getCategoryIcon = (icon: string) => {
-  if (isEmoji(icon)) {
-    return <div className='w-4 h-4'>{icon}</div>;
-  }
-
-  if (isValidIcon(icon)) {
-    return <Icon name={icon} className='w-4 h-4' />;
-  }
-
-  return <Box className='w-4 h-4' />;
-};
-
-// TODO: move this somewhere else, perchance `lib/utils.ts`
-const isEmoji = (icon: string) => {
-  const regex = /(\p{Emoji_Presentation}|\p{Extended_Pictographic})/gu;
-  return regex.test(icon);
 };
