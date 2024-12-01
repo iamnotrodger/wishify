@@ -1,7 +1,8 @@
 import * as cheerio from 'cheerio';
-import { findBySelectors, removeNullAndUndefined } from './lib/utils';
-import { Product, Scraper } from './types';
 import { parseCurrency, parseNum, parseURL } from './lib/parse';
+import { removeNullAndUndefined } from './lib/utils';
+import { findBySelectors } from './selector';
+import { Product, Scraper } from './types';
 
 export default class MicrodataScraper implements Scraper {
   $: cheerio.CheerioAPI;
@@ -74,7 +75,7 @@ export default class MicrodataScraper implements Scraper {
 
     const imageURL = parseURL(image, this.url.hostname);
 
-    const product = {
+    const product: Product = {
       name,
       brand,
       description,
@@ -83,6 +84,6 @@ export default class MicrodataScraper implements Scraper {
       currency: parseCurrency(currency),
     };
 
-    return removeNullAndUndefined(product) as Product;
+    return removeNullAndUndefined(product);
   }
 }
