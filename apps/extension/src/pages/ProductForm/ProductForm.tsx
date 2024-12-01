@@ -42,7 +42,7 @@ const apiToForm = (product: ScrapedProduct) => ({
   brand: product?.brand ?? '',
   url: product.url ?? '',
   currency: product.currency ?? 'CAD',
-  price: product.price ?? 0.0,
+  ...(product.price ? { price: product.price } : {}),
   ...(product.images?.length && product.images[0]
     ? { images: [product.images[0]] }
     : {}),
@@ -157,7 +157,7 @@ const ProductForm = ({
                   control={form.control}
                   name='currency'
                   render={({ field }) => (
-                    <FormItem className='w-32'>
+                    <FormItem className='mr-3 w-24'>
                       <Select
                         value={field.value}
                         onValueChange={field.onChange}
