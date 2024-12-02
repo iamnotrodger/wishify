@@ -2,7 +2,13 @@
 
 import { updateProduct } from '@/app/actions';
 import { Button } from '@repo/ui/components/button';
-import { ExternalLink, PartyPopper, Trash } from 'lucide-react';
+import {
+  ExternalLink,
+  PartyPopper,
+  ShoppingCart,
+  Tag,
+  Trash,
+} from 'lucide-react';
 import { useState } from 'react';
 import { CategoryIcon } from './category-icon';
 
@@ -81,6 +87,21 @@ export function ProductCard() {
             e.currentTarget.src = PLACEHOLDER_IMAGE;
           }}
         />
+        {isPlanning || isBought ? (
+          <div
+            dir='rtl'
+            className='bg-muted absolute left-0 top-3 flex items-center gap-2 rounded-s-lg p-3 shadow'
+          >
+            <span className='text-sm'>
+              {isBought ? 'Bought' : 'Plan to buy'}
+            </span>
+            {isBought ? (
+              <Tag className='h-4 w-4' />
+            ) : (
+              <ShoppingCart className='h-4 w-4' />
+            )}
+          </div>
+        ) : null}
         <div className='invisible absolute right-3 top-3 flex flex-col gap-2 opacity-0 transition-opacity duration-300 group-hover:visible group-hover/media:opacity-100'>
           <a href={url}>
             <Button size='icon' variant='outline' className='rounded-full'>
