@@ -58,26 +58,26 @@ export function ProductCard({
   const [isPlanning, setIsPlanning] = useState(datePlanned != null);
   const [isBought, setIsBought] = useState(dateBought != null);
 
-  const handlePrimaryButtonClick = () => {
-    if (!isPlanning) {
-      updateProduct(id, { datePlanned: new Date().toISOString() });
-      setIsPlanning(true);
-    } else if (!isBought) {
-      updateProduct(id, { dateBought: new Date().toISOString() });
-      setIsBought(true);
-    }
-  };
-
-  const handleSecondaryButtonClick = () => {
+  const handlePrimaryClick = () => {
     if (isBought) {
       updateProduct(id, { dateBought: null });
       setIsBought(false);
     } else if (isPlanning) {
-      updateProduct(id, { datePlanned: null });
-      setIsPlanning(false);
-    } else {
       updateProduct(id, { dateBought: new Date().toISOString() });
       setIsBought(true);
+    } else {
+      updateProduct(id, { datePlanned: new Date().toISOString() });
+      setIsPlanning(true);
+    }
+  };
+
+  const handleSecondaryClick = () => {
+    if (!isBought && !isPlanning) {
+      updateProduct(id, { dateBought: new Date().toISOString() });
+      setIsBought(true);
+    } else if (isPlanning && !isBought) {
+      updateProduct(id, { datePlanned: null });
+      setIsPlanning(false);
     }
   };
 
@@ -95,8 +95,8 @@ export function ProductCard({
         product={product}
         isPlanning={isPlanning}
         isBought={isBought}
-        onPrimaryClick={handlePrimaryButtonClick}
-        onSecondaryClick={handleSecondaryButtonClick}
+        onPrimaryClick={handlePrimaryClick}
+        onSecondaryClick={handleSecondaryClick}
         className='h-0 opacity-0 transition-opacity duration-300 group-hover:flex-1 group-hover:opacity-100'
       />
     </div>
@@ -233,6 +233,9 @@ function ProductActions({
   className,
 }: ProductActionsProps) {
   const { category } = product;
+  const primaryButtonClass = isBought ? '' : '';
+  const secondaryButtonClass = isBought ? 'hidden' : '';
+
   return (
     <div className={cn('flex flex-col gap-2', className)}>
       {category ? (
@@ -242,25 +245,31 @@ function ProductActions({
         </div>
       ) : null}
 
-      {!isBought && (
-        <Button className='w-full' onClick={onPrimaryClick}>
-          {isPlanning ? (
-            <>
-              <span>Bought it!</span>
-              <PartyPopper />
-            </>
-          ) : (
-            'Want to Buy'
-          )}
-        </Button>
-      )}
+      <Button
+        className={cn('w-full', primaryButtonClass)}
+        variant={isBought ? 'outline' : 'default'}
+        onClick={onPrimaryClick}
+      >
+        {isBought ? (
+          'Undo purchase'
+        ) : isPlanning ? (
+          <>
+            <span>Bought it!</span>
+            <PartyPopper />
+          </>
+        ) : (
+          'Want to Buy'
+        )}
+      </Button>
 
-      <Button variant='ghost' className='w-full' onClick={onSecondaryClick}>
-        {isBought
-          ? 'Undo purchase'
-          : isPlanning
-            ? 'Remove from planned purchases'
-            : 'I bought this item already'}
+      <Button
+        variant='ghost'
+        className={cn('w-full', secondaryButtonClass)}
+        onClick={onSecondaryClick}
+      >
+        {isPlanning
+          ? 'Remove from planned purchases'
+          : 'I bought this item already'}
       </Button>
     </div>
   );
