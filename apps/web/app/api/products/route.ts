@@ -64,7 +64,7 @@ export const GET = auth(async (req) => {
 export const POST = auth(async (req) => {
   if (!isAuthenticated(req.auth)) return unauthorizedResponse();
 
-  const user = req.auth!.user!;
+  const user = req.auth.user;
   const data = await req.json();
 
   const productValidation = CreateProductSchema.safeParse(data);
@@ -78,7 +78,7 @@ export const POST = auth(async (req) => {
     prisma.product.create({
       data: {
         ...productRequest,
-        userId: user.id!,
+        userId: user.id,
       },
     })
   );

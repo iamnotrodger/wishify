@@ -4,9 +4,9 @@ import { useForm } from 'react-hook-form';
 
 import cc from 'currency-codes';
 
-import { CreateProduct, CreateProductSchema, Folder } from '@repo/api';
+import { CreateProduct, CreateProductSchema, Category } from '@repo/api';
+import { Product as ScrapedProduct } from '@repo/scraper/types';
 import { Button } from '@repo/ui/components/button';
-import { Textarea } from '@repo/ui/components/textarea';
 import {
   Form,
   FormControl,
@@ -15,21 +15,21 @@ import {
   FormLabel,
 } from '@repo/ui/components/form';
 import { Input } from '@repo/ui/components/input';
-import { Plus } from 'lucide-react';
 import {
   Select,
   SelectContent,
+  SelectItem,
   SelectTrigger,
   SelectValue,
-  SelectItem,
 } from '@repo/ui/components/select';
-import { Product as ScrapedProduct } from '@repo/scraper/types';
+import { Textarea } from '@repo/ui/components/textarea';
 import { cn } from '@repo/ui/lib/utils';
+import { Plus } from 'lucide-react';
 
 import ProductFormLoading from './ProductFormLoading';
 
-const testFolders = [
-  { id: '672d791a4b3f63ec36d0a345', name: '❤️ Favorites' },
+const testCategories = [
+  { id: '672d791a4b3f63ec36d0a345', name: '❤ Favorites' },
   { id: '6730fd807e3d9e1937290b1c', name: '🎁 Gifts' },
   {
     id: '6730fd807e3d9e1937290b2d',
@@ -67,9 +67,9 @@ const ProductForm = ({
       images: [{ url: '' }],
     },
   });
-  const [folders, setFolders] = useState<Folder[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   useEffect(() => {
-    setFolders(testFolders);
+    setCategories(testCategories);
   }, []);
 
   useEffect(() => {
@@ -81,7 +81,7 @@ const ProductForm = ({
     }
   }, [form, product]);
 
-  form.watch('folderId');
+  form.watch('categoryId');
 
   function onSubmit(values: CreateProduct) {
     console.log(values);
@@ -210,14 +210,14 @@ const ProductForm = ({
           </div>
           <FormField
             control={form.control}
-            name='folderId'
+            name='categoryId'
             render={({ field }) => (
               <FormItem className='flex w-full flex-col justify-start gap-2 text-left'>
                 <FormLabel className='text-secondary w-full text-sm font-semibold'>
                   Assign to a category
                 </FormLabel>
                 <div className='flex min-h-[88px] flex-wrap gap-2'>
-                  {folders.map(({ name, id }, i) =>
+                  {categories.map(({ name, id }, i) =>
                     i != null ? (
                       <Button
                         key={name}
@@ -233,7 +233,7 @@ const ProductForm = ({
                           if (field.value !== id) {
                             field.onChange(id);
                           } else {
-                            form.resetField('folderId');
+                            form.resetField('categoryId');
                           }
                         }}
                       >
@@ -256,11 +256,11 @@ const ProductForm = ({
         >
           <FormControl>
             <SelectTrigger>
-              <SelectValue placeholder='Select a Folder' />
+              <SelectValue placeholder='Select a Category' />
             </SelectTrigger>
           </FormControl>
           <SelectContent>
-            {folders.map(({ name }, i) =>
+            {categories.map(({ name }, i) =>
               i != null ? (
                 <SelectItem key={name} value={name}>
                   {name}

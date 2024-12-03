@@ -1,8 +1,9 @@
 import { z } from 'zod';
 
-export const FolderSchema = z.object({
-  id: z.string().optional(),
+export const CategorySchema = z.object({
+  id: z.string(),
   name: z.string(),
+  icon: z.string().optional(),
 });
 
 export const ImageSchema = z.object({
@@ -24,24 +25,28 @@ export const ProductSchema = z.object({
     .max(256, 'Description cannot be more than 256 characters')
     .optional(),
   images: z.array(ImageSchema).optional(),
-  folderId: z.string().optional(),
-  category: z.string().optional(),
+  category: CategorySchema.optional(),
   metadata: z.record(z.any()).optional(),
 
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
-  isDeleted: z.boolean().optional(),
 });
 
 export const CreateProductSchema = ProductSchema.omit({
   id: true,
   userId: true,
+  category: true,
   createdAt: true,
   updatedAt: true,
-  isDeleted: true,
+}).extend({
+  categoryId: z.string().optional(),
+});
+export const CreateCategorySchema = CategorySchema.omit({
+  id: true,
 });
 
-export type Folder = z.infer<typeof FolderSchema>;
+export type Category = z.infer<typeof CategorySchema>;
 export type Image = z.infer<typeof ImageSchema>;
 export type Product = z.infer<typeof ProductSchema>;
 export type CreateProduct = z.infer<typeof CreateProductSchema>;
+export type CreateCategory = z.infer<typeof CreateProductSchema>;
