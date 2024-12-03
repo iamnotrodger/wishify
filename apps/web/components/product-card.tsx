@@ -11,8 +11,9 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { CategoryIcon } from './category-icon';
+import { Product } from '@repo/api';
 
-const product = {
+const PRODUCT = {
   id: '',
   url: '',
   brand: 'The North Face',
@@ -25,6 +26,7 @@ const product = {
   price: 429.99,
   currency: 'CAD',
   category: {
+    id: '1',
     name: 'Clothings',
     icon: 'shirt',
   },
@@ -35,7 +37,19 @@ const product = {
 const PLACEHOLDER_IMAGE =
   'https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png';
 
-export function ProductCard() {
+// FIXME: TempProduct is a workaround to avoid TypeScript error
+interface TempProduct extends Product {
+  datePlanned?: string | null;
+  dateBought?: string | null;
+}
+
+// TODO: make product and onDelete a required field
+interface ProductCardProps {
+  product?: TempProduct;
+  onDelete?: () => void;
+}
+
+export function ProductCard({ product = PRODUCT }: ProductCardProps) {
   const {
     id,
     url,
@@ -80,7 +94,7 @@ export function ProductCard() {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           className='h-full w-full object-cover transition-all duration-300'
-          src={images[0]?.url}
+          src={images ? images[0]?.url : PLACEHOLDER_IMAGE}
           alt={`${brand} - ${name}`}
           loading='lazy'
           onError={(e) => {
@@ -114,9 +128,11 @@ export function ProductCard() {
         </div>
       </div>
       <div className='flex flex-col gap-1 align-top'>
-        <div className='font-semibold tracking-tight'>
-          {brand.toUpperCase()}
-        </div>
+        {brand ? (
+          <div className='font-semibold tracking-tight'>
+            {brand.toUpperCase()}
+          </div>
+        ) : null}
         <div className='text-sm'>{name}</div>
         <div className='flex gap-1 text-sm font-medium'>
           <span>{currency}</span>
@@ -124,10 +140,12 @@ export function ProductCard() {
         </div>
       </div>
       <div className='flex h-0 flex-col gap-2 opacity-0 transition-opacity duration-300 group-hover:flex-1 group-hover:opacity-100'>
-        <div className='flex h-9 w-fit items-center gap-2 rounded-md border px-3 text-sm'>
-          <CategoryIcon icon={category.icon} />
-          <span>{category.name}</span>
-        </div>
+        {category ? (
+          <div className='flex h-9 w-fit items-center gap-2 rounded-md border px-3 text-sm'>
+            <CategoryIcon icon={category.icon} />
+            <span>{category.name}</span>
+          </div>
+        ) : null}
 
         {!isBought && (
           <Button className='w-full' onClick={handlePrimaryButtonClick}>

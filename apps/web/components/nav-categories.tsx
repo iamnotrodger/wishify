@@ -1,3 +1,4 @@
+import { Category } from '@repo/api';
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -8,13 +9,6 @@ import {
 import { Plus } from 'lucide-react';
 import Link from 'next/link';
 import { CategoryIcon } from './category-icon';
-
-// TODO: create this to types, or use api types
-interface Category {
-  id?: string;
-  name: string;
-  icon: string;
-}
 
 const DUMMY_CATEGORIES: Category[] = [
   {
@@ -43,8 +37,7 @@ export const NavCategories = ({
 }: NavCategoriesProps) => {
   const categoryLinks = categories.map((category) => ({
     title: category.name,
-    // url: `/categories/${category.id}`,
-    url: `?category=${category.name}`,
+    url: `/categories/${category.id}`,
     icon: <CategoryIcon icon={category.icon} />,
   }));
 
