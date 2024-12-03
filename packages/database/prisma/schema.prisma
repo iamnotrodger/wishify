@@ -13,9 +13,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-type Folder {
-  id   String @db.ObjectId
-  name String
+model Category {
+  id       String    @id @default(auto()) @map("_id") @db.ObjectId
+  name     String
+  icon     String?
+  user     User      @relation(fields: [userId], references: [id])
+  userId   String    @db.ObjectId
+  products Product[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
+
+  @@map("category")
 }
 
 type Image {
@@ -31,30 +41,30 @@ model Product {
   price       Float?
   currency    String?
   images      Image[]
-  category    String?
+  categoryId  String? @db.ObjectId
   description String?
-  folderId    String? @db.ObjectId
   metadata    Json?
   html        String?
   user        User    @relation(fields: [userId], references: [id])
   userId      String  @db.ObjectId
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  isDeleted Boolean  @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  isDeleted Boolean   @default(false)
+  Category  Category? @relation(fields: [categoryId], references: [id])
 
   @@map("product")
 }
 
 model User {
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  id            String     @id @default(auto()) @map("_id") @db.ObjectId
   name          String?
-  email         String?   @unique
+  email         String?    @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
-  folders       Folder[]
+  categories    Category[]
   products      Product[]
 
   createdAt DateTime @default(now())
