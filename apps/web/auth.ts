@@ -21,6 +21,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authConfig,
 });
 
-export const isAuthenticated = (session: Session | null) => {
-  return session && session.user && session.user.id;
+interface AuthenticatedSession extends Session {
+  user: {
+    id: string;
+  };
+}
+
+export const isAuthenticated = (
+  session: Session | null
+): session is AuthenticatedSession => {
+  return !!session && !!session.user && typeof session.user.id === 'string';
 };
