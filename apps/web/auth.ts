@@ -21,7 +21,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authConfig,
 });
 
-interface AuthenticatedSession extends Session {
+export interface AuthenticatedSession extends Session {
   user: {
     id: string;
   };

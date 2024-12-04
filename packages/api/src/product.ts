@@ -1,45 +1,55 @@
 import { z } from 'zod';
 
+const LiteralSchema = z.union([z.string(), z.number(), z.boolean(), z.null()]);
+type Literal = z.infer<typeof LiteralSchema>;
+export type Json = Literal | { [key: string]: Json } | Json[];
+export const JsonSchema: z.ZodType<Json> = z.lazy(() =>
+  z.union([LiteralSchema, z.array(JsonSchema), z.record(JsonSchema)])
+);
+
 export const CategorySchema = z.object({
   id: z.string(),
   name: z.string(),
-  icon: z.string().optional(),
+  icon: z.string().nullish(),
 });
 
 export const ImageSchema = z.object({
   url: z.string().url(),
-  width: z.number().int().optional(),
-  height: z.number().int().optional(),
+  width: z.number().int().nullish(),
+  height: z.number().int().nullish(),
 });
 
 export const ProductSchema = z.object({
   id: z.string(),
-  userId: z.string().optional(),
-  url: z.string().url({ message: 'Invalid link' }),
-  name: z.string().min(1, { message: 'Name cannot be empty' }),
-  brand: z.string().optional(),
-  price: z.number().min(0, { message: 'Invalid price' }),
-  currency: z.string().length(3, { message: 'Must choose a valid currency' }),
+  url: z.string().url({ message: 'Invalid link' }).nullish(),
+  name: z.string().min(1, { message: 'Name cannot be empty' }).nullish(),
+  brand: z.string().nullish(),
+  price: z.number().min(0, { message: 'Invalid price' }).nullish(),
+  currency: z
+    .string()
+    .length(3, { message: 'Must choose a valid currency' })
+    .nullish(),
   description: z
     .string()
     .max(256, 'Description cannot be more than 256 characters')
-    .optional(),
+    .nullish(),
   images: z.array(ImageSchema).optional(),
-  category: CategorySchema.optional(),
-  metadata: z.record(z.any()).optional(),
+  category: CategorySchema.nullish(),
+  metadata: JsonSchema.nullable(),
+  plannedPurchaseDate: z.string().datetime({ offset: true }).nullish(),
+  purchaseDate: z.string().datetime({ offset: true }).nullish(),
 
-  createdAt: z.string().optional(),
-  updatedAt: z.string().optional(),
+  createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime(),
 });
 
 export const CreateProductSchema = ProductSchema.omit({
   id: true,
-  userId: true,
   category: true,
   createdAt: true,
   updatedAt: true,
 }).extend({
-  categoryId: z.string().optional(),
+  categoryId: z.string().nullable(),
 });
 export const CreateCategorySchema = CategorySchema.omit({
   id: true,
@@ -49,4 +59,4 @@ export type Category = z.infer<typeof CategorySchema>;
 export type Image = z.infer<typeof ImageSchema>;
 export type Product = z.infer<typeof ProductSchema>;
 export type CreateProduct = z.infer<typeof CreateProductSchema>;
-export type CreateCategory = z.infer<typeof CreateProductSchema>;
+export type CreateCategory = z.infer<typeof CreateCategorySchema>;

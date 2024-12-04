@@ -4,69 +4,42 @@ import {
   unauthorizedResponse,
   unknownErrorResponse,
 } from '@/lib/responses';
-import { safeAsync } from '@/lib/utils';
-import { prisma } from '@/prisma';
+import {
+  createProduct,
+  GetProductQuerySchema,
+  getProducts,
+} from '@/services/product-service';
 import { CreateProductSchema } from '@repo/api';
 import { NextResponse } from 'next/server';
-import { z } from 'zod';
 import { fromZodError } from 'zod-validation-error';
-
-const GetProductQuerySchema = z.object({
-  search: z.string().optional(),
-  sort_by: z.enum(['price', 'createdAt']).optional().default('createdAt'),
-  sort_dir: z.enum(['asc', 'desc']).optional().default('desc'),
-  limit: z
-    .string()
-    .optional()
-    .pipe(
-      z.coerce
-        .number()
-        .int()
-        .min(1)
-        .transform((x) => Math.min(x, 100))
-        .default(50)
-    ),
-});
 
 export const GET = auth(async (req) => {
   if (!isAuthenticated(req.auth)) return unauthorizedResponse();
 
-  const searchParamsValidation = GetProductQuerySchema.safeParse(
+  const queryValidation = GetProductQuerySchema.safeParse(
     Object.fromEntries(req.nextUrl.searchParams)
   );
-  if (!searchParamsValidation.success) {
-    const validationError = fromZodError(searchParamsValidation.error);
+  if (!queryValidation.success) {
+    const validationError = fromZodError(queryValidation.error);
     return invalidRequestResponse(validationError);
   }
 
-  const user = req.auth!.user!;
-  const searchParams = searchParamsValidation.data;
+  const query = queryValidation.data;
+  const [products, error] = await getProducts(query, req.auth);
 
-  const [products, error] = await safeAsync(
-    prisma.product.findMany({
-      where: { userId: user.id },
-      orderBy: [
-        {
-          [searchParams.sort_by]: searchParams.sort_dir,
-        },
-      ],
-      take: searchParams.limit,
-    })
-  );
   if (error) {
     console.log(error);
     return unknownErrorResponse(new Error('unable to process request'));
   }
 
-  return NextResponse.json({ products });
+  const cursor = products && products[0] ? products[0].id : null;
+  return NextResponse.json({ products, cursor });
 });
 
 export const POST = auth(async (req) => {
   if (!isAuthenticated(req.auth)) return unauthorizedResponse();
 
-  const user = req.auth.user;
   const data = await req.json();
-
   const productValidation = CreateProductSchema.safeParse(data);
   if (!productValidation.success) {
     const validationError = fromZodError(productValidation.error);
@@ -74,14 +47,7 @@ export const POST = auth(async (req) => {
   }
 
   const productRequest = productValidation.data;
-  const [product, error] = await safeAsync(
-    prisma.product.create({
-      data: {
-        ...productRequest,
-        userId: user.id,
-      },
-    })
-  );
+  const [product, error] = await createProduct(productRequest, req.auth);
 
   if (error) {
     console.log(error);
