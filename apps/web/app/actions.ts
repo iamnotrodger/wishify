@@ -2,6 +2,7 @@
 
 import { CreateProduct } from '@repo/api';
 
+// TODO: remove this
 type UpdateProduct = Partial<CreateProduct> & {
   plannedPurchaseDate?: string | null;
   purchaseDate?: string | null;
