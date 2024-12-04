@@ -21,7 +21,6 @@ export function AppSidebar() {
         <SidebarSeparator />
         <NavCategories />
       </SidebarContent>
-      <SidebarRail />
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -34,6 +33,7 @@ export function AppSidebar() {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
+      <SidebarRail />
     </Sidebar>
   );
 }

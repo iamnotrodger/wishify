@@ -5,7 +5,8 @@ import dynamicIconImports from 'lucide-react/dynamicIconImports';
 export type IconName = keyof typeof dynamicIconImports;
 const iconNames = Object.keys(dynamicIconImports);
 
-export const isValidIcon = (icon: string): icon is IconName => {
+export const isValidIcon = (icon?: string | null): icon is IconName => {
+  if (!icon) return false;
   return iconNames.includes(icon);
 };
 
