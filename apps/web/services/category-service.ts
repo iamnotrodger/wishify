@@ -1,13 +1,17 @@
 import { AuthenticatedSession } from '@/auth';
-import { prisma } from '@/prisma';
 import { safeAsync } from '@/lib/utils';
+import { prisma } from '@/prisma';
 import { CreateCategory } from '@repo/api';
+import { Prisma } from '@repo/db';
 
 const CATEGORY_FIELDS = {
   id: true,
   name: true,
   icon: true,
-};
+} satisfies Prisma.CategorySelect;
+export type CategoryModel = Prisma.CategoryGetPayload<{
+  select: typeof CATEGORY_FIELDS;
+}>;
 
 export async function getCategories(session: AuthenticatedSession) {
   const { id } = session.user;

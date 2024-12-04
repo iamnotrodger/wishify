@@ -1,7 +1,8 @@
 import { AuthenticatedSession } from '@/auth';
 import { safeAsync } from '@/lib/utils';
 import { prisma } from '@/prisma';
-import { CreateProduct } from '@repo/api';
+import { CreateProduct, Json, Product } from '@repo/api';
+import { Prisma } from '@repo/db';
 import { z } from 'zod';
 
 const PRODUCT_FIELDS = {
@@ -24,7 +25,11 @@ const PRODUCT_FIELDS = {
   plannedPurchaseDate: true,
   purchaseDate: true,
   createdAt: true,
-};
+  updatedAt: true,
+} satisfies Prisma.ProductSelect;
+export type ProductModel = Prisma.ProductGetPayload<{
+  select: typeof PRODUCT_FIELDS;
+}>;
 
 export const GetProductQuerySchema = z.object({
   search: z.string().optional(),
@@ -51,7 +56,7 @@ export async function getProducts(
 ) {
   const { user } = session;
 
-  return await safeAsync(
+  const [data, error] = await safeAsync(
     prisma.product.findMany({
       where: { userId: user.id, isDeleted: false },
       orderBy: [
@@ -69,6 +74,11 @@ export async function getProducts(
         : undefined,
     })
   );
+
+  if (data == null || error) return [null, error];
+
+  const products: Product[] = data.map((product) => transformProduct(product));
+  return [products, error];
 }
 
 export async function getProductById(
@@ -131,3 +141,12 @@ export async function deleteProduct(id: string, session: AuthenticatedSession) {
     })
   );
 }
+
+const transformProduct = (product: ProductModel): Product => ({
+  ...product,
+  metadata: product.metadata as Json,
+  purchaseDate: product.purchaseDate?.toISOString(),
+  plannedPurchaseDate: product.plannedPurchaseDate?.toISOString(),
+  createdAt: product.createdAt.toISOString(),
+  updatedAt: product.updatedAt.toISOString(),
+});
