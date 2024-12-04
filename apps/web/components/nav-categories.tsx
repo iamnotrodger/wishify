@@ -11,24 +11,14 @@ import {
 import { Plus } from 'lucide-react';
 import Link from 'next/link';
 import { CategoryIcon } from './category-icon';
+import { Category } from '@repo/api';
 
 export async function NavCategories() {
   const session = await auth();
-
-  let categoryLinks: {
-    title: string;
-    url: string;
-    icon: JSX.Element;
-  }[] = [];
+  let categories: Category[] | undefined;
 
   if (isAuthenticated(session)) {
-    const [categories] = await getCategories(session);
-    categoryLinks =
-      categories?.map((category) => ({
-        title: category.name,
-        url: `/app/categories/${category.id}`,
-        icon: <CategoryIcon icon={category.icon} />,
-      })) ?? [];
+    [categories] = await getCategories(session);
   }
 
   return (
@@ -36,13 +26,13 @@ export async function NavCategories() {
       <SidebarGroupLabel>Categories</SidebarGroupLabel>
       <SidebarGroupContent>
         <SidebarMenu>
-          {categoryLinks.map((item) => (
-            <SidebarMenuItem key={item.title}>
+          {categories?.map((category) => (
+            <SidebarMenuItem key={category.id}>
               <SidebarMenuButton asChild>
-                <Link href={item.url}>
-                  {item.icon}
+                <Link href={`/app/categories/${category.id}`}>
+                  <CategoryIcon icon={category.icon} />
                   <span className='truncate text-sm font-medium'>
-                    {item.title}
+                    {category.name}
                   </span>
                 </Link>
               </SidebarMenuButton>
