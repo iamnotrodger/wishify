@@ -1,7 +1,9 @@
-import { Category } from '@repo/api';
+import { auth, isAuthenticated } from '@/auth';
+import { getCategories } from '@/services/category-service';
 import {
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -10,39 +12,28 @@ import { Plus } from 'lucide-react';
 import Link from 'next/link';
 import { CategoryIcon } from './category-icon';
 
-const DUMMY_CATEGORIES: Category[] = [
-  {
-    id: '1',
-    name: 'Clothings',
-    icon: 'shirt',
-  },
-  {
-    id: '2',
-    name: 'Electronics',
-    icon: 'smartphone',
-  },
-  {
-    id: '3',
-    name: 'Furnitures',
-    icon: 'sofa',
-  },
-];
+export async function NavCategories() {
+  const session = await auth();
 
-interface NavCategoriesProps {
-  categories?: Category[];
-}
+  let categoryLinks: {
+    title: string;
+    url: string;
+    icon: JSX.Element;
+  }[] = [];
 
-export const NavCategories = ({
-  categories = DUMMY_CATEGORIES,
-}: NavCategoriesProps) => {
-  const categoryLinks = categories.map((category) => ({
-    title: category.name,
-    url: `/categories/${category.id}`,
-    icon: <CategoryIcon icon={category.icon} />,
-  }));
+  if (isAuthenticated(session)) {
+    const [categories] = await getCategories(session);
+    categoryLinks =
+      categories?.map((category) => ({
+        title: category.name,
+        url: `/app/categories/${category.id}`,
+        icon: <CategoryIcon icon={category.icon} />,
+      })) ?? [];
+  }
 
   return (
     <SidebarGroup>
+      <SidebarGroupLabel>Categories</SidebarGroupLabel>
       <SidebarGroupContent>
         <SidebarMenu>
           {categoryLinks.map((item) => (
@@ -65,4 +56,4 @@ export const NavCategories = ({
       </SidebarGroupContent>
     </SidebarGroup>
   );
-};
+}

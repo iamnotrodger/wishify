@@ -11,12 +11,12 @@ import Link from 'next/link';
 const items = [
   {
     title: 'Overview',
-    url: '?overview',
+    url: '/app/overview',
     icon: PieChart,
   },
   {
     title: 'Inbox',
-    url: '#',
+    url: '/app',
     icon: Inbox,
   },
 ];
