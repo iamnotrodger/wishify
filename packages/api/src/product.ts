@@ -35,7 +35,7 @@ export const ProductSchema = z.object({
     .nullish(),
   images: z.array(ImageSchema).optional(),
   category: CategorySchema.nullish(),
-  metadata: JsonSchema.nullable(),
+  metadata: JsonSchema.nullish(),
   plannedPurchaseDate: z.string().datetime({ offset: true }).nullish(),
   purchaseDate: z.string().datetime({ offset: true }).nullish(),
 
@@ -49,7 +49,7 @@ export const CreateProductSchema = ProductSchema.omit({
   createdAt: true,
   updatedAt: true,
 }).extend({
-  categoryId: z.string().nullable(),
+  categoryId: z.string().nullish(),
 });
 export const CreateCategorySchema = CategorySchema.omit({
   id: true,
