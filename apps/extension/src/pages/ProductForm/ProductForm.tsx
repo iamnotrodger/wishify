@@ -38,9 +38,9 @@ const testCategories = [
 ];
 
 const apiToForm = (product: ScrapedProduct) => ({
-  name: product.name ?? '',
-  brand: product?.brand ?? '',
-  url: product.url ?? '',
+  name: product.name,
+  brand: product?.brand,
+  url: product.url,
   currency: product.currency ?? 'CAD',
   ...(product.price ? { price: product.price } : {}),
   ...(product.images?.length && product.images[0]
@@ -130,7 +130,7 @@ const ProductForm = ({
                     <Input
                       className='h-[unset] border-none p-0 text-base font-bold decoration-blue-500 decoration-2 hover:cursor-pointer hover:underline focus:cursor-auto focus:underline focus-visible:ring-[none]'
                       onChange={field.onChange}
-                      value={field.value}
+                      value={field.value ?? undefined}
                       placeholder='Brand'
                       spellCheck={false}
                     />
@@ -145,7 +145,7 @@ const ProductForm = ({
                     <Input
                       className='text-secondary h-[unset] border-none p-0 text-sm decoration-blue-500 decoration-2 hover:cursor-pointer hover:underline focus:cursor-auto focus:underline focus-visible:ring-[none]'
                       onChange={field.onChange}
-                      value={field.value}
+                      value={field.value ?? undefined}
                       placeholder='Product Name'
                       spellCheck={false}
                     />
@@ -159,7 +159,7 @@ const ProductForm = ({
                   render={({ field }) => (
                     <FormItem className='mr-3 w-24'>
                       <Select
-                        value={field.value}
+                        value={field.value ?? undefined}
                         onValueChange={field.onChange}
                       >
                         <FormControl>
@@ -283,7 +283,7 @@ const ProductForm = ({
                 <Textarea
                   className='placeholder:text-secondary border-brand-border bg-brand-surface-layer h-[6rem] resize-none rounded-lg text-sm'
                   onChange={field.onChange}
-                  value={field.value}
+                  value={field.value ?? undefined}
                   placeholder='Add your notes here...'
                   spellCheck={false}
                 />
