@@ -35,23 +35,26 @@ type Image {
 }
 
 model Product {
-  id          String  @id @default(auto()) @map("_id") @db.ObjectId
-  url         String
-  name        String?
-  price       Float?
-  currency    String?
-  images      Image[]
-  categoryId  String? @db.ObjectId
-  description String?
-  metadata    Json?
-  html        String?
-  user        User    @relation(fields: [userId], references: [id])
-  userId      String  @db.ObjectId
+  id                  String    @id @default(auto()) @map("_id") @db.ObjectId
+  url                 String?
+  brand               String?
+  name                String?
+  price               Float?
+  currency            String?
+  images              Image[]
+  description         String?
+  metadata            Json?
+  html                String?
+  categoryId          String?   @db.ObjectId
+  category            Category? @relation(fields: [categoryId], references: [id])
+  user                User      @relation(fields: [userId], references: [id])
+  userId              String    @db.ObjectId
+  plannedPurchaseDate DateTime?
+  purchaseDate        DateTime?
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  isDeleted Boolean   @default(false)
-  Category  Category? @relation(fields: [categoryId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
 
   @@map("product")
 }
