@@ -14,7 +14,7 @@ export const ImageSchema = z.object({
 
 export const ProductSchema = z.object({
   id: z.string(),
-  userId: z.string().optional(),
+  userId: z.string(),
   url: z.string().url({ message: 'Invalid link' }),
   name: z.string().min(1, { message: 'Name cannot be empty' }),
   brand: z.string().optional(),
@@ -27,6 +27,8 @@ export const ProductSchema = z.object({
   images: z.array(ImageSchema).optional(),
   category: CategorySchema.optional(),
   metadata: z.record(z.any()).optional(),
+  plannedPurchaseDate: z.string().datetime({ offset: true }).optional(),
+  purchaseDate: z.string().datetime({ offset: true }).optional(),
 
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
@@ -49,4 +51,4 @@ export type Category = z.infer<typeof CategorySchema>;
 export type Image = z.infer<typeof ImageSchema>;
 export type Product = z.infer<typeof ProductSchema>;
 export type CreateProduct = z.infer<typeof CreateProductSchema>;
-export type CreateCategory = z.infer<typeof CreateProductSchema>;
+export type CreateCategory = z.infer<typeof CreateCategorySchema>;
