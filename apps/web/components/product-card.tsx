@@ -14,44 +14,16 @@ import { CategoryIcon } from './category-icon';
 import { Product } from '@repo/api';
 import { cn } from '@repo/ui/lib/utils';
 
-const PRODUCT = {
-  id: '',
-  url: '',
-  brand: 'The North Face',
-  name: "Women's 1996 Retro Nuptse Jacket",
-  images: [
-    {
-      url: 'https://assets.thenorthface.com/images/t_img/c_pad,b_white,f_auto,h_906,w_780,e_sharpen:70/NF0A833R4H0-HERO/NF0A833R4H0-in-TNF-Black.png',
-    },
-  ],
-  price: 429.99,
-  currency: 'CAD',
-  category: {
-    id: '1',
-    name: 'Clothings',
-    icon: 'shirt',
-  },
-  datePlanned: null,
-  dateBought: null,
-};
-
 const PLACEHOLDER_IMAGE =
   'https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png';
 
-// FIXME: TempProduct is a workaround to avoid TypeScript error
-interface TempProduct extends Product {
-  plannedPurchaseDate?: string | null;
-  purchaseDate?: string | null;
-}
-
-// TODO: make product and onDelete a required field
 interface ProductCardProps {
-  product?: TempProduct;
+  product: Product;
   onDelete?: () => void;
 }
 
 export function ProductCard({
-  product = PRODUCT,
+  product,
   onDelete = () => {},
 }: ProductCardProps) {
   const { id, plannedPurchaseDate, purchaseDate } = product;
@@ -60,7 +32,7 @@ export function ProductCard({
 
   const handlePrimaryClick = () => {
     if (isBought) {
-      updateProductAction(id, { purchaseDate: null });
+      updateProductAction(id, { purchaseDate: undefined });
       setIsBought(false);
     } else if (isPlanning) {
       updateProductAction(id, { purchaseDate: new Date().toISOString() });
@@ -84,7 +56,7 @@ export function ProductCard({
   };
 
   return (
-    <div className='group flex h-[450px] cursor-pointer flex-col gap-3 overflow-hidden'>
+    <div className='group flex h-[450px] flex-col gap-3 overflow-hidden'>
       <ProductMedia
         product={product}
         isPlanning={isPlanning}
@@ -131,7 +103,7 @@ function ProductMedia({
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         className='h-full w-full object-cover transition-all duration-300'
-        src={images ? images[0]?.url : PLACEHOLDER_IMAGE}
+        src={images && images[0] ? images[0]?.url : PLACEHOLDER_IMAGE}
         alt={`${brand} - ${name}`}
         loading='lazy'
         onError={(e) => {
@@ -150,7 +122,7 @@ interface ProductTagProps {
 }
 
 function ProductTag({ isPlanning, isBought }: ProductTagProps) {
-  if (!isPlanning || !isBought) {
+  if (!isPlanning && !isBought) {
     return null;
   }
 
@@ -170,14 +142,14 @@ function ProductTag({ isPlanning, isBought }: ProductTagProps) {
 }
 
 interface ProductMediaActionsProps {
-  url: string;
+  url?: string | null;
   onDelete: () => void;
 }
 
 function ProductMediaActions({ url, onDelete }: ProductMediaActionsProps) {
   return (
     <div className='invisible absolute right-3 top-3 flex flex-col gap-2 opacity-0 transition-opacity duration-300 group-hover:visible group-hover/media:opacity-100'>
-      <a href={url}>
+      <a href={url ?? ''} className={url ? '' : 'hidden'}>
         <Button size='icon' variant='outline' className='rounded-full'>
           <ExternalLink />
         </Button>
@@ -210,7 +182,7 @@ function ProductContent({ product, className }: ProductContentProps) {
       ) : null}
       <div className='text-sm'>{name}</div>
       <div className='flex gap-1 text-sm font-medium'>
-        <span>{currency}</span>
+        <span>{currency ?? 'USD'}</span>
         <span>{price}</span>
       </div>
     </div>
