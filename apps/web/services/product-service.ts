@@ -53,12 +53,12 @@ export type GetProductQuery = z.infer<typeof GetProductQuerySchema>;
 export async function getProducts(
   query: GetProductQuery,
   session: AuthenticatedSession
-) {
+): Promise<[Product[] | undefined, Error | undefined]> {
   const { user } = session;
 
   const [data, error] = await safeAsync(
     prisma.product.findMany({
-      where: { userId: user.id, isDeleted: false },
+      where: { userId: user.id, deletedAt: undefined },
       orderBy: [
         {
           [query.sort_by]: query.sort_dir,
@@ -75,7 +75,7 @@ export async function getProducts(
     })
   );
 
-  if (data == null || error) return [null, error];
+  if (data == null || error) return [undefined, error];
 
   const products: Product[] = data.map((product) => transformProduct(product));
   return [products, error];
@@ -89,7 +89,7 @@ export async function getProductById(
 
   return await safeAsync(
     prisma.product.findFirst({
-      where: { id, userId: user.id },
+      where: { id, userId: user.id, deletedAt: undefined },
       select: PRODUCT_FIELDS,
     })
   );
@@ -136,7 +136,7 @@ export async function deleteProduct(id: string, session: AuthenticatedSession) {
     prisma.product.update({
       where: { id, userId: user.id },
       data: {
-        isDeleted: true,
+        deletedAt: new Date(),
       },
     })
   );

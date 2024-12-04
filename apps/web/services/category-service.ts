@@ -18,7 +18,7 @@ export async function getCategories(session: AuthenticatedSession) {
 
   return await safeAsync(
     prisma.category.findMany({
-      where: { userId: id, isDeleted: false },
+      where: { userId: id, deletedAt: undefined },
       select: CATEGORY_FIELDS,
     })
   );
@@ -66,7 +66,7 @@ export async function deleteCategory(
   return await safeAsync(
     prisma.category.update({
       where: { id, userId: user.id },
-      data: { isDeleted: true },
+      data: { deletedAt: new Date() },
       select: CATEGORY_FIELDS,
     })
   );
