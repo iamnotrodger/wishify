@@ -1,6 +1,6 @@
 'use client';
 
-import { updateProduct } from '@/app/actions';
+import { updateProductAction } from '@/app/actions';
 import { Button } from '@repo/ui/components/button';
 import {
   ExternalLink,
@@ -40,8 +40,8 @@ const PLACEHOLDER_IMAGE =
 
 // FIXME: TempProduct is a workaround to avoid TypeScript error
 interface TempProduct extends Product {
-  datePlanned?: string | null;
-  dateBought?: string | null;
+  plannedPurchaseDate?: string | null;
+  purchaseDate?: string | null;
 }
 
 // TODO: make product and onDelete a required field
@@ -54,29 +54,31 @@ export function ProductCard({
   product = PRODUCT,
   onDelete = () => {},
 }: ProductCardProps) {
-  const { id, datePlanned, dateBought } = product;
-  const [isPlanning, setIsPlanning] = useState(datePlanned != null);
-  const [isBought, setIsBought] = useState(dateBought != null);
+  const { id, plannedPurchaseDate, purchaseDate } = product;
+  const [isPlanning, setIsPlanning] = useState(plannedPurchaseDate != null);
+  const [isBought, setIsBought] = useState(purchaseDate != null);
 
   const handlePrimaryClick = () => {
     if (isBought) {
-      updateProduct(id, { dateBought: null });
+      updateProductAction(id, { purchaseDate: null });
       setIsBought(false);
     } else if (isPlanning) {
-      updateProduct(id, { dateBought: new Date().toISOString() });
+      updateProductAction(id, { purchaseDate: new Date().toISOString() });
       setIsBought(true);
     } else {
-      updateProduct(id, { datePlanned: new Date().toISOString() });
+      updateProductAction(id, {
+        plannedPurchaseDate: new Date().toISOString(),
+      });
       setIsPlanning(true);
     }
   };
 
   const handleSecondaryClick = () => {
     if (!isBought && !isPlanning) {
-      updateProduct(id, { dateBought: new Date().toISOString() });
+      updateProductAction(id, { purchaseDate: new Date().toISOString() });
       setIsBought(true);
     } else if (isPlanning && !isBought) {
-      updateProduct(id, { datePlanned: null });
+      updateProductAction(id, { plannedPurchaseDate: null });
       setIsPlanning(false);
     }
   };

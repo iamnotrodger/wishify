@@ -3,11 +3,11 @@
 import { CreateProduct } from '@repo/api';
 
 type UpdateProduct = Partial<CreateProduct> & {
-  datePlanned?: string | null;
-  dateBought?: string | null;
+  plannedPurchaseDate?: string | null;
+  purchaseDate?: string | null;
 };
 
-export async function updateProduct(id: string, product: UpdateProduct) {
+export async function updateProductAction(id: string, product: UpdateProduct) {
   console.log(id, product);
   return [product, null];
 }
