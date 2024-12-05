@@ -1,7 +1,9 @@
 'use client';
 
 import { updateProductAction } from '@/app/actions';
+import { Product } from '@repo/api';
 import { Button } from '@repo/ui/components/button';
+import { cn } from '@repo/ui/lib/utils';
 import {
   ExternalLink,
   PartyPopper,
@@ -11,8 +13,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { CategoryIcon } from './category-icon';
-import { Product } from '@repo/api';
-import { cn } from '@repo/ui/lib/utils';
+import Link from 'next/link';
 
 const PLACEHOLDER_IMAGE =
   'https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png';
@@ -92,7 +93,7 @@ function ProductMedia({
   onDelete,
   className,
 }: ProductMediaProps) {
-  const { images, brand, name, url } = product;
+  const { id, images, brand, name, url } = product;
   return (
     <div
       className={cn(
@@ -100,16 +101,18 @@ function ProductMedia({
         className
       )}
     >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        className='h-full w-full object-cover transition-all duration-300'
-        src={images && images[0] ? images[0]?.url : PLACEHOLDER_IMAGE}
-        alt={`${brand} - ${name}`}
-        loading='lazy'
-        onError={(e) => {
-          e.currentTarget.src = PLACEHOLDER_IMAGE;
-        }}
-      />
+      <Link href={`?selectedProduct=${id}`} scroll={false}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          className='h-full w-full object-cover transition-all duration-300'
+          src={images && images[0] ? images[0]?.url : PLACEHOLDER_IMAGE}
+          alt={`${brand} - ${name}`}
+          loading='lazy'
+          onError={(e) => {
+            e.currentTarget.src = PLACEHOLDER_IMAGE;
+          }}
+        />
+      </Link>
       <ProductTag isPlanning={isPlanning} isBought={isBought} />
       <ProductMediaActions url={url} onDelete={onDelete} />
     </div>
