@@ -1,14 +1,19 @@
 import { signIn } from '@/auth';
+import { Button } from '@repo/ui/components/button';
 
-export const SignIn = () => {
+interface SignInProps {
+  redirectTo?: string;
+}
+
+export const SignIn = ({ redirectTo = '/app' }: SignInProps) => {
   return (
     <form
       action={async () => {
         'use server';
-        await signIn('google', { redirectTo: '/app' });
+        await signIn('google', { redirectTo });
       }}
     >
-      <button type='submit'>Sign in</button>
+      <Button type='submit'>Sign In</Button>
     </form>
   );
 };
