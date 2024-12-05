@@ -12,6 +12,7 @@ import { Plus } from 'lucide-react';
 import Link from 'next/link';
 import { CategoryIcon } from './category-icon';
 import { Category } from '@repo/api';
+import { CategoryForm } from './category-form';
 
 export async function NavCategories() {
   const session = await auth();
@@ -38,10 +39,12 @@ export async function NavCategories() {
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
-          <SidebarMenuButton>
-            <Plus className='h-4 w-4' />
-            <span className='text-sm font-medium'>Add new category</span>
-          </SidebarMenuButton>
+          <CategoryForm>
+            <SidebarMenuButton>
+              <Plus className='h-4 w-4' />
+              <span className='text-sm font-medium'>Add new category</span>
+            </SidebarMenuButton>
+          </CategoryForm>
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>
