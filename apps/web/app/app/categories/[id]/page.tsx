@@ -1,5 +1,6 @@
 import { auth, isAuthenticated } from '@/auth';
 import { ProductCard } from '@/components/product-card';
+import { ProductForm } from '@/components/product-form';
 import { getCategoryById } from '@/services/category-service';
 import { getProducts } from '@/services/product-service';
 import { Button } from '@repo/ui/components/button';
@@ -33,10 +34,12 @@ export default async function Category({
         <h1 className='text-2xl font-medium tracking-tight'>
           {category?.name}
         </h1>
-        <Button className='ml-auto'>
-          <Plus />
-          Add new item
-        </Button>
+        <ProductForm>
+          <Button className='ml-auto'>
+            <Plus />
+            Add new item
+          </Button>
+        </ProductForm>
       </header>
       <main className='py-4'>
         <div className='grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-4'>
