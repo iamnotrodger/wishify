@@ -32,7 +32,7 @@ export function ProductCard({
 
   const handlePrimaryClick = () => {
     if (isBought) {
-      updateProductAction(id, { purchaseDate: undefined });
+      updateProductAction(id, { purchaseDate: null });
       setIsBought(false);
     } else if (isPlanning) {
       updateProductAction(id, { purchaseDate: new Date().toISOString() });
