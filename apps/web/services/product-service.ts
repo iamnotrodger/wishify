@@ -33,8 +33,8 @@ export type ProductModel = Prisma.ProductGetPayload<{
 
 export const GetProductQuerySchema = z.object({
   search: z.string().optional(),
-  sort_by: z.enum(['price', 'createdAt']).optional().default('createdAt'),
-  sort_dir: z.enum(['asc', 'desc']).optional().default('desc'),
+  sortBy: z.enum(['price', 'createdAt']).optional().default('createdAt'),
+  sortDir: z.enum(['asc', 'desc']).optional().default('desc'),
   category: z.string().optional(),
   cursor: z.string().optional(),
   limit: z
@@ -66,7 +66,7 @@ export async function getProducts(
       },
       orderBy: [
         {
-          [query.sort_by]: query.sort_dir,
+          [query.sortBy]: query.sortDir,
         },
       ],
       select: PRODUCT_FIELDS,

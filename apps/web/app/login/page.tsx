@@ -5,7 +5,7 @@ export default async function Login({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const redirect_to = (await searchParams).redirect_to as string | undefined;
+  const redirectTo = (await searchParams).redirectTo as string | undefined;
 
   return (
     <main>
@@ -13,7 +13,7 @@ export default async function Login({
         <div className='my-2.5 text-center'>
           <h2 className='text-xl font-semibold'>Login</h2>
         </div>
-        <SignIn redirectTo={redirect_to} />
+        <SignIn redirectTo={redirectTo} />
       </section>
     </main>
   );

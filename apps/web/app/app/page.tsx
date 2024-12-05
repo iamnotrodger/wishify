@@ -10,11 +10,11 @@ import { redirect } from 'next/navigation';
 export default async function App() {
   const session = await auth();
   if (!isAuthenticated(session)) {
-    return redirect('/login?redirect_to=/app');
+    return redirect('/login?redirectTo=/app');
   }
 
   const [products, error] = await getProducts(
-    { sort_by: 'createdAt', sort_dir: 'desc', limit: 50 },
+    { sortBy: 'createdAt', sortDir: 'desc', limit: 50 },
     session
   );
 

@@ -17,13 +17,13 @@ export default async function Category({
 
   const session = await auth();
   if (!isAuthenticated(session)) {
-    return redirect(`/login?redirect_to=/app/categories/${id}`);
+    return redirect(`/login?redirectTo=/app/categories/${id}`);
   }
 
   // TODO: handle error
   const [category] = await getCategoryById(id, session);
   const [products] = await getProducts(
-    { sort_by: 'createdAt', sort_dir: 'desc', limit: 50, category: id },
+    { sortBy: 'createdAt', sortDir: 'desc', limit: 50, category: id },
     session
   );
 
