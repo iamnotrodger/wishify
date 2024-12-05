@@ -35,6 +35,7 @@ export const GetProductQuerySchema = z.object({
   search: z.string().optional(),
   sort_by: z.enum(['price', 'createdAt']).optional().default('createdAt'),
   sort_dir: z.enum(['asc', 'desc']).optional().default('desc'),
+  category: z.string().optional(),
   cursor: z.string().optional(),
   limit: z
     .string()
@@ -58,7 +59,11 @@ export async function getProducts(
 
   const [data, error] = await safeAsync(
     prisma.product.findMany({
-      where: { userId: user.id, deletedAt: undefined },
+      where: {
+        userId: user.id,
+        deletedAt: undefined,
+        ...(query.category ? { categoryId: query.category } : {}),
+      },
       orderBy: [
         {
           [query.sort_by]: query.sort_dir,
