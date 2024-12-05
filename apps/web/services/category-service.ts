@@ -24,6 +24,20 @@ export async function getCategories(session: AuthenticatedSession) {
   );
 }
 
+export async function getCategoryById(
+  id: string,
+  session: AuthenticatedSession
+) {
+  const { user } = session;
+
+  return await safeAsync(
+    prisma.category.findUnique({
+      where: { id, userId: user.id, deletedAt: undefined },
+      select: CATEGORY_FIELDS,
+    })
+  );
+}
+
 export async function createCategory(
   category: CreateCategory,
   session: AuthenticatedSession
