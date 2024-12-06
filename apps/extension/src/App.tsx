@@ -1,6 +1,6 @@
 import '@repo/ui/globals.css';
 import './App.css';
-import ProductForm from './pages/ProductForm/ProductForm';
+import ProductForm from './components/product-form';
 import { useEffect, useMemo, useState } from 'react';
 import { getProduct } from '@repo/scraper';
 import { Product } from '@repo/scraper/types';

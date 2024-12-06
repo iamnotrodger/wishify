@@ -26,7 +26,7 @@ import { Textarea } from '@repo/ui/components/textarea';
 import { cn } from '@repo/ui/lib/utils';
 import { Plus } from 'lucide-react';
 
-import ProductFormLoading from './ProductFormLoading';
+import ProductFormLoading from './product-form-loading';
 
 const testCategories = [
   { id: '672d791a4b3f63ec36d0a345', name: '❤ Favorites' },
@@ -91,7 +91,7 @@ const ProductForm = ({
 
   return (
     <Form {...form}>
-      <div className='bg-brand-surface-layer px-4 py-3 text-left'>
+      <div className='bg-muted px-4 py-3 text-left'>
         <h1 className='text-xl font-semibold'>Save item</h1>
       </div>
       {!isLoading ? (
@@ -107,7 +107,7 @@ const ProductForm = ({
               render={({ field }) => (
                 <FormItem
                   className={cn(
-                    'bg-brand-surface-layer max-h-[116px] min-h-[116px] min-w-[116px] max-w-[116px] rounded-md border shadow-sm',
+                    'bg-muted max-h-[116px] min-h-[116px] min-w-[116px] max-w-[116px] rounded-md border shadow-sm',
                     field.value?.length && 'border-gray-200'
                   )}
                 >
@@ -163,7 +163,7 @@ const ProductForm = ({
                         onValueChange={field.onChange}
                       >
                         <FormControl>
-                          <SelectTrigger className='border-brand-border max-w-[80px]'>
+                          <SelectTrigger className='max-w-[80px]'>
                             <SelectValue />
                           </SelectTrigger>
                         </FormControl>
@@ -222,12 +222,12 @@ const ProductForm = ({
                       <Button
                         key={name}
                         value={id}
-                        variant={
-                          field.value !== id
-                            ? 'brand-outline'
-                            : 'brand-outline-selected'
-                        }
-                        className={`h-9 w-fit max-w-[9rem] truncate rounded-lg px-3 text-sm font-normal`}
+                        variant='outline'
+                        className={cn(
+                          'h-9 w-fit max-w-[9rem] truncate rounded-lg px-3 text-sm font-normal',
+                          field.value === id &&
+                            'text-primary border-primary bg-accent'
+                        )}
                         title={name}
                         onClick={() => {
                           if (field.value !== id) {
@@ -242,7 +242,7 @@ const ProductForm = ({
                     ) : null
                   )}
                   <Button
-                    variant='brand-outline'
+                    variant='outline'
                     className='h-9 w-fit max-w-[9rem] rounded-lg px-3 text-sm font-normal'
                   >
                     <Plus size={16} className='mr-0.5' />
@@ -281,7 +281,7 @@ const ProductForm = ({
                   Notes
                 </FormLabel>
                 <Textarea
-                  className='placeholder:text-secondary border-brand-border bg-brand-surface-layer h-[6rem] resize-none rounded-lg text-sm'
+                  className='placeholder:text-secondary bg-muted h-[6rem] resize-none rounded-lg text-sm'
                   onChange={field.onChange}
                   value={field.value ?? undefined}
                   placeholder='Add your notes here...'
@@ -290,7 +290,7 @@ const ProductForm = ({
               </FormItem>
             )}
           />
-          <Button className='w-full' variant='brand' type='submit'>
+          <Button className='w-full' type='submit'>
             Save item to Wishify
           </Button>
         </form>
