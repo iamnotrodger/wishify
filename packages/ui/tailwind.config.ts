@@ -25,7 +25,21 @@ const config = {
     },
     extend: {
       colors: {
-        border: 'hsl(var(--brand-border-gray))',
+        brand: {
+          purple: {
+            DEFAULT: 'hsl(var(--purple-80))',
+            70: 'hsl(var(--purple-70))',
+            60: 'hsl(var(--purple-60))',
+            50: 'hsl(var(--purple-50))',
+            40: 'hsl(var(--purple-40))',
+          },
+        },
+        layer: {
+          DEFAULT: 'hsl(var(--layer-1))',
+          20: 'hsl(var(--layer-2))',
+          30: 'hsl(var(--layer-3))',
+        },
+        border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
         background: 'hsl(var(--background))',
@@ -49,15 +63,6 @@ const config = {
         accent: {
           DEFAULT: 'hsl(var(--accent))',
           foreground: 'hsl(var(--accent-foreground))',
-        },
-        brand: {
-          purple: {
-            DEFAULT: 'hsl(var(--brand-purple))',
-            light: 'hsl(var(--brand-purple-light))',
-            lighter: 'hsl(var(--brand-purple-lighter))',
-          },
-          border: 'hsl(var(--brand-border))',
-          'surface-layer': 'hsl(var(--brand-surface-layer))',
         },
         popover: {
           DEFAULT: 'hsl(var(--popover))',
