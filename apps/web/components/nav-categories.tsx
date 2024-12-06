@@ -16,7 +16,7 @@ import { CategoryForm } from './category-form';
 
 export async function NavCategories() {
   const session = await auth();
-  let categories: Category[] | undefined;
+  let categories: Category[] | null = [];
 
   if (isAuthenticated(session)) {
     [categories] = await getCategories(session);

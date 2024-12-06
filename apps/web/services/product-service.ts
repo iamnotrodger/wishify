@@ -27,9 +27,12 @@ const PRODUCT_FIELDS = {
   createdAt: true,
   updatedAt: true,
 } satisfies Prisma.ProductSelect;
-export type ProductModel = Prisma.ProductGetPayload<{
+
+export type ProductDatabaseSchema = Prisma.ProductGetPayload<{
   select: typeof PRODUCT_FIELDS;
 }>;
+
+type ProductResult<T = Product> = [T | null, Error | null];
 
 export const GetProductQuerySchema = z.object({
   search: z.string().optional(),
@@ -54,7 +57,7 @@ export type GetProductQuery = z.infer<typeof GetProductQuerySchema>;
 export async function getProducts(
   query: GetProductQuery,
   session: AuthenticatedSession
-): Promise<[Product[]?, Error?]> {
+): Promise<ProductResult<Product[]>> {
   const { user } = session;
 
   const [data, error] = await safeAsync(
@@ -80,7 +83,10 @@ export async function getProducts(
     })
   );
 
-  if (data == null || error) return [undefined, error];
+  if (data == null || error) {
+    console.log(error);
+    return [null, error];
+  }
 
   const products: Product[] = data.map((product) => transformProduct(product));
   return [products, error];
@@ -89,7 +95,7 @@ export async function getProducts(
 export async function getProductById(
   id: string,
   session: AuthenticatedSession
-): Promise<[Product?, Error?]> {
+): Promise<ProductResult> {
   const { user } = session;
 
   const [data, error] = await safeAsync(
@@ -99,19 +105,21 @@ export async function getProductById(
     })
   );
 
-  if (data == null || error) return [undefined, error];
+  if (data == null || error) {
+    console.log(error);
+    return [null, error];
+  }
 
-  const product = transformProduct(data);
-  return [product, undefined];
+  return [transformProduct(data), null];
 }
 
 export async function createProduct(
   product: CreateProduct,
   session: AuthenticatedSession
-) {
+): Promise<ProductResult> {
   const { user } = session;
 
-  return await safeAsync(
+  const [data, error] = await safeAsync(
     prisma.product.create({
       data: {
         ...product,
@@ -120,29 +128,44 @@ export async function createProduct(
       select: PRODUCT_FIELDS,
     })
   );
+
+  if (data == null || error) {
+    console.log(error);
+    return [null, error];
+  }
+
+  return [transformProduct(data), null];
 }
 
 export async function updateProduct(
   id: string,
   product: CreateProduct,
   session: AuthenticatedSession
-) {
+): Promise<ProductResult> {
   const { user } = session;
 
-  return await safeAsync(
+  const [data, error] = await safeAsync(
     prisma.product.update({
       where: { id, userId: user.id },
       data: {
         ...product,
       },
+      select: PRODUCT_FIELDS,
     })
   );
+
+  if (data == null || error) {
+    console.log(error);
+    return [null, error];
+  }
+
+  return [transformProduct(data), null];
 }
 
 export async function deleteProduct(id: string, session: AuthenticatedSession) {
   const { user } = session;
 
-  return await safeAsync(
+  const [, error] = await safeAsync(
     prisma.product.update({
       where: { id, userId: user.id },
       data: {
@@ -150,13 +173,18 @@ export async function deleteProduct(id: string, session: AuthenticatedSession) {
       },
     })
   );
+
+  if (error) {
+    console.log(error);
+  }
+  return error;
 }
 
-const transformProduct = (product: ProductModel): Product => ({
+const transformProduct = (product: ProductDatabaseSchema): Product => ({
   ...product,
   metadata: product.metadata as Json,
   purchaseDate: product.purchaseDate?.toISOString(),
   plannedPurchaseDate: product.plannedPurchaseDate?.toISOString(),
-  createdAt: product.createdAt.toISOString(),
-  updatedAt: product.updatedAt.toISOString(),
+  createdAt: product.createdAt?.toISOString(),
+  updatedAt: product.updatedAt?.toISOString(),
 });

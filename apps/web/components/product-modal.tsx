@@ -23,14 +23,13 @@ export function ProductModal() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  // TODO: replace this with react query
   useEffect(() => {
     const fetchProduct = async () => {
       const id = searchParams.get('selectedProduct');
       if (!id) return;
 
       const [product] = await getProductByIdAction(id);
-      if (!product) return;
-
       setProduct(product);
       setOpen(true);
     };

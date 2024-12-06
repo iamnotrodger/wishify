@@ -4,24 +4,20 @@ import { auth, isAuthenticated } from '@/auth';
 import { getProductById, updateProduct } from '@/services/product-service';
 import { CreateProduct, Product } from '@repo/api';
 
+type ProductActionResult<T = Product> = [T | null, Error | null];
+
+const UNAUTHORIZED_ERROR = new Error('Unauthorized');
+
 export async function updateProductAction(id: string, product: CreateProduct) {
   const session = await auth();
-  if (!isAuthenticated(session)) return [null, new Error('Unauthorized')];
-
-  const [updatedProduct, error] = await updateProduct(id, product, session);
-  if (error) console.log(error);
-
-  return [updatedProduct, error];
+  if (!isAuthenticated(session)) return [null, UNAUTHORIZED_ERROR];
+  return await updateProduct(id, product, session);
 }
 
 export async function getProductByIdAction(
   id: string
-): Promise<[Product?, Error?]> {
+): Promise<ProductActionResult> {
   const session = await auth();
-  if (!isAuthenticated(session)) return [undefined, new Error('Unauthorized')];
-
-  const [product, error] = await getProductById(id, session);
-  if (error) console.log(error);
-
-  return [product, error];
+  if (!isAuthenticated(session)) return [null, UNAUTHORIZED_ERROR];
+  return await getProductById(id, session);
 }
