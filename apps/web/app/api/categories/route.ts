@@ -15,7 +15,6 @@ export const GET = auth(async (req) => {
   const [categories, error] = await getCategories(req.auth);
 
   if (error) {
-    console.log(error);
     return unknownErrorResponse(new Error('unable to process request'));
   }
 
@@ -38,7 +37,6 @@ export const POST = auth(async (req) => {
   );
 
   if (error) {
-    console.log(error);
     return unknownErrorResponse(new Error('failed to add folder'));
   }
 

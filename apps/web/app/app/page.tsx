@@ -18,7 +18,7 @@ export default async function App() {
     session
   );
 
-  if (error) console.log(error);
+  if (error) throw error;
 
   return (
     <div className='p-4 md:px-20 md:py-10'>

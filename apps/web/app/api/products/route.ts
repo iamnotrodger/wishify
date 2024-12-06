@@ -28,7 +28,6 @@ export const GET = auth(async (req) => {
   const [products, error] = await getProducts(query, req.auth);
 
   if (error) {
-    console.log(error);
     return unknownErrorResponse(new Error('unable to process request'));
   }
 
@@ -50,7 +49,6 @@ export const POST = auth(async (req) => {
   const [product, error] = await createProduct(productRequest, req.auth);
 
   if (error) {
-    console.log(error);
     return unknownErrorResponse(new Error('failed to save product'));
   }
 
