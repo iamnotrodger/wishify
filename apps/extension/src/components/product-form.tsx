@@ -128,7 +128,7 @@ const ProductForm = ({
                 render={({ field }) => (
                   <FormItem>
                     <Input
-                      className='h-[unset] border-none p-0 text-base font-bold decoration-blue-500 decoration-2 hover:cursor-pointer hover:underline focus:cursor-auto focus:underline focus-visible:ring-[none]'
+                      className='placeholder:text-secondary/70 decoration-primary h-[unset] border-none p-0 text-base font-bold text-black decoration-2 hover:cursor-pointer hover:underline focus:cursor-auto focus:underline focus-visible:ring-[none]'
                       onChange={field.onChange}
                       value={field.value ?? undefined}
                       placeholder='Brand'
@@ -143,7 +143,7 @@ const ProductForm = ({
                 render={({ field }) => (
                   <FormItem>
                     <Input
-                      className='text-secondary h-[unset] border-none p-0 text-sm decoration-blue-500 decoration-2 hover:cursor-pointer hover:underline focus:cursor-auto focus:underline focus-visible:ring-[none]'
+                      className='placeholder:text-secondary/70 decoration-primary text-secondary h-[unset] border-none p-0 text-sm decoration-2 hover:cursor-pointer hover:underline focus:cursor-auto focus:underline focus-visible:ring-[none]'
                       onChange={field.onChange}
                       value={field.value ?? undefined}
                       placeholder='Product Name'
@@ -188,7 +188,7 @@ const ProductForm = ({
                         type='number'
                         min='1'
                         step='any'
-                        className='h-[unset] border-none p-0 text-left text-sm font-medium decoration-blue-500 decoration-2 hover:cursor-pointer hover:underline focus:cursor-auto focus:underline focus-visible:ring-transparent'
+                        className='placeholder:text-secondary/70 decoration-primary text-secondary h-[unset] border-none p-0 text-left text-sm font-medium decoration-2 hover:cursor-pointer hover:underline focus:cursor-auto focus:underline focus-visible:ring-transparent'
                         onChange={(e) => {
                           if (
                             e.target.value === '.' ||
