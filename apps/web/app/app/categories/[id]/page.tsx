@@ -21,7 +21,10 @@ export default async function Category({
   }
 
   // TODO: handle error
-  const [category] = await getCategoryById(id, session);
+  const [category, error] = await getCategoryById(id, session);
+
+  if (error) throw error;
+
   const [products] = await getProducts(
     { sortBy: 'createdAt', sortDir: 'desc', limit: 50, category: id },
     session
@@ -30,7 +33,7 @@ export default async function Category({
   return (
     <div className='p-4 md:px-20 md:py-10'>
       <header className='flex shrink-0 items-center gap-2'>
-        <SidebarTrigger className='' />
+        <SidebarTrigger className='text-foreground h-8 w-8' />
         <h1 className='text-2xl font-medium tracking-tight'>
           {category?.name}
         </h1>

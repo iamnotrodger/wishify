@@ -23,7 +23,7 @@ export default async function App() {
   return (
     <div className='p-4 md:px-20 md:py-10'>
       <header className='flex shrink-0 items-center gap-2'>
-        <SidebarTrigger className='' />
+        <SidebarTrigger className='text-foreground h-8 w-8' />
         <h1 className='text-2xl font-medium tracking-tight'>Inbox</h1>
         <ProductForm>
           <Button className='ml-auto'>

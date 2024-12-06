@@ -216,7 +216,7 @@ function ProductActions({
   return (
     <div className={cn('flex flex-col gap-2', className)}>
       {category ? (
-        <div className='flex h-9 w-fit items-center gap-2 rounded-md border px-3 text-sm'>
+        <div className='border-foreground flex h-9 w-fit items-center gap-2 rounded-md border px-3 text-sm'>
           <CategoryIcon icon={category.icon} />
           <span>{category.name}</span>
         </div>
@@ -224,7 +224,7 @@ function ProductActions({
 
       <Button
         className={cn('w-full', primaryButtonClass)}
-        variant={isBought ? 'outline' : 'default'}
+        variant={isBought ? 'ghost' : 'default'}
         onClick={onPrimaryClick}
       >
         {isBought ? (
@@ -241,7 +241,7 @@ function ProductActions({
 
       <Button
         variant='ghost'
-        className={cn('w-full', secondaryButtonClass)}
+        className={cn('text-primary w-full', secondaryButtonClass)}
         onClick={onSecondaryClick}
       >
         {isPlanning
