@@ -1,7 +1,7 @@
 import { AuthenticatedSession } from '@/auth';
 import { safeAsync } from '@/lib/utils';
 import { prisma } from '@/prisma';
-import { CreateProduct, Json, Product } from '@repo/api';
+import { CreateProduct, Json, Product, UpdateProduct } from '@repo/api';
 import { Prisma } from '@repo/db';
 import { z } from 'zod';
 
@@ -139,7 +139,7 @@ export async function createProduct(
 
 export async function updateProduct(
   id: string,
-  product: CreateProduct,
+  product: UpdateProduct,
   session: AuthenticatedSession
 ): Promise<ProductResult> {
   const { user } = session;
