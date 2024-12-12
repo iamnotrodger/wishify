@@ -37,15 +37,13 @@ const testCategories = [
   },
 ];
 
-const apiToForm = (product: ScrapedProduct) => ({
-  name: product.name,
-  brand: product?.brand,
-  url: product.url,
-  currency: product.currency ?? 'CAD',
-  ...(product.price ? { price: product.price } : {}),
-  ...(product.images?.length && product.images[0]
-    ? { images: [product.images[0]] }
-    : {}),
+const mapProductToFormValues = (product: ScrapedProduct | null) => ({
+  name: product?.name ?? '',
+  brand: product?.brand ?? '',
+  url: product?.url ?? '',
+  currency: product?.currency ?? 'CAD',
+  price: product?.price ?? 0,
+  images: product?.images ?? undefined,
 });
 
 const ProductForm = ({
@@ -57,15 +55,7 @@ const ProductForm = ({
 }) => {
   const form = useForm<CreateProduct>({
     resolver: zodResolver(CreateProductSchema),
-    defaultValues: {
-      ...(product ? apiToForm(product) : {}),
-      name: '',
-      brand: '',
-      description: '',
-      url: '',
-      currency: 'CAD',
-      images: [{ url: '' }],
-    },
+    defaultValues: mapProductToFormValues(product),
   });
   const [categories, setCategories] = useState<Category[]>([]);
   useEffect(() => {
@@ -76,7 +66,7 @@ const ProductForm = ({
     if (product) {
       form.reset((prev) => ({
         ...prev,
-        ...apiToForm(product),
+        ...mapProductToFormValues(product),
       }));
     }
   }, [form, product]);
