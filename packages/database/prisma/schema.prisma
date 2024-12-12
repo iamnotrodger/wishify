@@ -51,6 +51,7 @@ model Product {
   userId              String    @db.ObjectId
   plannedPurchaseDate DateTime?
   purchaseDate        DateTime?
+  notes               String?
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
