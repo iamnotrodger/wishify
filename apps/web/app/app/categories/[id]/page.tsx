@@ -37,7 +37,7 @@ export default async function Category({
         <h1 className='text-2xl font-medium tracking-tight'>
           {category?.name}
         </h1>
-        <ProductForm>
+        <ProductForm categoryId={id}>
           <Button className='ml-auto'>
             <Plus />
             Add new item

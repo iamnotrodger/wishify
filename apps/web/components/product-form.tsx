@@ -1,5 +1,6 @@
 'use client';
 
+import { createProductAction } from '@/app/actions';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CreateProduct, CreateProductSchema } from '@repo/api';
 import { Button } from '@repo/ui/components/button';
@@ -14,26 +15,48 @@ import {
 } from '@repo/ui/components/dialog';
 import { Form, FormField, FormItem, FormLabel } from '@repo/ui/components/form';
 import { Input } from '@repo/ui/components/input';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 const formItemClass = 'grid grid-cols-8 items-center gap-3';
 const formInputClass = 'col-span-6';
 const formLabelClass = 'col-span-2 text-right text-sm';
 
-export function ProductForm({ children }: { children: React.ReactNode }) {
+interface ProductFormProps {
+  categoryId?: string;
+  children: React.ReactNode;
+}
+
+export function ProductForm({children, categoryId}: ProductFormProps) {
+  const [open, setOpen] = useState(false)
+  const router = useRouter();
   const form = useForm<CreateProduct>({
     resolver: zodResolver(CreateProductSchema),
     defaultValues: {
+      categoryId,
       currency: 'CAD',
     },
   });
 
-  const onSubmit = (values: CreateProduct) => {
-    console.log(values);
+  const onSubmit = async (values: CreateProduct) => {
+    const [, error] = await createProductAction(values);
+
+    if (error) {
+      // TODO: display the error with toast
+      console.log(error)
+      setOpen(false);
+      return;
+    }
+
+    // TODO: instead of refreshing the page use react-query and mutate the product state
+    form.reset()
+    setOpen(false);
+    router.refresh()
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className='sm:max-w-[500px]'>
         <DialogHeader>
