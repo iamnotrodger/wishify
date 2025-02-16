@@ -10,23 +10,30 @@ import { getProductsActions } from '../app/actions';
 
 const FETCH_LIMIT = 50;
 
-const fetchProducts = async ({ pageParam }: { pageParam?: string }) => {
-  const [products, error] = await getProductsActions({
-    sortBy: 'createdAt',
-    sortDir: 'desc',
-    cursor: pageParam,
-    limit: FETCH_LIMIT,
-  });
-  if (error) throw error;
-  return products;
-};
+const fetchProducts =
+  (category?: string) =>
+  async ({ pageParam }: { pageParam?: string }) => {
+    const [products, error] = await getProductsActions({
+      sortBy: 'createdAt',
+      sortDir: 'desc',
+      category: category,
+      cursor: pageParam,
+      limit: FETCH_LIMIT,
+    });
+    if (error) throw error;
+    return products;
+  };
 
-export default function ProductList() {
+interface ProductListProps {
+  category?: string;
+}
+
+export default function ProductList({ category }: ProductListProps) {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
-      queryKey: ['posts'],
+      queryKey: ['posts', category],
       initialPageParam: undefined,
-      queryFn: fetchProducts,
+      queryFn: fetchProducts(category),
       getNextPageParam: (lastPage) => {
         if (!lastPage || lastPage.length < FETCH_LIMIT) return undefined;
         return lastPage[lastPage.length - 1]?.id;

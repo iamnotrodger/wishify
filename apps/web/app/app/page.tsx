@@ -20,7 +20,7 @@ export default async function App() {
 
   const queryClient = new QueryClient();
   await queryClient.prefetchInfiniteQuery({
-    queryKey: ['posts'],
+    queryKey: ['products'],
     initialPageParam: undefined,
     queryFn: async () => {
       const [products, error] = await getProductsActions({
