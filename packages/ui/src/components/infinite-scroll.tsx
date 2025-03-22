@@ -72,7 +72,6 @@ export default function InfiniteScroll({
         const isObserveTarget = reverse
           ? index === 0
           : index === flattenChildren.length - 1;
-        console.log('is observer target', isObserveTarget);
         const ref = isObserveTarget ? observerRef : null;
         // @ts-ignore ignore ref type
         return React.cloneElement(child, { ref });
