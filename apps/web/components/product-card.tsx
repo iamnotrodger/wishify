@@ -1,6 +1,6 @@
 'use client';
 
-import { updateProductAction } from '@/app/actions';
+import { updateProductAction, UpdateProductProps } from '@/app/actions';
 import { Product } from '@repo/api';
 import { Button } from '@repo/ui/components/button';
 import { cn } from '@repo/ui/lib/utils';
@@ -14,6 +14,7 @@ import {
 import { useState } from 'react';
 import { CategoryIcon } from './category-icon';
 import Link from 'next/link';
+import { useMutation } from '@tanstack/react-query';
 
 const PLACEHOLDER_IMAGE =
   'https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png';
@@ -25,22 +26,35 @@ interface ProductCardProps {
 
 export function ProductCard({
   product,
-  onDelete = () => {},
+  onDelete = () => { },
 }: ProductCardProps) {
   const { id, plannedPurchaseDate, purchaseDate } = product;
   const [isPlanning, setIsPlanning] = useState(plannedPurchaseDate != null);
   const [isBought, setIsBought] = useState(purchaseDate != null);
 
+  const updateProduct = useMutation({
+    mutationKey: ['updateProduct'],
+    mutationFn: async (updateProduct: UpdateProductProps) => {
+      const [updatedProduct, error] = await updateProductAction(updateProduct);
+      if (error) throw error;
+      return updatedProduct;
+    },
+  });
+
   const handlePrimaryClick = () => {
     if (isBought) {
-      updateProductAction(id, { purchaseDate: null });
+      updateProduct.mutate({ id, product: { purchaseDate: null } });
       setIsBought(false);
     } else if (isPlanning) {
-      updateProductAction(id, { purchaseDate: new Date().toISOString() });
+      updateProduct.mutate({
+        id,
+        product: { purchaseDate: new Date().toISOString() },
+      });
       setIsBought(true);
     } else {
-      updateProductAction(id, {
-        plannedPurchaseDate: new Date().toISOString(),
+      updateProduct.mutate({
+        id,
+        product: { plannedPurchaseDate: new Date().toISOString() },
       });
       setIsPlanning(true);
     }
@@ -48,10 +62,13 @@ export function ProductCard({
 
   const handleSecondaryClick = () => {
     if (!isBought && !isPlanning) {
-      updateProductAction(id, { purchaseDate: new Date().toISOString() });
+      updateProduct.mutate({
+        id,
+        product: { purchaseDate: new Date().toISOString() },
+      });
       setIsBought(true);
     } else if (isPlanning && !isBought) {
-      updateProductAction(id, { plannedPurchaseDate: null });
+      updateProduct.mutate({ id, product: { plannedPurchaseDate: null } });
       setIsPlanning(false);
     }
   };

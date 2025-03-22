@@ -22,7 +22,11 @@ export async function getProductsActions(
   return await getProducts(query, session);
 }
 
-export async function updateProductAction(id: string, product: UpdateProduct) {
+export type UpdateProductProps = { id: string; product: UpdateProduct };
+export async function updateProductAction({
+  id,
+  product,
+}: UpdateProductProps): Promise<ProductActionResult<Product>> {
   const session = await auth();
   if (!isAuthenticated(session)) return [null, UNAUTHORIZED_ERROR];
   return await updateProduct(id, product, session);
