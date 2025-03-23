@@ -118,7 +118,7 @@ function ProductMedia({
         className
       )}
     >
-      <Link href={`?selectedProduct=${id}`} scroll={false}>
+      <Link href={`?product_id=${id}`} scroll={false}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           className='h-full w-full object-cover transition-all duration-300'
