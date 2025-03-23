@@ -24,7 +24,7 @@ export const ProductSchema = z.object({
   url: z.string().url({ message: 'Invalid link' }).nullish(),
   name: z.string().min(1, { message: 'Name cannot be empty' }).nullish(),
   brand: z.string().nullish(),
-  price: z.number().min(0, { message: 'Invalid price' }).nullish(),
+  price: z.coerce.number().min(0, { message: 'Invalid price' }).nullish(),
   currency: z
     .string()
     .length(3, { message: 'Must choose a valid currency' })
