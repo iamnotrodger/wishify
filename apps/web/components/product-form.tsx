@@ -15,7 +15,7 @@ import {
 } from '@repo/ui/components/dialog';
 import { Form, FormField, FormItem, FormLabel } from '@repo/ui/components/form';
 import { Input } from '@repo/ui/components/input';
-import { useRouter } from 'next/navigation';
+import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -30,7 +30,7 @@ interface ProductFormProps {
 
 export function ProductForm({ children, categoryId }: ProductFormProps) {
   const [open, setOpen] = useState(false);
-  const router = useRouter();
+
   const form = useForm<CreateProduct>({
     resolver: zodResolver(CreateProductSchema),
     defaultValues: {
@@ -39,20 +39,19 @@ export function ProductForm({ children, categoryId }: ProductFormProps) {
     },
   });
 
-  const onSubmit = async (values: CreateProduct) => {
-    const [, error] = await createProductAction(values);
+  const addProduct = useMutation({
+    mutationKey: ['addProduct'],
+    mutationFn: async (product: CreateProduct) => {
+      const [newProduct, error] = await createProductAction(product);
+      if (error) throw error;
+      return newProduct;
+    },
+  });
 
-    if (error) {
-      // TODO: display the error with toast
-      console.log(error);
-      setOpen(false);
-      return;
-    }
-
-    // TODO: instead of refreshing the page use react-query and mutate the product state
+  const onSubmit = (values: CreateProduct) => {
+    addProduct.mutate(values);
     form.reset();
     setOpen(false);
-    router.refresh();
   };
 
   return (
@@ -117,7 +116,7 @@ export function ProductForm({ children, categoryId }: ProductFormProps) {
                       step='0.01'
                       onChange={field.onChange}
                       className={formInputClass}
-                      value={field.value ?? undefined}
+                      value={field.value ?? ''}
                       placeholder='e.g. 100.00'
                     />
                   </FormItem>

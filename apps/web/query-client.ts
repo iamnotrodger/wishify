@@ -71,10 +71,54 @@ function makeQueryClient() {
     },
   });
 
+  queryClient.setMutationDefaults(['addProduct'], {
+    onSuccess: (product: Product) => {
+      const queryFilter = { queryKey: ['products'], exact: false };
+
+      const previousProducts = queryClient.getQueriesData(queryFilter);
+
+      queryClient.setQueryData(['products', product.id], product);
+      queryClient.setQueryData(
+        ['products'],
+        (old: InfiniteProductsQueryData) => {
+          if (!isInfiniteProductsQueryData(old)) return old;
+
+          const firstPage = old.pages[0]
+            ? [product, ...old.pages[0]]
+            : [product];
+
+          return {
+            ...old,
+            pages: [firstPage, ...old.pages.slice(1)],
+          };
+        }
+      );
+
+      if (product.category) {
+        queryClient.setQueryData(
+          ['products', 'category', product.category.id],
+          (old: InfiniteProductsQueryData) => {
+            if (!isInfiniteProductsQueryData(old)) return old;
+
+            const firstPage = old.pages[0]
+              ? [product, ...old.pages[0]]
+              : [product];
+
+            return {
+              ...old,
+              pages: [firstPage, ...old.pages.slice(1)],
+            };
+          }
+        );
+      }
+
+      return { previousProducts };
+    },
+  });
+
   queryClient.setMutationDefaults(['deleteProduct'], {
     onMutate: async (id: string) => {
       const queryFilter = { queryKey: ['products'], exact: false };
-
 
       await queryClient.cancelQueries(queryFilter);
       const previousProducts = queryClient.getQueriesData(queryFilter);

@@ -33,7 +33,9 @@ export async function updateProductAction({
   return await updateProduct(id, product, session);
 }
 
-export async function createProductAction(product: CreateProduct) {
+export async function createProductAction(
+  product: CreateProduct
+): Promise<ProductActionResult<Product>> {
   const session = await auth();
   if (!isAuthenticated(session)) return [null, UNAUTHORIZED_ERROR];
   return await createProduct(product, session);

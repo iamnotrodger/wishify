@@ -31,7 +31,7 @@ interface ProductListProps {
 export default function ProductList({ category }: ProductListProps) {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
-      queryKey: category ? ['products', category] : ['products'],
+      queryKey: category ? ['products', 'category', category] : ['products'],
       initialPageParam: undefined,
       queryFn: fetchProducts(category),
       getNextPageParam: (lastPage) => {
