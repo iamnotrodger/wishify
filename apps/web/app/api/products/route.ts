@@ -33,7 +33,7 @@ export const GET = auth(async (req) => {
 
   const cursor = products && products[0] ? products[0].id : null;
   return NextResponse.json({ products, cursor });
-});
+}) as any; // TODO: remove this when NextAuth is fixes this
 
 export const POST = auth(async (req) => {
   if (!isAuthenticated(req.auth)) return unauthorizedResponse();
@@ -53,4 +53,4 @@ export const POST = auth(async (req) => {
   }
 
   return NextResponse.json(product);
-});
+}) as any // TODO: remove this when NextAuth is fixes this;

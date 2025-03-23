@@ -19,7 +19,7 @@ export const GET = auth(async (req) => {
   }
 
   return NextResponse.json(categories || []);
-});
+}) as any; // TODO: remove this when NextAuth is fixes this
 
 export const POST = auth(async (req) => {
   if (!isAuthenticated(req.auth)) return unauthorizedResponse();
@@ -41,4 +41,4 @@ export const POST = auth(async (req) => {
   }
 
   return NextResponse.json(category);
-});
+}) as any; // TODO: remove this when NextAuth is fixes this
