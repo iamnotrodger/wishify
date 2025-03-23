@@ -1,6 +1,20 @@
 import { isServer, QueryClient } from '@tanstack/react-query';
-import { updateProductAction, UpdateProductProps } from '@/app/actions';
-import { Product } from '@repo/api';
+import { Product, UpdateProduct } from '@repo/api';
+
+type InfiniteProductsQueryData = {
+  pages: Product[][];
+  pageParams: string[];
+};
+type ProductsQueryData = Product | InfiniteProductsQueryData;
+
+const isInfiniteProductsQueryData = (
+  data: ProductsQueryData
+): data is InfiniteProductsQueryData => {
+  return (
+    (data as InfiniteProductsQueryData).pages !== undefined &&
+    Array.isArray((data as InfiniteProductsQueryData).pages)
+  );
+};
 
 function makeQueryClient() {
   const queryClient = new QueryClient({
@@ -12,28 +26,34 @@ function makeQueryClient() {
   });
 
   queryClient.setMutationDefaults(['updateProduct'], {
-    onMutate: async (updateProduct) => {
+    onMutate: async ({
+      id,
+      product,
+    }: {
+      id: string;
+      product: UpdateProduct;
+    }) => {
       const queryFilter = { queryKey: ['products'], exact: false };
 
       await queryClient.cancelQueries(queryFilter);
       const previousProducts = queryClient.getQueriesData(queryFilter);
 
-      queryClient.setQueriesData(
-        queryFilter,
-        (old?: { pages?: Product[][] }) => {
-          if (!old || !old.pages) return old;
+      queryClient.setQueriesData(queryFilter, (old?: ProductsQueryData) => {
+        if (!old) return old;
+
+        if (isInfiniteProductsQueryData(old)) {
           return {
             ...old,
-            pages: old.pages?.map((page) =>
-              page.map((product) =>
-                product.id === updateProduct.id
-                  ? { ...product, ...updateProduct.product }
-                  : product
-              )
+            pages: old.pages.map((page) =>
+              page.map((p) => (p.id === id ? { ...p, ...product } : p))
             ),
           };
         }
-      );
+
+        if (old.id === id) {
+          return { ...old, ...product };
+        }
+      });
 
       return { previousProducts };
     },
