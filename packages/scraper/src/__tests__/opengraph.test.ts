@@ -1,8 +1,8 @@
 import fs from 'fs';
 import path from 'path';
-import { Product, Scraper } from '../types';
 import { normalizeText } from '../lib/utils';
 import OpenGraphScraper from '../opengraph';
+import { Product, Scraper } from '../types';
 
 describe('OpenGraphScraper', () => {
   const testUrl = 'https://example.com/product';

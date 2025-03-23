@@ -4,6 +4,7 @@ import { updateProductAction, UpdateProductProps } from '@/app/actions';
 import { Product } from '@repo/api';
 import { Button } from '@repo/ui/components/button';
 import { cn } from '@repo/ui/lib/utils';
+import { useMutation } from '@tanstack/react-query';
 import {
   ExternalLink,
   PartyPopper,
@@ -11,10 +12,9 @@ import {
   Tag,
   Trash,
 } from 'lucide-react';
+import Link from 'next/link';
 import { useState } from 'react';
 import { CategoryIcon } from './category-icon';
-import Link from 'next/link';
-import { useMutation } from '@tanstack/react-query';
 
 const PLACEHOLDER_IMAGE =
   'https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png';
@@ -26,7 +26,7 @@ interface ProductCardProps {
 
 export function ProductCard({
   product,
-  onDelete = () => { },
+  onDelete = () => {},
 }: ProductCardProps) {
   const { id, plannedPurchaseDate, purchaseDate } = product;
   const [isPlanning, setIsPlanning] = useState(plannedPurchaseDate != null);

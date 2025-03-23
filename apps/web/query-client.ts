@@ -1,5 +1,5 @@
-import { isServer, QueryClient } from '@tanstack/react-query';
 import { Product, UpdateProduct } from '@repo/api';
+import { QueryClient, isServer } from '@tanstack/react-query';
 
 type InfiniteProductsQueryData = {
   pages: Product[][];

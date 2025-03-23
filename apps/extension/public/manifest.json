@@ -1,56 +1,56 @@
 {
-    "manifest_version": 3,
-    "name": "Wishify Extension",
-    "version": "1.0.0",
-    "action": {
-        "default_popup": "index.html"
-    },
-    "permissions": [
-        "activeTab",
-        "alarms",
-        "background",
-        "bookmarks",
-        "browsingData",
-        "clipboardRead",
-        "clipboardWrite",
-        "contentSettings",
-        "contextMenus",
-        "cookies",
-        "debugger",
-        "declarativeContent",
-        "declarativeNetRequest",
-        "declarativeNetRequestWithHostAccess",
-        "downloads",
-        "history",
-        "identity",
-        "idle",
-        "management",
-        "nativeMessaging",
-        "notifications",
-        "pageCapture",
-        "scripting",
-        "sessions",
-        "storage",
-        "system.cpu",
-        "system.display",
-        "system.memory",
-        "system.storage",
-        "tabCapture",
-        "tabGroups",
-        "tabs",
-        "topSites",
-        "webNavigation",
-        "webRequest"
-      ],
-      "host_permissions": ["<all_urls>"],
-      "content_scripts": [
-        {
-          "matches": ["<all_urls>"],
-          "js": ["contentScript.js"],
-          "run_at": "document_idle"
-        }
-      ],
-      "background": {
-        "service_worker": "background.js"
-      }
+  "manifest_version": 3,
+  "name": "Wishify Extension",
+  "version": "1.0.0",
+  "action": {
+    "default_popup": "index.html"
+  },
+  "permissions": [
+    "activeTab",
+    "alarms",
+    "background",
+    "bookmarks",
+    "browsingData",
+    "clipboardRead",
+    "clipboardWrite",
+    "contentSettings",
+    "contextMenus",
+    "cookies",
+    "debugger",
+    "declarativeContent",
+    "declarativeNetRequest",
+    "declarativeNetRequestWithHostAccess",
+    "downloads",
+    "history",
+    "identity",
+    "idle",
+    "management",
+    "nativeMessaging",
+    "notifications",
+    "pageCapture",
+    "scripting",
+    "sessions",
+    "storage",
+    "system.cpu",
+    "system.display",
+    "system.memory",
+    "system.storage",
+    "tabCapture",
+    "tabGroups",
+    "tabs",
+    "topSites",
+    "webNavigation",
+    "webRequest"
+  ],
+  "host_permissions": ["<all_urls>"],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["contentScript.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  }
 }

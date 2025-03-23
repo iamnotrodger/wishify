@@ -2,9 +2,9 @@
 
 import { auth, isAuthenticated } from '@/auth';
 import {
+  GetProductQuery,
   createProduct,
   getProductById,
-  GetProductQuery,
   getProducts,
   updateProduct,
 } from '@/services/product-service';

@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <main>
       <section className='mx-auto my-6 flex h-[80vh] max-w-md flex-col items-center justify-center gap-2'>
-        <h1 className='text-5xl font-bold text-primary'>Wishify</h1>
+        <h1 className='text-primary text-5xl font-bold'>Wishify</h1>
         <div className='my-2.5 text-center'>
           <h2 className='text-xl font-semibold'>
             Turn your wishlist into a plan

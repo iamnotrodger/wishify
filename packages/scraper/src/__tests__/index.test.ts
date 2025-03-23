@@ -1,6 +1,6 @@
-import { amazonSelectors } from '../amazon';
 import fs from 'fs';
 import path from 'path';
+import { amazonSelectors } from '../amazon';
 import { getProduct } from '../index';
 import { normalizeText } from '../lib/utils';
 

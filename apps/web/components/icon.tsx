@@ -1,6 +1,6 @@
-import dynamic from 'next/dynamic';
 import { LucideProps } from 'lucide-react';
 import dynamicIconImports from 'lucide-react/dynamicIconImports';
+import dynamic from 'next/dynamic';
 
 export type IconName = keyof typeof dynamicIconImports;
 const iconNames = Object.keys(dynamicIconImports);

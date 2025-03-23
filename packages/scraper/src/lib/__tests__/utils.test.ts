@@ -1,5 +1,4 @@
 import { Product } from '../../types';
-import * as cheerio from 'cheerio';
 import { mergeProducts, normalizeText, removeNullAndUndefined } from '../utils';
 
 describe('Utils Module', () => {

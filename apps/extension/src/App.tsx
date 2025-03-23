@@ -1,9 +1,11 @@
-import '@repo/ui/globals.css';
-import './App.css';
-import ProductForm from './components/product-form';
-import { useEffect, useMemo, useState } from 'react';
+import ProductForm from '@/components/product-form';
 import { getProduct } from '@repo/scraper';
 import { Product } from '@repo/scraper/types';
+import { useEffect, useMemo, useState } from 'react';
+
+import '@repo/ui/globals.css';
+import './App.css';
+
 type PageData = {
   url: string;
   html: string;

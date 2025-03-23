@@ -1,11 +1,11 @@
 import * as cheerio from 'cheerio';
 import JsonLdScraper from './jsonld';
+import { parseNum, parseURL } from './lib/parse';
 import { mergeProducts, removeNullAndUndefined } from './lib/utils';
 import MicrodataScraper from './microdata';
 import OpenGraphScraper from './opengraph';
-import { findBySelectors, Selector } from './selector';
+import { Selector, findBySelectors } from './selector';
 import { Product, Scraper } from './types';
-import { parseNum, parseURL } from './lib/parse';
 
 type Selectors = Record<string, Selector[]>;
 

@@ -1,6 +1,6 @@
 import { Box } from 'lucide-react';
-import Icon, { isValidIcon } from './icon';
 import { memo } from 'react';
+import Icon, { isValidIcon } from './icon';
 
 interface CategoryIconProps {
   icon?: string | null;

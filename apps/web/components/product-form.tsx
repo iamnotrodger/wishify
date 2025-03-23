@@ -28,8 +28,8 @@ interface ProductFormProps {
   children: React.ReactNode;
 }
 
-export function ProductForm({children, categoryId}: ProductFormProps) {
-  const [open, setOpen] = useState(false)
+export function ProductForm({ children, categoryId }: ProductFormProps) {
+  const [open, setOpen] = useState(false);
   const router = useRouter();
   const form = useForm<CreateProduct>({
     resolver: zodResolver(CreateProductSchema),
@@ -44,15 +44,15 @@ export function ProductForm({children, categoryId}: ProductFormProps) {
 
     if (error) {
       // TODO: display the error with toast
-      console.log(error)
+      console.log(error);
       setOpen(false);
       return;
     }
 
     // TODO: instead of refreshing the page use react-query and mutate the product state
-    form.reset()
+    form.reset();
     setOpen(false);
-    router.refresh()
+    router.refresh();
   };
 
   return (

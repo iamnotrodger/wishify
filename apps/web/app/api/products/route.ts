@@ -5,8 +5,8 @@ import {
   unknownErrorResponse,
 } from '@/lib/responses';
 import {
-  createProduct,
   GetProductQuerySchema,
+  createProduct,
   getProducts,
 } from '@/services/product-service';
 import { CreateProductSchema } from '@repo/api';

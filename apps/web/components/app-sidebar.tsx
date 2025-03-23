@@ -8,10 +8,10 @@ import {
   SidebarRail,
   SidebarSeparator,
 } from '@repo/ui/components/sidebar';
+import { Settings2 } from 'lucide-react';
+import Link from 'next/link';
 import { NavCategories } from './nav-categories';
 import { NavMenu } from './nav-menu';
-import Link from 'next/link';
-import { Settings2 } from 'lucide-react';
 
 export function AppSidebar() {
   return (

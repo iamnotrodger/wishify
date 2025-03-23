@@ -1,10 +1,6 @@
+import ProductFormLoading from '@/components/product-form-loading';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect, useMemo, useState } from 'react';
-import { useForm } from 'react-hook-form';
-
-import cc from 'currency-codes';
-
-import { CreateProduct, CreateProductSchema, Category } from '@repo/api';
+import { Category, CreateProduct, CreateProductSchema } from '@repo/api';
 import { Product as ScrapedProduct } from '@repo/scraper/types';
 import { Button } from '@repo/ui/components/button';
 import {
@@ -24,9 +20,10 @@ import {
 } from '@repo/ui/components/select';
 import { Textarea } from '@repo/ui/components/textarea';
 import { cn } from '@repo/ui/lib/utils';
+import cc from 'currency-codes';
 import { Plus } from 'lucide-react';
-
-import ProductFormLoading from './product-form-loading';
+import { useEffect, useMemo, useState } from 'react';
+import { useForm } from 'react-hook-form';
 
 const testCategories = [
   { id: '672d791a4b3f63ec36d0a345', name: '❤ Favorites' },

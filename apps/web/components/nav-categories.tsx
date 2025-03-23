@@ -1,5 +1,6 @@
 import { auth, isAuthenticated } from '@/auth';
 import { getCategories } from '@/services/category-service';
+import { Category } from '@repo/api';
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -10,9 +11,8 @@ import {
 } from '@repo/ui/components/sidebar';
 import { Plus } from 'lucide-react';
 import Link from 'next/link';
-import { CategoryIcon } from './category-icon';
-import { Category } from '@repo/api';
 import { CategoryForm } from './category-form';
+import { CategoryIcon } from './category-icon';
 
 export async function NavCategories() {
   const session = await auth();

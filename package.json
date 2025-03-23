@@ -9,6 +9,7 @@
   },
   "devDependencies": {
     "prettier": "^3.4.1",
+    "prettier-plugin-organize-imports": "^4.1.0",
     "prettier-plugin-tailwindcss": "^0.6.9",
     "turbo": "^2.2.3",
     "typescript": "5.4.5"

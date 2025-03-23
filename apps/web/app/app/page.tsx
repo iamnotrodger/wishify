@@ -1,16 +1,16 @@
+import { getProductsActions } from '@/app/actions';
 import { auth, isAuthenticated } from '@/auth';
 import { ProductForm } from '@/components/product-form';
+import ProductList from '@/components/product-list';
 import { Button } from '@repo/ui/components/button';
 import { SidebarTrigger } from '@repo/ui/components/sidebar';
 import {
-  dehydrate,
   HydrationBoundary,
   QueryClient,
+  dehydrate,
 } from '@tanstack/react-query';
 import { Plus } from 'lucide-react';
 import { redirect } from 'next/navigation';
-import { getProductsActions } from '@/app/actions';
-import ProductList from '@/components/product-list';
 
 export default async function App() {
   const session = await auth();

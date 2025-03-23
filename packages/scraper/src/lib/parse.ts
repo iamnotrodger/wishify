@@ -1,6 +1,6 @@
 import { jsonrepair } from 'jsonrepair';
-import { currencies } from './currency';
 import { Json } from '../types';
+import { currencies } from './currency';
 
 export const parseNum = (value?: number | string | null, decimalSep = '.') => {
   try {
