@@ -28,6 +28,7 @@ import { cn } from '@repo/ui/lib/utils';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Loader2 } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
 const PLACEHOLDER_IMAGE =
@@ -59,7 +60,6 @@ export function ProductModal() {
 
   const form = useForm<UpdateProduct>({
     resolver: zodResolver(UpdateProductSchema),
-    values: product ?? {},
   });
 
   const updateProduct = useMutation({
@@ -71,21 +71,30 @@ export function ProductModal() {
     },
   });
 
+  useEffect(() => {
+    if (product) {
+      form.reset(product);
+    }
+  }, [product]);
+
+  const onSubmit = useCallback(
+    async (values: UpdateProduct) => {
+      if (!id || !form.formState.isDirty) {
+        console.log('No changes to save');
+        return;
+      }
+
+      updateProduct.mutate({ id, product: values });
+    },
+    [id, form.formState.isDirty]
+  );
+
   const handleClose = () => {
     form.reset();
 
     const params = new URLSearchParams(Array.from(searchParams.entries()));
     params.delete('product_id');
     router.push(`${pathname}?${params.toString()}`, { scroll: false });
-  };
-
-  const onSubmit = async (values: UpdateProduct) => {
-    if (!id || !form.formState.isDirty) {
-      console.log('No changes to save');
-      return;
-    }
-
-    updateProduct.mutate({ id, product: values });
   };
 
   return (
@@ -217,7 +226,11 @@ export function ProductModal() {
               <DialogFooter className='mt-auto'>
                 <Button
                   type='submit'
-                  disabled={!product || updateProduct.isPending}
+                  disabled={
+                    !product ||
+                    updateProduct.isPending ||
+                    !form.formState.isValid
+                  }
                 >
                   <Loader2
                     className={cn(
