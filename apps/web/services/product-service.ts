@@ -26,6 +26,7 @@ const PRODUCT_FIELDS = {
   purchaseDate: true,
   createdAt: true,
   updatedAt: true,
+  deletedAt: true,
 } satisfies Prisma.ProductSelect;
 
 export type ProductDatabaseSchema = Prisma.ProductGetPayload<{
@@ -64,7 +65,7 @@ export async function getProducts(
     prisma.product.findMany({
       where: {
         userId: user.id,
-        deletedAt: undefined,
+        deletedAt: { isSet: false },
         ...(query.category ? { categoryId: query.category } : {}),
       },
       orderBy: [
@@ -100,7 +101,7 @@ export async function getProductById(
 
   const [data, error] = await safeAsync(
     prisma.product.findFirst({
-      where: { id, userId: user.id, deletedAt: undefined },
+      where: { id, userId: user.id, deletedAt: { isSet: false } },
       select: PRODUCT_FIELDS,
     })
   );

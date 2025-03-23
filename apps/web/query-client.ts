@@ -66,6 +66,49 @@ function makeQueryClient() {
           productQueryData[1]
         );
       });
+
+      console.log(err);
+    },
+  });
+
+  queryClient.setMutationDefaults(['deleteProduct'], {
+    onMutate: async (id: string) => {
+      const queryFilter = { queryKey: ['products'], exact: false };
+
+
+      await queryClient.cancelQueries(queryFilter);
+      const previousProducts = queryClient.getQueriesData(queryFilter);
+
+      queryClient.removeQueries({ queryKey: ['products', id] });
+
+      queryClient.setQueriesData(queryFilter, (old?: ProductsQueryData) => {
+        if (!old) return old;
+
+        if (isInfiniteProductsQueryData(old)) {
+          return {
+            ...old,
+            pages: old.pages.map((page) => page.filter((p) => p.id !== id)),
+          };
+        }
+      });
+
+      return { previousProducts };
+    },
+
+    onError: (err, variables, context: any) => {
+      if (!context && !context.previousProducts) return;
+      context.previousProducts.forEach((productQueryData: any[]) => {
+        queryClient.setQueriesData(
+          { queryKey: productQueryData[0] },
+          productQueryData[1]
+        );
+      });
+
+      console.log(err);
+    },
+
+    onSettled: (data, error, id) => {
+      queryClient.invalidateQueries({ queryKey: ['products', id] });
     },
   });
 

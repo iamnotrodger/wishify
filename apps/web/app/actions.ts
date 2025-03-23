@@ -4,6 +4,7 @@ import { auth, isAuthenticated } from '@/auth';
 import {
   GetProductQuery,
   createProduct,
+  deleteProduct,
   getProductById,
   getProducts,
   updateProduct,
@@ -44,4 +45,10 @@ export async function getProductByIdAction(
   const session = await auth();
   if (!isAuthenticated(session)) return [null, UNAUTHORIZED_ERROR];
   return await getProductById(id, session);
+}
+
+export async function deleteProductAction(id: string): Promise<Error | null> {
+  const session = await auth();
+  if (!isAuthenticated(session)) return UNAUTHORIZED_ERROR;
+  return await deleteProduct(id, session);
 }

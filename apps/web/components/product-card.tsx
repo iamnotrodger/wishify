@@ -1,6 +1,10 @@
 'use client';
 
-import { updateProductAction, UpdateProductProps } from '@/app/actions';
+import {
+  deleteProductAction,
+  updateProductAction,
+  UpdateProductProps,
+} from '@/app/actions';
 import { Product } from '@repo/api';
 import { Button } from '@repo/ui/components/button';
 import { cn } from '@repo/ui/lib/utils';
@@ -21,13 +25,9 @@ const PLACEHOLDER_IMAGE =
 
 interface ProductCardProps {
   product: Product;
-  onDelete?: () => void;
 }
 
-export function ProductCard({
-  product,
-  onDelete = () => {},
-}: ProductCardProps) {
+export function ProductCard({ product }: ProductCardProps) {
   const { id, plannedPurchaseDate, purchaseDate } = product;
   const [isPlanning, setIsPlanning] = useState(plannedPurchaseDate != null);
   const [isBought, setIsBought] = useState(purchaseDate != null);
@@ -79,7 +79,6 @@ export function ProductCard({
         product={product}
         isPlanning={isPlanning}
         isBought={isBought}
-        onDelete={onDelete}
         className='flex-[1_1_100%] transition-all duration-300 group-hover:flex-[0_0_50%]'
       />
       <ProductContent product={product} className='flex flex-col gap-1' />
@@ -99,7 +98,6 @@ interface ProductMediaProps {
   product: Product;
   isPlanning: boolean;
   isBought: boolean;
-  onDelete: () => void;
   className?: string;
 }
 
@@ -107,7 +105,6 @@ function ProductMedia({
   product,
   isPlanning,
   isBought,
-  onDelete,
   className,
 }: ProductMediaProps) {
   const { id, images, brand, name, url } = product;
@@ -131,7 +128,7 @@ function ProductMedia({
         />
       </Link>
       <ProductTag isPlanning={isPlanning} isBought={isBought} />
-      <ProductMediaActions url={url} onDelete={onDelete} />
+      <ProductMediaActions url={url} product={product} />
     </div>
   );
 }
@@ -163,10 +160,19 @@ function ProductTag({ isPlanning, isBought }: ProductTagProps) {
 
 interface ProductMediaActionsProps {
   url?: string | null;
-  onDelete: () => void;
+  product: Product;
 }
 
-function ProductMediaActions({ url, onDelete }: ProductMediaActionsProps) {
+function ProductMediaActions({ url, product }: ProductMediaActionsProps) {
+  const deleteProduct = useMutation({
+    mutationKey: ['deleteProduct'],
+    mutationFn: async (id: string) => {
+      console.log('deleting product', id);
+      const error = await deleteProductAction(id);
+      if (error) throw error;
+    },
+  });
+
   return (
     <div className='invisible absolute right-3 top-3 flex flex-col gap-2 opacity-0 transition-opacity duration-300 group-hover:visible group-hover/media:opacity-100'>
       <a href={url ?? ''} className={url ? '' : 'hidden'}>
@@ -178,7 +184,7 @@ function ProductMediaActions({ url, onDelete }: ProductMediaActionsProps) {
         size='icon'
         variant='destructive'
         className='rounded-full'
-        onClick={onDelete}
+        onClick={() => deleteProduct.mutate(product.id)}
       >
         <Trash />
       </Button>
