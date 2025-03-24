@@ -1,6 +1,7 @@
 'use server';
 
 import { auth, isAuthenticated } from '@/auth';
+import { createCategory, getCategories } from '@/services/category-service';
 import {
   GetProductQuery,
   createProduct,
@@ -9,9 +10,16 @@ import {
   getProducts,
   updateProduct,
 } from '@/services/product-service';
-import { CreateProduct, Product, UpdateProduct } from '@repo/api';
+import {
+  Category,
+  CreateCategory,
+  CreateProduct,
+  Product,
+  UpdateProduct,
+} from '@repo/api';
 
 type ProductActionResult<T = Product> = [T | null, Error | null];
+type CategoryActionResult<T = Category> = [T | null, Error | null];
 
 const UNAUTHORIZED_ERROR = new Error('Unauthorized');
 
@@ -53,4 +61,20 @@ export async function deleteProductAction(id: string): Promise<Error | null> {
   const session = await auth();
   if (!isAuthenticated(session)) return UNAUTHORIZED_ERROR;
   return await deleteProduct(id, session);
+}
+
+export async function getCategoriesAction(): Promise<
+  CategoryActionResult<Category[]>
+> {
+  const session = await auth();
+  if (!isAuthenticated(session)) return [null, UNAUTHORIZED_ERROR];
+  return await getCategories(session);
+}
+
+export async function createCategoriesAction(
+  category: CreateCategory
+): Promise<CategoryActionResult<Category>> {
+  const session = await auth();
+  if (!isAuthenticated(session)) return [null, UNAUTHORIZED_ERROR];
+  return await createCategory(category, session);
 }
