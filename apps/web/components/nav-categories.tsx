@@ -1,6 +1,6 @@
-import { auth, isAuthenticated } from '@/auth';
-import { getCategories } from '@/services/category-service';
-import { Category } from '@repo/api';
+'use client';
+
+import { getCategoriesAction } from '@/app/actions';
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -9,18 +9,21 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@repo/ui/components/sidebar';
+import { useQuery } from '@tanstack/react-query';
 import { Plus } from 'lucide-react';
 import Link from 'next/link';
 import { CategoryForm } from './category-form';
 import { CategoryIcon } from './category-icon';
 
-export async function NavCategories() {
-  const session = await auth();
-  let categories: Category[] | null = [];
-
-  if (isAuthenticated(session)) {
-    [categories] = await getCategories(session);
-  }
+export function NavCategories() {
+  const { data: categories } = useQuery({
+    queryKey: ['categories'],
+    queryFn: async () => {
+      const [categories, error] = await getCategoriesAction();
+      if (error) throw error;
+      return categories;
+    },
+  });
 
   return (
     <SidebarGroup>
