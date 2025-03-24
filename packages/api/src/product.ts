@@ -66,6 +66,9 @@ export const UpdateProductSchema = ProductSchema.omit({
 export const CreateCategorySchema = CategorySchema.omit({
   id: true,
 });
+export const UpdateCategorySchema = CategorySchema.omit({
+  id: true,
+});
 
 export type Category = z.infer<typeof CategorySchema>;
 export type Image = z.infer<typeof ImageSchema>;
@@ -73,3 +76,4 @@ export type Product = z.infer<typeof ProductSchema>;
 export type CreateProduct = z.infer<typeof CreateProductSchema>;
 export type UpdateProduct = z.infer<typeof UpdateProductSchema>;
 export type CreateCategory = z.infer<typeof CreateCategorySchema>;
+export type UpdateCategory = z.infer<typeof UpdateCategorySchema>;
