@@ -53,4 +53,4 @@ export const POST = auth(async (req) => {
   }
 
   return NextResponse.json(product);
-}) as any // TODO: remove this when NextAuth is fixes this;
+}) as any; // TODO: remove this when NextAuth is fixes this;

@@ -84,7 +84,7 @@ export function ProductModal() {
         return;
       }
 
-      updateProduct.mutate({ id, product: values });
+      await updateProduct.mutateAsync({ id, product: values });
     },
     [id, form.formState.isDirty]
   );

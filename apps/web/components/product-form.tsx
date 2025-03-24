@@ -48,10 +48,10 @@ export function ProductForm({ children, categoryId }: ProductFormProps) {
     },
   });
 
-  const onSubmit = (values: CreateProduct) => {
-    addProduct.mutate(values);
-    form.reset();
+  const onSubmit = async (values: CreateProduct) => {
+    await addProduct.mutateAsync(values);
     setOpen(false);
+    form.reset();
   };
 
   return (
@@ -65,102 +65,99 @@ export function ProductForm({ children, categoryId }: ProductFormProps) {
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <div className='flex flex-col gap-3 pb-4'>
-              <FormField
-                control={form.control}
-                name='name'
-                render={({ field }) => (
-                  <FormItem className={formItemClass}>
-                    <FormLabel className={formLabelClass}>
-                      Product Name<span className='text-red-500'>*</span>
-                    </FormLabel>
-                    <Input
-                      className={formInputClass}
-                      onChange={field.onChange}
-                      value={field.value ?? ''}
-                      placeholder='e.g. Wide Jeans'
-                      spellCheck={false}
-                    />
-                  </FormItem>
-                )}
-              />
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className='flex flex-col gap-3 pb-4'
+          >
+            <FormField
+              control={form.control}
+              name='name'
+              render={({ field }) => (
+                <FormItem className={formItemClass}>
+                  <FormLabel className={formLabelClass}>
+                    Product Name<span className='text-red-500'>*</span>
+                  </FormLabel>
+                  <Input
+                    className={formInputClass}
+                    onChange={field.onChange}
+                    value={field.value ?? ''}
+                    placeholder='e.g. Wide Jeans'
+                    spellCheck={false}
+                  />
+                </FormItem>
+              )}
+            />
 
-              <FormField
-                control={form.control}
-                name='brand'
-                render={({ field }) => (
-                  <FormItem className={formItemClass}>
-                    <FormLabel className={formLabelClass}>Brand</FormLabel>
-                    <Input
-                      className={formInputClass}
-                      onChange={field.onChange}
-                      value={field.value ?? ''}
-                      placeholder='e.g. Biggie & Co.'
-                      spellCheck={false}
-                    />
-                  </FormItem>
-                )}
-              />
+            <FormField
+              control={form.control}
+              name='brand'
+              render={({ field }) => (
+                <FormItem className={formItemClass}>
+                  <FormLabel className={formLabelClass}>Brand</FormLabel>
+                  <Input
+                    className={formInputClass}
+                    onChange={field.onChange}
+                    value={field.value ?? ''}
+                    placeholder='e.g. Biggie & Co.'
+                    spellCheck={false}
+                  />
+                </FormItem>
+              )}
+            />
 
-              <FormField
-                control={form.control}
-                name='price'
-                render={({ field }) => (
-                  <FormItem className={formItemClass}>
-                    <FormLabel className={formLabelClass}>
-                      Price<span className='text-red-500'>*</span>
-                    </FormLabel>
-                    <Input
-                      type='number'
-                      step='0.01'
-                      onChange={field.onChange}
-                      className={formInputClass}
-                      value={field.value ?? ''}
-                      placeholder='e.g. 100.00'
-                    />
-                  </FormItem>
-                )}
-              />
+            <FormField
+              control={form.control}
+              name='price'
+              render={({ field }) => (
+                <FormItem className={formItemClass}>
+                  <FormLabel className={formLabelClass}>
+                    Price<span className='text-red-500'>*</span>
+                  </FormLabel>
+                  <Input
+                    type='number'
+                    step='0.01'
+                    onChange={field.onChange}
+                    className={formInputClass}
+                    value={field.value ?? ''}
+                    placeholder='e.g. 100.00'
+                  />
+                </FormItem>
+              )}
+            />
 
-              <FormField
-                control={form.control}
-                name='images'
-                render={({ field }) => (
-                  <FormItem className={formItemClass}>
-                    <FormLabel className={formLabelClass}>Image URL</FormLabel>
-                    <Input
-                      className={formInputClass}
-                      onChange={(e) =>
-                        field.onChange([{ url: e.target.value }])
-                      }
-                      value={field.value?.[0]?.url ?? ''}
-                      placeholder='Insert image url here'
-                      spellCheck={false}
-                    />
-                  </FormItem>
-                )}
-              />
+            <FormField
+              control={form.control}
+              name='images'
+              render={({ field }) => (
+                <FormItem className={formItemClass}>
+                  <FormLabel className={formLabelClass}>Image URL</FormLabel>
+                  <Input
+                    className={formInputClass}
+                    onChange={(e) => field.onChange([{ url: e.target.value }])}
+                    value={field.value?.[0]?.url ?? ''}
+                    placeholder='Insert image url here'
+                    spellCheck={false}
+                  />
+                </FormItem>
+              )}
+            />
 
-              <FormField
-                control={form.control}
-                name='url'
-                render={({ field }) => (
-                  <FormItem className={formItemClass}>
-                    <FormLabel className={formLabelClass}>
-                      Product URL
-                    </FormLabel>
-                    <Input
-                      className={formInputClass}
-                      onChange={field.onChange}
-                      value={field.value ?? ''}
-                      placeholder='Insert product url here'
-                      spellCheck={false}
-                    />
-                  </FormItem>
-                )}
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name='url'
+              render={({ field }) => (
+                <FormItem className={formItemClass}>
+                  <FormLabel className={formLabelClass}>Product URL</FormLabel>
+                  <Input
+                    className={formInputClass}
+                    onChange={field.onChange}
+                    value={field.value ?? ''}
+                    placeholder='Insert product url here'
+                    spellCheck={false}
+                  />
+                </FormItem>
+              )}
+            />
             <DialogFooter>
               <Button type='submit'>Add item</Button>
             </DialogFooter>
