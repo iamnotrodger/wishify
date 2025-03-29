@@ -6,6 +6,16 @@ import {
   UpdateProductProps,
 } from '@/app/actions';
 import { Product } from '@repo/api';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@repo/ui/components/alert-dialog';
 import { Button } from '@repo/ui/components/button';
 import { cn } from '@repo/ui/lib/utils';
 import { useMutation } from '@tanstack/react-query';
@@ -167,7 +177,6 @@ function ProductMediaActions({ url, product }: ProductMediaActionsProps) {
   const deleteProduct = useMutation({
     mutationKey: ['deleteProduct'],
     mutationFn: async (id: string) => {
-      console.log('deleting product', id);
       const error = await deleteProductAction(id);
       if (error) throw error;
     },
@@ -180,14 +189,29 @@ function ProductMediaActions({ url, product }: ProductMediaActionsProps) {
           <ExternalLink />
         </Button>
       </a>
-      <Button
-        size='icon'
-        variant='destructive'
-        className='rounded-full'
-        onClick={() => deleteProduct.mutate(product.id)}
-      >
-        <Trash />
-      </Button>
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button size='icon' variant='destructive' className='rounded-full'>
+            <Trash />
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction asChild>
+              <Button
+                variant='destructive'
+                onClick={() => deleteProduct.mutate(product.id)}
+              >
+                Continue
+              </Button>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
