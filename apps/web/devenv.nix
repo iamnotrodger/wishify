@@ -1,7 +1,7 @@
 { pkgs, ... }: {
   languages.javascript = {
     enable = true;
-    package = pkgs.nodejs_20;
+    package = pkgs.nodejs_24;
   };
 
   scripts = {
