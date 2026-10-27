@@ -7,7 +7,7 @@ import {
 import { createCategory, getCategories } from '@/services/category-service';
 import { CreateCategorySchema } from '@repo/api';
 import { NextResponse } from 'next/server';
-import { fromZodError } from 'zod-validation-error';
+import { fromZodError } from 'zod-validation-error/v3';
 
 export const GET = auth(async (req) => {
   if (!isAuthenticated(req.auth)) return unauthorizedResponse();

@@ -1,35 +1,17 @@
-const { resolve } = require('node:path');
+import nextVitals from 'eslint-config-next/core-web-vitals';
+import nextTs from 'eslint-config-next/typescript';
+import prettier from 'eslint-config-prettier';
+import globals from 'globals';
+import base from './base.js';
 
-const project = resolve(process.cwd(), 'tsconfig.json');
-
-/** @type {import("eslint").Linter.Config} */
-module.exports = {
-  extends: [
-    'eslint:recommended',
-    'prettier',
-    require.resolve('@vercel/style-guide/eslint/next'),
-    'turbo',
-  ],
-  globals: {
-    React: true,
-    JSX: true,
-  },
-  env: {
-    node: true,
-    browser: true,
-  },
-  plugins: ['only-warn'],
-  settings: {
-    'import/resolver': {
-      typescript: {
-        project,
-      },
+export default [
+  ...base,
+  ...nextVitals,
+  ...nextTs,
+  prettier,
+  {
+    languageOptions: {
+      globals: { ...globals.browser, ...globals.node },
     },
   },
-  ignorePatterns: [
-    // Ignore dotfiles
-    '.*.js',
-    'node_modules/',
-  ],
-  overrides: [{ files: ['*.js?(x)', '*.ts?(x)'] }],
-};
+];
