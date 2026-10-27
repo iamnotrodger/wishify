@@ -1,19 +1,20 @@
-import prettier from 'eslint-config-prettier';
+import pluginReactHooks from 'eslint-plugin-react-hooks';
 import globals from 'globals';
-import tseslint from 'typescript-eslint';
-import base from './base.js';
+import { config as baseConfig } from './base.js';
 
-/*
- * For internal (bundled by their consumer) libraries that utilize React.
- */
-export default [
-  ...base,
-  prettier,
+/**
+ * A custom ESLint configuration for libraries that use React.
+ *
+ * @type {import("eslint").Linter.Config[]} */
+export const config = [
+  ...baseConfig,
   {
-    files: ['**/*.{ts,tsx}'],
     languageOptions: {
-      parser: tseslint.parser,
-      globals: globals.browser,
+      globals: {
+        ...globals.serviceworker,
+        ...globals.browser,
+      },
     },
   },
+  pluginReactHooks.configs.flat.recommended,
 ];
