@@ -1,6 +1,5 @@
 import ProductForm from '@/components/product-form';
 import { getProduct } from '@repo/scraper';
-import { Product } from '@repo/scraper/types';
 import { useEffect, useMemo, useState } from 'react';
 
 import '@repo/ui/globals.css';
@@ -12,31 +11,24 @@ type PageData = {
 };
 
 function App() {
-  const [pageData, setPageData] = useState<PageData>({ url: '', html: '' });
-  const [isLoading, setIsLoading] = useState(true);
+  const [pageData, setPageData] = useState<PageData | null>(null);
 
   useEffect(() => {
-    setIsLoading(true);
     // Request data from the background script
     chrome?.runtime?.sendMessage({ type: 'GET_PAGE_DATA' }, (response) => {
       if (response?.payload?.url) {
         setPageData(response.payload);
       }
     });
-
-    if (!chrome?.runtime?.id) {
-      setIsLoading(false);
-    }
   }, []);
 
-  const [product, error] = useMemo(() => {
-    const { html, url } = pageData;
-    let productFetched: [Product | null, Error | null] = [null, null];
-    productFetched = getProduct(url, html);
+  // Outside the extension there is no background script to wait for.
+  const isLoading = !!chrome?.runtime?.id && !pageData;
 
-    setIsLoading(false);
-    return productFetched;
-  }, [pageData]);
+  const [product, error] = useMemo(
+    () => (pageData ? getProduct(pageData.url, pageData.html) : [null, null]),
+    [pageData]
+  );
 
   if (error) {
     console.log(error);
