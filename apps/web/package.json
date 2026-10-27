@@ -9,31 +9,31 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@auth/prisma-adapter": "^2.7.3",
+    "@auth/prisma-adapter": "^2.11.3",
     "@repo/api": "*",
     "@repo/db": "*",
     "@repo/scraper": "*",
     "@repo/ui": "*",
-    "@tanstack/react-query": "^5.69.0",
-    "bson": "^6.9.0",
-    "lucide-react": "^0.483.0",
-    "next": "^15.2.3",
-    "next-auth": "^5.0.0-beta.25",
-    "react": "^19.0.0-rc.1",
-    "react-dom": "^19.0.0-rc.1",
-    "react-hook-form": "^7.54.0",
-    "zod": "^3.23.8",
-    "zod-validation-error": "^3.4.0"
+    "@tanstack/react-query": "^5.105.0",
+    "bson": "^6.10.4",
+    "lucide-react": "^0.577.0",
+    "next": "^15.5.28",
+    "next-auth": "^5.0.0-beta.32",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "react-hook-form": "^7.91.0",
+    "zod": "^3.25.76",
+    "zod-validation-error": "^3.5.4"
   },
   "devDependencies": {
-    "@next/eslint-plugin-next": "^14.2.6",
+    "@next/eslint-plugin-next": "^14.2.35",
     "@repo/eslint-config": "*",
     "@repo/typescript-config": "*",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "^8",
-    "eslint-config-next": "14.2.6",
-    "typescript": "5.4.5"
+    "eslint-config-next": "14.2.35",
+    "typescript": "5.9.3"
   }
 }
