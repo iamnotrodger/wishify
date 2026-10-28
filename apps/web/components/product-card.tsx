@@ -156,7 +156,7 @@ function ProductTag({ isPlanning, isBought }: ProductTagProps) {
   return (
     <div
       dir='rtl'
-      className='bg-muted absolute left-0 top-3 flex items-center gap-2 rounded-s-lg p-3 shadow'
+      className='bg-muted absolute left-0 top-3 flex items-center gap-2 rounded-s-lg p-3 shadow-sm'
     >
       <span className='text-sm'>{isBought ? 'Bought' : 'Plan to buy'}</span>
       {isBought ? (

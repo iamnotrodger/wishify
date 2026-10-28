@@ -99,7 +99,7 @@ const ProductForm = ({
               render={({ field }) => (
                 <FormItem
                   className={cn(
-                    'bg-muted max-h-[116px] min-h-[116px] min-w-[116px] max-w-[116px] rounded-md border shadow-sm',
+                    'bg-muted max-h-[116px] min-h-[116px] min-w-[116px] max-w-[116px] rounded-md border shadow-xs',
                     field.value?.length && 'border-gray-200'
                   )}
                 >
