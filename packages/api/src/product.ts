@@ -4,7 +4,11 @@ const LiteralSchema = z.union([z.string(), z.number(), z.boolean(), z.null()]);
 type Literal = z.infer<typeof LiteralSchema>;
 export type Json = Literal | { [key: string]: Json } | Json[];
 export const JsonSchema: z.ZodType<Json> = z.lazy(() =>
-  z.union([LiteralSchema, z.array(JsonSchema), z.record(JsonSchema)])
+  z.union([
+    LiteralSchema,
+    z.array(JsonSchema),
+    z.record(z.string(), JsonSchema),
+  ])
 );
 
 export const CategorySchema = z.object({
@@ -14,17 +18,20 @@ export const CategorySchema = z.object({
 });
 
 export const ImageSchema = z.object({
-  url: z.string().url(),
+  url: z.url(),
   width: z.number().int().nullish(),
   height: z.number().int().nullish(),
 });
 
 export const ProductSchema = z.object({
   id: z.string(),
-  url: z.string().url({ message: 'Invalid link' }).nullish(),
+  url: z.url({ message: 'Invalid link' }).nullish(),
   name: z.string().min(1, { message: 'Name cannot be empty' }).nullish(),
   brand: z.string().nullish(),
-  price: z.coerce.number().min(0, { message: 'Invalid price' }).nullish(),
+  price: z.coerce
+    .number<string | number>()
+    .min(0, { message: 'Invalid price' })
+    .nullish(),
   currency: z
     .string()
     .length(3, { message: 'Must choose a valid currency' })
@@ -36,12 +43,12 @@ export const ProductSchema = z.object({
   images: z.array(ImageSchema).optional(),
   category: CategorySchema.nullish(),
   metadata: JsonSchema.nullish(),
-  plannedPurchaseDate: z.string().datetime({ offset: true }).nullish(),
-  purchaseDate: z.string().datetime({ offset: true }).nullish(),
+  plannedPurchaseDate: z.iso.datetime({ offset: true }).nullish(),
+  purchaseDate: z.iso.datetime({ offset: true }).nullish(),
   notes: z.string().nullish(),
 
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
+  createdAt: z.iso.datetime(),
+  updatedAt: z.iso.datetime(),
 });
 
 export const CreateProductSchema = ProductSchema.omit({
@@ -52,7 +59,9 @@ export const CreateProductSchema = ProductSchema.omit({
 }).extend({
   categoryId: z.string().nullish(),
   name: z.string().min(1, { message: 'Name cannot be empty' }),
-  price: z.coerce.number().min(0, { message: 'Invalid price' }),
+  price: z.coerce
+    .number<string | number>()
+    .min(0, { message: 'Invalid price' }),
   currency: z.string().length(3, { message: 'Must choose a valid currency' }),
 });
 export const UpdateProductSchema = ProductSchema.omit({
@@ -75,5 +84,7 @@ export type Image = z.infer<typeof ImageSchema>;
 export type Product = z.infer<typeof ProductSchema>;
 export type CreateProduct = z.infer<typeof CreateProductSchema>;
 export type UpdateProduct = z.infer<typeof UpdateProductSchema>;
+export type CreateProductInput = z.input<typeof CreateProductSchema>;
+export type UpdateProductInput = z.input<typeof UpdateProductSchema>;
 export type CreateCategory = z.infer<typeof CreateCategorySchema>;
 export type UpdateCategory = z.infer<typeof UpdateCategorySchema>;

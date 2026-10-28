@@ -11,7 +11,7 @@ import {
 } from '@/services/product-service';
 import { CreateProductSchema } from '@repo/api';
 import { NextResponse } from 'next/server';
-import { fromZodError } from 'zod-validation-error/v3';
+import { fromZodError } from 'zod-validation-error';
 
 export const GET = auth(async (req) => {
   if (!isAuthenticated(req.auth)) return unauthorizedResponse();

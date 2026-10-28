@@ -1,6 +1,11 @@
 import ProductFormLoading from '@/components/product-form-loading';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Category, CreateProduct, CreateProductSchema } from '@repo/api';
+import {
+  Category,
+  CreateProduct,
+  CreateProductInput,
+  CreateProductSchema,
+} from '@repo/api';
 import { Product as ScrapedProduct } from '@repo/scraper/types';
 import { Button } from '@repo/ui/components/button';
 import {
@@ -50,7 +55,7 @@ const ProductForm = ({
   product: ScrapedProduct | null;
   isLoading: boolean;
 }) => {
-  const form = useForm<CreateProduct>({
+  const form = useForm<CreateProductInput, unknown, CreateProduct>({
     resolver: zodResolver(CreateProductSchema),
     defaultValues: mapProductToFormValues(product),
   });

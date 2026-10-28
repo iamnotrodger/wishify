@@ -2,10 +2,10 @@
   "name": "@repo/api",
   "version": "0.0.0",
   "private": true,
-  "dependencies": {
-    "zod": "^3.25.76"
-  },
   "exports": {
     ".": "./src/product.ts"
+  },
+  "dependencies": {
+    "zod": "^4.6.7"
   }
 }

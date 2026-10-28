@@ -6,7 +6,11 @@ import {
   UpdateProductProps,
 } from '@/app/actions';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { UpdateProduct, UpdateProductSchema } from '@repo/api';
+import {
+  UpdateProduct,
+  UpdateProductInput,
+  UpdateProductSchema,
+} from '@repo/api';
 import { Button } from '@repo/ui/components/button';
 import {
   Dialog,
@@ -58,7 +62,7 @@ export function ProductModal() {
     enabled: !!id,
   });
 
-  const form = useForm<UpdateProduct>({
+  const form = useForm<UpdateProductInput, unknown, UpdateProduct>({
     resolver: zodResolver(UpdateProductSchema),
   });
 

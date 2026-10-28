@@ -2,7 +2,11 @@
 
 import { createProductAction } from '@/app/actions';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { CreateProduct, CreateProductSchema } from '@repo/api';
+import {
+  CreateProduct,
+  CreateProductInput,
+  CreateProductSchema,
+} from '@repo/api';
 import { Button } from '@repo/ui/components/button';
 import {
   Dialog,
@@ -31,7 +35,7 @@ interface ProductFormProps {
 export function ProductForm({ children, categoryId }: ProductFormProps) {
   const [open, setOpen] = useState(false);
 
-  const form = useForm<CreateProduct>({
+  const form = useForm<CreateProductInput, unknown, CreateProduct>({
     resolver: zodResolver(CreateProductSchema),
     defaultValues: {
       categoryId,

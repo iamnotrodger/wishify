@@ -46,7 +46,7 @@ export const GetProductQuerySchema = z.object({
     .optional()
     .pipe(
       z.coerce
-        .number()
+        .number<string | undefined>()
         .int()
         .min(1)
         .transform((x) => Math.min(x, 100))
