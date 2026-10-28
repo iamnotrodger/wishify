@@ -15,7 +15,7 @@
     "typescript": "5.9.3"
   },
   "engines": {
-    "node": ">=24"
+    "node": ">=26"
   },
   "packageManager": "npm@10.8.1",
   "workspaces": [
@@ -27,5 +27,14 @@
   },
   "overrides": {
     "@prisma/client": "^6.19.3"
+  },
+  "allowScripts": {
+    "prisma@6.19.3": true,
+    "@prisma/engines@6.19.3": true,
+    "@prisma/client@6.19.3": true,
+    "@parcel/watcher": false,
+    "@swc/core": false,
+    "unrs-resolver": false,
+    "fsevents": false
   }
 }
