@@ -203,6 +203,7 @@ export async function deleteProduct(id: string, session: AuthenticatedSession) {
 
 const transformProduct = (product: ProductDatabaseSchema): Product => ({
   ...product,
+  price: product.price?.toNumber(),
   images: product.images as Image[],
   metadata: product.metadata as Json,
   purchaseDate: product.purchaseDate?.toISOString(),
