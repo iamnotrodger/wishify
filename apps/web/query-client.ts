@@ -1,13 +1,11 @@
-import { Product, UpdateCategory, UpdateProduct } from '@repo/api';
-import { Category } from '@repo/db';
-import { QueryClient, isServer } from '@tanstack/react-query';
+import { Product, UpdateProduct } from '@repo/api';
+import { QueryClient, environmentManager } from '@tanstack/react-query';
 
 type InfiniteProductsQueryData = {
   pages: Product[][];
   pageParams: string[];
 };
 type ProductsQueryData = Product | InfiniteProductsQueryData;
-type CategoryQueryData = Category[];
 
 const isInfiniteProductsQueryData = (
   data?: ProductsQueryData
@@ -28,6 +26,11 @@ function makeQueryClient() {
     },
   });
 
+  const productsFilter = { queryKey: ['products'] };
+  const invalidateProducts = () =>
+    queryClient.invalidateQueries(productsFilter);
+
+  // Optimistic so the card toggles (planned/bought) respond instantly.
   queryClient.setMutationDefaults(['updateProduct'], {
     onMutate: async ({
       id,
@@ -36,12 +39,10 @@ function makeQueryClient() {
       id: string;
       product: UpdateProduct;
     }) => {
-      const queryFilter = { queryKey: ['products'], exact: false };
+      await queryClient.cancelQueries(productsFilter);
+      const previousData = queryClient.getQueriesData(productsFilter);
 
-      await queryClient.cancelQueries(queryFilter);
-      const previousData = queryClient.getQueriesData(queryFilter);
-
-      queryClient.setQueriesData(queryFilter, (old?: ProductsQueryData) => {
+      queryClient.setQueriesData(productsFilter, (old?: ProductsQueryData) => {
         if (!old) return old;
 
         if (isInfiniteProductsQueryData(old)) {
@@ -53,169 +54,38 @@ function makeQueryClient() {
           };
         }
 
-        if (old.id === id) {
-          return { ...old, ...product };
-        }
+        return old.id === id ? { ...old, ...product } : old;
       });
 
       return { previousData };
     },
 
-    onError: (err, variables, context: any) => {
-      if (!context && !context.previousData) return;
-      context.previousData.forEach((productQueryData: any[]) => {
-        queryClient.setQueriesData(
-          { queryKey: productQueryData[0] },
-          productQueryData[1]
-        );
+    onError: (
+      err,
+      _variables,
+      context?: { previousData: [unknown, unknown][] }
+    ) => {
+      context?.previousData.forEach(([queryKey, data]) => {
+        queryClient.setQueryData(queryKey as readonly unknown[], data);
       });
-
       console.log(err);
     },
+
+    // Refetch so server-derived fields (like a moved product's category) are correct.
+    onSettled: invalidateProducts,
   });
 
   queryClient.setMutationDefaults(['addProduct'], {
-    onSuccess: (product: Product) => {
-      const queryFilter = { queryKey: ['products'], exact: false };
-
-      const previousData = queryClient.getQueriesData(queryFilter);
-
-      queryClient.setQueryData(['products', product.id], product);
-      queryClient.setQueryData(
-        ['products'],
-        (old: InfiniteProductsQueryData) => {
-          if (!isInfiniteProductsQueryData(old)) return old;
-
-          const firstPage = old.pages[0]
-            ? [product, ...old.pages[0]]
-            : [product];
-
-          return {
-            ...old,
-            pages: [firstPage, ...old.pages.slice(1)],
-          };
-        }
-      );
-
-      if (product.category) {
-        queryClient.setQueryData(
-          ['products', 'category', product.category.id],
-          (old: InfiniteProductsQueryData) => {
-            if (!isInfiniteProductsQueryData(old)) return old;
-
-            const firstPage = old.pages[0]
-              ? [product, ...old.pages[0]]
-              : [product];
-
-            return {
-              ...old,
-              pages: [firstPage, ...old.pages.slice(1)],
-            };
-          }
-        );
-      }
-
-      return { previousData };
-    },
+    onSuccess: invalidateProducts,
   });
 
   queryClient.setMutationDefaults(['deleteProduct'], {
-    onMutate: async (id: string) => {
-      const queryFilter = { queryKey: ['products'], exact: false };
-
-      await queryClient.cancelQueries(queryFilter);
-      const previousData = queryClient.getQueriesData(queryFilter);
-
-      queryClient.removeQueries({ queryKey: ['products', id] });
-
-      queryClient.setQueriesData(queryFilter, (old?: ProductsQueryData) => {
-        if (!old) return old;
-
-        if (isInfiniteProductsQueryData(old)) {
-          return {
-            ...old,
-            pages: old.pages.map((page) => page.filter((p) => p.id !== id)),
-          };
-        }
-      });
-
-      return { previousData };
-    },
-
-    onError: (err, variables, context: any) => {
-      if (!context && !context.previousData) return;
-      context.previousData.forEach((productQueryData: any[]) => {
-        queryClient.setQueriesData(
-          { queryKey: productQueryData[0] },
-          productQueryData[1]
-        );
-      });
-
-      console.log(err);
-    },
-
-    onSettled: (data, error, id) => {
-      queryClient.invalidateQueries({ queryKey: ['products', id] });
-    },
+    onSuccess: invalidateProducts,
   });
 
   queryClient.setMutationDefaults(['addCategory'], {
-    onSuccess: (category: Category) => {
-      queryClient.setQueryData(['categories'], (old: CategoryQueryData) => [
-        ...old,
-        category,
-      ]);
-    },
-  });
-
-  queryClient.setMutationDefaults(['updateCategory'], {
-    onMutate: async ({
-      id,
-      category,
-    }: {
-      id: string;
-      category: UpdateCategory;
-    }) => {
-      const queryFilter = { queryKey: ['categories'] };
-
-      await queryClient.cancelQueries(queryFilter);
-      const previousData = queryClient.getQueriesData(queryFilter);
-
-      queryClient.setQueriesData(queryFilter, (old?: CategoryQueryData) => {
-        if (!old) return old;
-        return old.map((c) => (c.id === id ? { ...c, ...category } : c));
-      });
-
-      return { previousData };
-    },
-
-    onError: (err, variables, context: any) => {
-      if (!context && !context.previousData) return;
-      queryClient.setQueryData(['categories'], context.previousData);
-      console.log(err);
-    },
-  });
-
-  queryClient.setMutationDefaults(['deleteCategory'], {
-    onMutate: async (id: string) => {
-      const queryFilter = { queryKey: ['categories'] };
-
-      await queryClient.cancelQueries(queryFilter);
-      const previousData = queryClient.getQueriesData(queryFilter);
-
-      queryClient.setQueriesData(queryFilter, (old?: CategoryQueryData) => {
-        if (!old) return old;
-        return old.filter((c) => c.id !== id);
-      });
-
-      return { previousData };
-    },
-
-    onError: (err, variables, context: any) => {
-      if (!context && !context.previousData) return;
-      queryClient.setQueryData(['categories'], context.previousData);
-      console.log(err);
-    },
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ['categories'] }),
   });
 
   return queryClient;
@@ -224,7 +94,7 @@ function makeQueryClient() {
 let browserQueryClient: QueryClient | undefined = undefined;
 
 export function getQueryClient() {
-  if (isServer) {
+  if (environmentManager.isServer()) {
     return makeQueryClient();
   } else {
     if (!browserQueryClient) browserQueryClient = makeQueryClient();
