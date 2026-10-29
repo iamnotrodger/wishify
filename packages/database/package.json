@@ -9,8 +9,7 @@
   },
   "scripts": {
     "db:generate": "prisma generate",
-    "db:push": "prisma db push --skip-generate",
-    "db:migrate:better-auth": "node scripts/migrate-authjs-to-better-auth.mts"
+    "db:push": "prisma db push --skip-generate"
   },
   "exports": {
     ".": "./src/index.ts"
