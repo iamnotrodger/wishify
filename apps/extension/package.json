@@ -5,7 +5,6 @@
   "type": "module",
   "scripts": {
     "lint": "eslint .",
-    "test": "vitest run",
     "dev": "wxt",
     "dev:firefox": "wxt -b firefox",
     "build": "tsc --noEmit && wxt build",
@@ -17,10 +16,9 @@
   "dependencies": {
     "@hookform/resolvers": "^6.0.2",
     "@repo/api": "*",
+    "@repo/scraper": "*",
     "@repo/ui": "*",
     "better-auth": "^1.7.14",
-    "currency-codes": "^2.2.0",
-    "jsonrepair": "^3.15.0",
     "lucide-react": "^1.63.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
@@ -29,14 +27,12 @@
   },
   "devDependencies": {
     "@repo/eslint-config": "*",
-    "@repo/vitest-config": "*",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@wxt-dev/module-react": "^1.2.2",
     "eslint": "^10.13.0",
     "typescript": "~5.9.3",
     "vite": "^8.3.5",
-    "vitest": "^5.0.5",
     "web-ext": "^10.8.0",
     "wxt": "^0.21.5"
   },

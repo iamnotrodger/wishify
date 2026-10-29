@@ -3,7 +3,7 @@
 Browser extension built with [WXT](https://wxt.dev) that saves products from any store to Wishify.
 
 - Signs in through the web app (better-auth session cookie).
-- Scrapes the active tab for product details, falling back to an empty form.
+- Scrapes the active tab for product details with `@repo/scraper`, falling back to an empty form.
 - Lets the user edit the details, then saves them to the web app.
 
 ## Setup
@@ -16,6 +16,5 @@ Browser extension built with [WXT](https://wxt.dev) that saves products from any
 - `npm run dev` - start Chrome with the extension loaded and hot reload
 - `npm run build` - typecheck and build to `.output/chrome-mv3`
 - `npm run zip` - package the build for store upload
-- `npm test` - run scraper tests
 
 Firefox variants: `dev:firefox`, `build:firefox`, `zip:firefox`.

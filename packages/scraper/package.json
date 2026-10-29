@@ -1,0 +1,25 @@
+{
+  "name": "@repo/scraper",
+  "scripts": {
+    "lint": "eslint .",
+    "test": "vitest run"
+  },
+  "type": "module",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "jsonrepair": "^3.15.0"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "*",
+    "@repo/typescript-config": "*",
+    "@repo/vitest-config": "*",
+    "eslint": "^10.13.0",
+    "typescript": "5.9.3",
+    "vite": "^8.3.5",
+    "vitest": "^5.0.5"
+  }
+}

@@ -55,6 +55,20 @@ describe('extractMicrodata', () => {
     ).toBe('Nike');
   });
 
+  it('keeps every image of the product', () => {
+    expect(
+      extract(`
+        <div itemscope itemtype="https://schema.org/Product">
+          <img itemprop="image" src="/1.jpg" />
+          <img itemprop="image" data-src="/2.jpg" src="placeholder.gif" />
+        </div>
+      `).images
+    ).toEqual([
+      { url: 'http://example.com/1.jpg' },
+      { url: 'http://example.com/2.jpg' },
+    ]);
+  });
+
   it('returns nothing for pages without a Product', () => {
     expect(extract('<div></div>')).toEqual({});
   });

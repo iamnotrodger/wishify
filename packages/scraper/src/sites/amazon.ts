@@ -1,11 +1,16 @@
-import { parseURL } from '../lib/parse';
-import { removeNullAndUndefined } from '../lib/utils';
+import { parseJson, parseURL } from '../lib/parse';
+import { removeNullAndUndefined, toImages } from '../lib/utils';
 import {
   extractBySelectors,
   findBySelectors,
   type Selector,
 } from '../selector';
-import { type Image, type ItemAvailability, type Site } from '../types';
+import {
+  type Image,
+  type ItemAvailability,
+  type Json,
+  type Site,
+} from '../types';
 
 const selectors: Record<string, Selector[]> = {
   name: [
@@ -65,6 +70,24 @@ const getLargestImage = (doc: Document, pageUrl: URL): Image | undefined => {
   }
 };
 
+// An inline script holds the gallery as 'colorImages': { 'initial': [...] }.
+const getGalleryImages = (doc: Document, pageUrl: URL): Image[] | null => {
+  for (const script of doc.querySelectorAll('script:not([src])')) {
+    const raw = script.textContent?.match(
+      /'colorImages':\s*\{\s*'initial':\s*(\[.*\])\s*\}/
+    )?.[1];
+    const gallery = raw && parseJson(raw);
+    if (!Array.isArray(gallery)) continue;
+
+    return toImages(
+      gallery.map((image: Json) =>
+        parseURL(image?.hiRes ?? image?.large, pageUrl)
+      )
+    );
+  }
+  return null;
+};
+
 // Stock text is localized; unknown wording leaves availability unset.
 const getAvailability = (doc: Document): ItemAvailability | undefined => {
   const text = findBySelectors(doc, [
@@ -83,13 +106,16 @@ export const amazon: Site = {
   extract: (doc, pageUrl) => {
     const product = extractBySelectors(doc, pageUrl, selectors);
     const largestImage = getLargestImage(doc, pageUrl);
+    const images =
+      getGalleryImages(doc, pageUrl) ??
+      (largestImage ? [largestImage] : product.images);
 
     return removeNullAndUndefined({
       ...product,
       brand: product.brand ?? getBylineBrand(doc),
       sku: findBySelectors(doc, [{ selector: '#ASIN', attribute: 'value' }]),
       availability: getAvailability(doc),
-      images: largestImage ? [largestImage] : product.images,
+      images,
     });
   },
 };

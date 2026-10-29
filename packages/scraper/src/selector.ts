@@ -27,6 +27,22 @@ export const findBySelectors = (
   return undefined;
 };
 
+/** Values of every element matching the first selector that has any. */
+export const findAllBySelectors = (
+  root: ParentNode,
+  selectors?: Selector[]
+): string[] => {
+  if (!selectors) return [];
+
+  for (const { selector, attribute } of selectors) {
+    const values = Array.from(root.querySelectorAll(selector))
+      .map((element) => readElement(element, attribute)?.trim())
+      .filter((value): value is string => !!value);
+    if (values.length) return values;
+  }
+  return [];
+};
+
 /**
  * Builds a Product from selector lists keyed by Product field. Keys that are
  * not Product fields are collected into metadata.
@@ -57,7 +73,9 @@ export const extractBySelectors = (
     description: findBySelectors(doc, description),
     price: parseNum(findBySelectors(doc, price)),
     priceCurrency: parseCurrency(findBySelectors(doc, priceCurrency)),
-    images: toImages([parseURL(findBySelectors(doc, image), pageUrl)]),
+    images: toImages(
+      findAllBySelectors(doc, image).map((url) => parseURL(url, pageUrl))
+    ),
     metadata: Object.keys(metadata).length ? metadata : null,
   });
 };

@@ -8,10 +8,13 @@ import { normalizeText, removeNullAndUndefined, toImages } from './lib/utils';
 import { type Product } from './types';
 
 // Properties of nested items (e.g. a Brand's name) belong to that item, not the scope.
-const findOwnProperty = (scope: Element, prop: string) =>
-  Array.from(scope.querySelectorAll(`[itemprop~="${prop}"]`)).find(
+const findOwnProperties = (scope: Element, prop: string) =>
+  Array.from(scope.querySelectorAll(`[itemprop~="${prop}"]`)).filter(
     (element) => element.parentElement?.closest('[itemscope]') === scope
   );
+
+const findOwnProperty = (scope: Element, prop: string) =>
+  findOwnProperties(scope, prop)[0];
 
 const readProperty = (
   element: Element | undefined,
@@ -39,18 +42,15 @@ export const extractMicrodata = (doc: Document, pageUrl: URL): Product => {
   const offerProp = (name: string, attributes?: string[]) =>
     offer && readProperty(findOwnProperty(offer, name), attributes);
 
-  const image = readProperty(findOwnProperty(product, 'image'), [
-    'data-src',
-    'href',
-    'src',
-    'content',
-  ]);
+  const images = findOwnProperties(product, 'image').map((element) =>
+    readProperty(element, ['data-src', 'href', 'src', 'content'])
+  );
 
   return removeNullAndUndefined({
     name: prop('name'),
     brand,
     description: prop('description'),
-    images: toImages([parseURL(image, pageUrl)]),
+    images: toImages(images.map((url) => parseURL(url, pageUrl))),
     sku: prop('sku'),
     gtin:
       prop('gtin') ??

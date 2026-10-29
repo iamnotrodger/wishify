@@ -38,19 +38,24 @@ describe('scrapeProduct', () => {
     });
   });
 
-  it('combines JSON-LD and OpenGraph for SSENSE', () => {
+  it('keeps at most 8 images', () => {
+    const images = Array.from(
+      { length: 10 },
+      (_, i) =>
+        `<meta property="og:image" content="https://example.com/${i}.jpg" />`
+    ).join('');
+    expect(scrape('https://example.com/p', images).images).toHaveLength(8);
+  });
+
+  it('combines SSENSE site rules, JSON-LD and OpenGraph', () => {
     expect(scrape(ssenseUrl, ssenseHtml)).toEqual({
       name: 'Black Jersey Crewneck T-shirt',
       brand: 'Fear of God ESSENTIALS',
       description: ssenseDescription,
-      images: [
-        {
-          url: 'https://img.ssensemedia.com/images/251161M213015_1/essentials-black-jersey-crewneck-t-shirt.jpg',
-        },
-        {
-          url: 'https://res.cloudinary.com/ssenseweb/image/upload/b_white,c_lpad,g_south,h_706,w_470/c_scale,h_480/v550/251161M213015_1.jpg',
-        },
-      ],
+      // The gallery replaces the structured data's copies of the first photo.
+      images: [1, 2, 3, 4, 5].map((n) => ({
+        url: `https://img.ssensemedia.com/images/b_white,c_lpad,g_center,h_1412,w_940/c_scale,h_960/f_auto,dpr_2.0/251161M213015_${n}/fear-of-god-essentials-black-jersey-crewneck-t-shirt.jpg`,
+      })),
       url: ssenseUrl,
       price: 85,
       priceCurrency: 'CAD',
@@ -85,12 +90,16 @@ describe('scrapeProduct', () => {
       sku: 'B0CNT488KH',
       availability: 'InStock',
       images: [
-        {
-          url: 'https://m.media-amazon.com/images/I/61rbW2eIt3L._AC_SX679_.jpg',
-          width: 679,
-          height: 679,
-        },
-      ],
+        '61rbW2eIt3L',
+        '71N-ssQhylL',
+        '71Z8VWZ84pL',
+        '710aWNLso+L',
+        '71p-0vOHlOL',
+        '71Tnn-fq9+L',
+        '81X2SA8Yu0L',
+      ].map((id) => ({
+        url: `https://m.media-amazon.com/images/I/${id}._AC_SL1500_.jpg`,
+      })),
       metadata: { category: 'gl_toy' },
     });
   });

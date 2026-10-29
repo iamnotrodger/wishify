@@ -1,6 +1,6 @@
 import { parseCurrency, parseNum, parseURL } from './lib/parse';
 import { removeNullAndUndefined, toImages } from './lib/utils';
-import { findBySelectors } from './selector';
+import { findAllBySelectors, findBySelectors } from './selector';
 import { type Product } from './types';
 
 export const extractOpenGraph = (doc: Document, pageUrl: URL): Product => {
@@ -22,7 +22,7 @@ export const extractOpenGraph = (doc: Document, pageUrl: URL): Product => {
     { selector: 'meta[name="description"]', attribute: 'content' },
   ]);
 
-  const image = findBySelectors(doc, [
+  const images = findAllBySelectors(doc, [
     {
       selector: 'meta[property="og:image:secure_url"]',
       attribute: 'content',
@@ -68,7 +68,7 @@ export const extractOpenGraph = (doc: Document, pageUrl: URL): Product => {
     name,
     brand,
     description,
-    images: toImages([parseURL(image, pageUrl)]),
+    images: toImages(images.map((url) => parseURL(url, pageUrl))),
     url: parseURL(url, pageUrl),
     price: parseNum(price),
     priceCurrency: parseCurrency(currency),

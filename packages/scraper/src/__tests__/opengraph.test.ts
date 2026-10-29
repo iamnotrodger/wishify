@@ -37,6 +37,20 @@ describe('extractOpenGraph', () => {
     });
   });
 
+  it('keeps every og:image', () => {
+    const doc = parseHtml(`
+      <meta property="og:image" content="https://example.com/1.jpg" />
+      <meta property="og:image" content="https://example.com/2.jpg" />
+      <meta name="twitter:image" content="https://example.com/3.jpg" />
+    `);
+    expect(
+      extractOpenGraph(doc, new URL('https://example.com')).images
+    ).toEqual([
+      { url: 'https://example.com/1.jpg' },
+      { url: 'https://example.com/2.jpg' },
+    ]);
+  });
+
   it('falls back to the page title with whitespace collapsed', () => {
     const doc = parseHtml('<title>\n  Foo\n  Bar </title>');
     expect(extractOpenGraph(doc, new URL('https://x.com')).name).toBe(

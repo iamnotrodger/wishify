@@ -1,4 +1,4 @@
-import { type Product, scrapeProduct } from '@/scraper';
+import { type Product, scrapeProduct } from '@repo/scraper';
 import { browser } from 'wxt/browser';
 
 /**

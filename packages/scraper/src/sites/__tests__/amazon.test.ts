@@ -16,7 +16,7 @@ describe('amazon', () => {
 
   it('ignores other sites', () => {
     expect(findSite(new URL('https://notamazon.com/dp/1'))).toBeUndefined();
-    expect(findSite(new URL('https://www.ssense.com/p/1'))).toBeUndefined();
+    expect(findSite(new URL('https://example.com/dp/1'))).toBeUndefined();
   });
 
   it('extracts the product from the page markup', () => {
@@ -28,12 +28,16 @@ describe('amazon', () => {
       sku: 'B0CNT488KH',
       availability: 'InStock',
       images: [
-        {
-          url: 'https://m.media-amazon.com/images/I/61rbW2eIt3L._AC_SX679_.jpg',
-          width: 679,
-          height: 679,
-        },
-      ],
+        '61rbW2eIt3L',
+        '71N-ssQhylL',
+        '71Z8VWZ84pL',
+        '710aWNLso+L',
+        '71p-0vOHlOL',
+        '71Tnn-fq9+L',
+        '81X2SA8Yu0L',
+      ].map((id) => ({
+        url: `https://m.media-amazon.com/images/I/${id}._AC_SL1500_.jpg`,
+      })),
       metadata: { category: 'gl_toy' },
     });
   });
@@ -60,6 +64,19 @@ describe('amazon fallbacks', () => {
     expect(extract(`<div id="availability">${text}</div>`).availability).toBe(
       availability
     );
+  });
+
+  it('falls back to the largest landing image without a gallery', () => {
+    const sizes = JSON.stringify({
+      '/i/s.jpg': [100, 100],
+      '/i/l.jpg': [500, 400],
+    });
+    expect(
+      extract(`<img id="landingImage" data-a-dynamic-image='${sizes}' />`)
+        .images
+    ).toEqual([
+      { url: 'https://www.amazon.com/i/l.jpg', width: 500, height: 400 },
+    ]);
   });
 
   it('falls back to the image src without size data', () => {

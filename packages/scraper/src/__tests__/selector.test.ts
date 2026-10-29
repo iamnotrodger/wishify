@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { extractBySelectors, findBySelectors } from '../selector';
+import {
+  extractBySelectors,
+  findAllBySelectors,
+  findBySelectors,
+} from '../selector';
 import { parseHtml } from './helpers';
 
 describe('findBySelectors', () => {
@@ -39,6 +43,29 @@ describe('findBySelectors', () => {
     const doc = parseHtml('<span id="a"></span><span id="b">B</span>');
     expect(findBySelectors(doc, [{ selector: '#a' }, { selector: '#b' }])).toBe(
       'B'
+    );
+  });
+});
+
+describe('findAllBySelectors', () => {
+  it('reads every element matching the first selector that has values', () => {
+    const doc = parseHtml(`
+      <img class="secure" />
+      <img class="og" src="a.jpg" /><img class="og" src="b.jpg" />
+      <img class="twitter" src="c.jpg" />
+    `);
+    expect(
+      findAllBySelectors(doc, [
+        { selector: '.secure', attribute: 'src' },
+        { selector: '.og', attribute: 'src' },
+        { selector: '.twitter', attribute: 'src' },
+      ])
+    ).toEqual(['a.jpg', 'b.jpg']);
+  });
+
+  it('returns nothing when nothing matches', () => {
+    expect(findAllBySelectors(parseHtml(''), [{ selector: 'img' }])).toEqual(
+      []
     );
   });
 });
