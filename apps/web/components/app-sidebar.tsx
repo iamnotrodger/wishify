@@ -1,5 +1,5 @@
 import { getCategoriesAction } from '@/app/actions';
-import { auth, isAuthenticated } from '@/auth';
+import { getSession, isAuthenticated } from '@/auth';
 import {
   Sidebar,
   SidebarContent,
@@ -22,7 +22,7 @@ import { NavCategories } from './nav-categories';
 import { NavMenu } from './nav-menu';
 
 export async function AppSidebar() {
-  const session = await auth();
+  const session = await getSession();
   if (!isAuthenticated(session)) {
     return redirect('/login?redirectTo=/app');
   }

@@ -1,5 +1,5 @@
 import { getProductsActions } from '@/app/actions';
-import { auth, isAuthenticated } from '@/auth';
+import { getSession, isAuthenticated } from '@/auth';
 import { ProductForm } from '@/components/product-form';
 import ProductList from '@/components/product-list';
 import { Button } from '@repo/ui/components/button';
@@ -13,7 +13,7 @@ import { Plus } from 'lucide-react';
 import { redirect } from 'next/navigation';
 
 export default async function App() {
-  const session = await auth();
+  const session = await getSession();
   if (!isAuthenticated(session)) {
     return redirect('/login?redirectTo=/app');
   }

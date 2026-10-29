@@ -1,4 +1,4 @@
-import { auth, isAuthenticated } from '@/auth';
+import { getSession, isAuthenticated } from '@/auth';
 import {
   invalidRequestResponse,
   unauthorizedResponse,
@@ -6,23 +6,25 @@ import {
 } from '@/lib/responses';
 import { createCategory, getCategories } from '@/services/category-service';
 import { CreateCategorySchema } from '@repo/api';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { fromZodError } from 'zod-validation-error';
 
-export const GET = auth(async (req) => {
-  if (!isAuthenticated(req.auth)) return unauthorizedResponse();
+export async function GET(req: NextRequest) {
+  const session = await getSession(req.headers);
+  if (!isAuthenticated(session)) return unauthorizedResponse();
 
-  const [categories, error] = await getCategories(req.auth);
+  const [categories, error] = await getCategories(session);
 
   if (error) {
     return unknownErrorResponse(new Error('unable to process request'));
   }
 
   return NextResponse.json(categories || []);
-}) as any; // TODO: remove this when NextAuth is fixes this
+}
 
-export const POST = auth(async (req) => {
-  if (!isAuthenticated(req.auth)) return unauthorizedResponse();
+export async function POST(req: NextRequest) {
+  const session = await getSession(req.headers);
+  if (!isAuthenticated(session)) return unauthorizedResponse();
 
   const data = await req.json();
   const categoryValidation = CreateCategorySchema.safeParse(data);
@@ -33,7 +35,7 @@ export const POST = auth(async (req) => {
 
   const [category, error] = await createCategory(
     categoryValidation.data,
-    req.auth
+    session
   );
 
   if (error) {
@@ -41,4 +43,4 @@ export const POST = auth(async (req) => {
   }
 
   return NextResponse.json(category);
-}) as any; // TODO: remove this when NextAuth is fixes this
+}

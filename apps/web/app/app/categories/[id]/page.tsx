@@ -1,5 +1,5 @@
 import { getProductsActions } from '@/app/actions';
-import { auth, isAuthenticated } from '@/auth';
+import { getSession, isAuthenticated } from '@/auth';
 import { ProductForm } from '@/components/product-form';
 import ProductList from '@/components/product-list';
 import { getCategoryById } from '@/services/category-service';
@@ -16,7 +16,7 @@ export default async function Category({
 }) {
   const { id } = await params;
 
-  const session = await auth();
+  const session = await getSession();
   if (!isAuthenticated(session)) {
     return redirect(`/login?redirectTo=/app/categories/${id}`);
   }

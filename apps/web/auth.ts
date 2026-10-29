@@ -1,50 +1,49 @@
 import { safeAsync } from '@/lib/utils';
 import { prisma } from '@/prisma';
-import { PrismaAdapter } from '@auth/prisma-adapter';
-import NextAuth, { DefaultSession, Session } from 'next-auth';
-import Google from 'next-auth/providers/google';
+import { betterAuth } from 'better-auth';
+import { prismaAdapter } from 'better-auth/adapters/prisma';
+import { nextCookies } from 'better-auth/next-js';
+import { headers } from 'next/headers';
 
-declare module 'next-auth' {
-  interface Session {
-    user: { id: string } & DefaultSession['user'];
-  }
-}
-
-export const { handlers, signIn, signOut, auth } = NextAuth({
-  adapter: PrismaAdapter(prisma),
-  providers: [Google],
-  pages: {
-    signIn: '/login',
+export const auth = betterAuth({
+  database: prismaAdapter(prisma, { provider: 'mongodb' }),
+  advanced: {
+    // Let MongoDB create ObjectIds so existing user ids keep matching products and categories.
+    database: { generateId: false },
   },
-  session: { strategy: 'jwt' },
-  callbacks: {
-    session({ session, token }) {
-      if (token.sub) session.user.id = token.sub;
-      return session;
+  socialProviders: {
+    google: {
+      clientId: process.env.AUTH_GOOGLE_ID!,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET!,
     },
   },
-  events: {
-    createUser: async (message) => {
-      const { user } = message;
-      const [, error] = await safeAsync(
-        prisma.category.createMany({
-          data: [
-            { name: 'Clothes', icon: 'shirt', userId: user.id! },
-            { name: 'Electronics', icon: 'smartphone', userId: user.id! },
-            { name: 'Furniture', icon: 'sofa', userId: user.id! },
-          ],
-        })
-      );
+  databaseHooks: {
+    user: {
+      create: {
+        after: async (user) => {
+          const [, error] = await safeAsync(
+            prisma.category.createMany({
+              data: [
+                { name: 'Clothes', icon: 'shirt', userId: user.id },
+                { name: 'Electronics', icon: 'smartphone', userId: user.id },
+                { name: 'Furniture', icon: 'sofa', userId: user.id },
+              ],
+            })
+          );
 
-      if (error) console.log(error);
+          if (error) console.log(error);
+        },
+      },
     },
   },
+  plugins: [nextCookies()],
 });
 
-export type AuthenticatedSession = Session;
+export type AuthenticatedSession = typeof auth.$Infer.Session;
+
+export const getSession = async (requestHeaders?: Headers) =>
+  auth.api.getSession({ headers: requestHeaders ?? (await headers()) });
 
 export const isAuthenticated = (
-  session: Session | null
-): session is AuthenticatedSession => {
-  return typeof session?.user?.id === 'string';
-};
+  session: AuthenticatedSession | null
+): session is AuthenticatedSession => !!session;

@@ -6,7 +6,7 @@
       "dependsOn": ["^build", "^db:generate"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**"],
-      "env": ["API_URL"]
+      "env": ["API_URL", "AUTH_GOOGLE_ID", "AUTH_GOOGLE_SECRET"]
     },
     "lint": {
       "dependsOn": ["^lint"]
