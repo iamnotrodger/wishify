@@ -1,4 +1,10 @@
-import type { Category, CreateProduct, Product } from '@repo/api';
+import type {
+  Category,
+  CreateCategory,
+  CreateProduct,
+  Product,
+} from '@repo/api';
+import { browser } from 'wxt/browser';
 
 export const apiUrl: string = import.meta.env.WXT_API_URL;
 if (!apiUrl) throw new Error('WXT_API_URL is not set');
@@ -17,9 +23,22 @@ const request = async <T>(path: string, init?: RequestInit): Promise<T> => {
 
 export const getCategories = () => request<Category[]>('/api/categories');
 
+export const createCategory = (category: CreateCategory) =>
+  request<Category>('/api/categories', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(category),
+  });
+
 export const createProduct = (product: CreateProduct) =>
   request<Product>('/api/products', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(product),
   });
+
+export const deleteProduct = (id: string) =>
+  request<{ success: boolean }>(`/api/products/${id}`, { method: 'DELETE' });
+
+export const openWishify = (path: string) =>
+  browser.tabs.create({ url: new URL(path, apiUrl).href });

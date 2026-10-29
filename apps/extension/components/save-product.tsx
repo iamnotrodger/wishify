@@ -1,51 +1,62 @@
-import { ProductForm } from '@/components/product-form';
+import { PopupHeader } from '@/components/popup-header';
+import { ProductForm, toFormValues } from '@/components/product-form';
 import { ProductFormSkeleton } from '@/components/product-form-skeleton';
-import { type Product as ScrapedProduct } from '@/scraper';
-import { apiUrl, getCategories } from '@/utils/api';
+import { ProductSaved } from '@/components/product-saved';
+import { getCategories } from '@/utils/api';
 import { scrapeActiveTab } from '@/utils/scrape-active-tab';
-import { type Category } from '@repo/api';
-import { Button } from '@repo/ui/components/button';
+import {
+  type Category,
+  type CreateProductInput,
+  type Product,
+} from '@repo/api';
+import { type Product as ScrapedProduct } from '@repo/scraper';
 import { useEffect, useState } from 'react';
-import { browser } from 'wxt/browser';
 
 type Data = { product: ScrapedProduct; categories: Category[] };
 
 export const SaveProduct = () => {
   const [data, setData] = useState<Data | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [isSaved, setIsSaved] = useState(false);
+  // Kept across an undo so the user gets back the form as they submitted it.
+  const [draft, setDraft] = useState<CreateProductInput | null>(null);
+  const [saved, setSaved] = useState<Product | null>(null);
 
   useEffect(() => {
     Promise.all([scrapeActiveTab(), getCategories()])
-      .then(([product, categories]) => setData({ product, categories }))
+      .then(([product, categories]) => {
+        setData({ product, categories });
+        setDraft(toFormValues(product));
+      })
       .catch((error: Error) => setError(error.message));
   }, []);
 
   if (error) {
-    return <p className='text-destructive p-6 text-center text-sm'>{error}</p>;
-  }
-
-  if (isSaved) {
     return (
-      <div className='flex flex-col items-center gap-3 p-6 text-center'>
-        <p className='text-sm font-medium'>Saved to Wishify</p>
-        <Button
-          variant='outline'
-          onClick={() => browser.tabs.create({ url: new URL('/app', apiUrl).href })}
-        >
-          View in Wishify
-        </Button>
-      </div>
+      <>
+        <PopupHeader />
+        <p className='text-destructive p-6 text-center text-sm'>{error}</p>
+      </>
     );
   }
 
-  if (!data) return <ProductFormSkeleton />;
+  if (!data || !draft) return <ProductFormSkeleton />;
+
+  if (saved) {
+    return <ProductSaved product={saved} onUndone={() => setSaved(null)} />;
+  }
 
   return (
     <ProductForm
       product={data.product}
       categories={data.categories}
-      onSaved={() => setIsSaved(true)}
+      defaultValues={draft}
+      onCategoryCreated={(category) =>
+        setData({ ...data, categories: [...data.categories, category] })
+      }
+      onSaved={(product, values) => {
+        setDraft(values);
+        setSaved(product);
+      }}
     />
   );
 };

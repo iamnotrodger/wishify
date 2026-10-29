@@ -1,17 +1,26 @@
+import { PopupHeader } from '@/components/popup-header';
 import { Skeleton } from '@repo/ui/components/skeleton';
 
 export const ProductFormSkeleton = () => (
-  <div className='flex flex-col gap-4 p-4'>
-    <div className='flex gap-4'>
-      <Skeleton className='size-[116px] rounded-md' />
-      <div className='flex flex-1 flex-col gap-2'>
-        <Skeleton className='h-6 w-full rounded-md' />
-        <Skeleton className='h-6 w-full rounded-md' />
-        <Skeleton className='h-9 w-40 rounded-md' />
+  <>
+    <PopupHeader />
+    <div className='flex flex-col gap-4 p-4'>
+      <div className='flex items-center gap-3'>
+        <Skeleton className='size-[72px] rounded-xl' />
+        <div className='flex flex-1 flex-col gap-1.5'>
+          <Skeleton className='h-3 w-16' />
+          <Skeleton className='h-4 w-40' />
+          <Skeleton className='h-4 w-20' />
+        </div>
+      </div>
+      <Skeleton className='h-[58px] w-full' />
+      <div className='grid grid-cols-2 gap-2.5'>
+        <Skeleton className='h-[58px]' />
+        <Skeleton className='h-[58px]' />
       </div>
     </div>
-    <Skeleton className='h-24 w-full rounded-md' />
-    <Skeleton className='h-20 w-full rounded-md' />
-    <Skeleton className='h-9 w-full rounded-md' />
-  </div>
+    <div className='border-t px-4 pt-3 pb-4'>
+      <Skeleton className='h-10 w-full' />
+    </div>
+  </>
 );

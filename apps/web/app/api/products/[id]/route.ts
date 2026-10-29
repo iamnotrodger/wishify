@@ -4,7 +4,7 @@ import {
   unauthorizedResponse,
   unknownErrorResponse,
 } from '@/lib/responses';
-import { getProductById } from '@/services/product-service';
+import { deleteProduct, getProductById } from '@/services/product-service';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
@@ -25,4 +25,21 @@ export async function GET(
   }
 
   return NextResponse.json(product);
+}
+
+export async function DELETE(
+  req: NextRequest,
+  { params }: RouteContext<'/api/products/[id]'>
+) {
+  const session = await getSession(req.headers);
+  if (!isAuthenticated(session)) return unauthorizedResponse();
+
+  const { id } = await params;
+  const error = await deleteProduct(id, session);
+
+  if (error) {
+    return unknownErrorResponse(new Error('failed to delete product'));
+  }
+
+  return NextResponse.json({ success: true });
 }

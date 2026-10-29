@@ -1,13 +1,17 @@
-import { type Product as ScrapedProduct } from '@/scraper';
-import { createProduct } from '@/utils/api';
+import { PopupHeader } from '@/components/popup-header';
+import { ProductFound } from '@/components/product-found';
+import { createCategory, createProduct } from '@/utils/api';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   type Category,
   type CreateProduct,
   type CreateProductInput,
   CreateProductSchema,
+  type Product,
 } from '@repo/api';
+import { type Product as ScrapedProduct } from '@repo/scraper';
 import { Button } from '@repo/ui/components/button';
+import { CategoryPicker } from '@repo/ui/components/category';
 import {
   Form,
   FormControl,
@@ -16,23 +20,17 @@ import {
   FormLabel,
   FormMessage,
 } from '@repo/ui/components/form';
+import { ImageInput } from '@repo/ui/components/image-input';
 import { Input } from '@repo/ui/components/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@repo/ui/components/select';
-import { Textarea } from '@repo/ui/components/textarea';
-import { cn } from '@repo/ui/lib/utils';
-import cc from 'currency-codes';
-import { useForm } from 'react-hook-form';
+import { PriceInput } from '@repo/ui/components/price-input';
+import { formatPrice } from '@repo/ui/lib/format-price';
+import { type KeyboardEvent } from 'react';
+import { useForm, useWatch } from 'react-hook-form';
 
-const currencyCodes = cc.codes();
 const DESCRIPTION_MAX_LENGTH = 256;
+const isMac = navigator.userAgent.includes('Mac');
 
-const toFormValues = (product: ScrapedProduct): CreateProductInput => ({
+export const toFormValues = (product: ScrapedProduct): CreateProductInput => ({
   url: product.url,
   name: product.name ?? '',
   brand: product.brand,
@@ -43,7 +41,8 @@ const toFormValues = (product: ScrapedProduct): CreateProductInput => ({
   gtin: product.gtin,
   mpn: product.mpn,
   price: product.price ?? '',
-  priceCurrency: product.priceCurrency ?? 'CAD',
+  // Empty lets PriceInput apply its default currency.
+  priceCurrency: product.priceCurrency ?? '',
   availability: product.availability,
   images: product.images ?? undefined,
   metadata: product.metadata,
@@ -52,24 +51,44 @@ const toFormValues = (product: ScrapedProduct): CreateProductInput => ({
 interface ProductFormProps {
   product: ScrapedProduct;
   categories: Category[];
-  onSaved: () => void;
+  defaultValues: CreateProductInput;
+  onSaved: (product: Product, values: CreateProductInput) => void;
+  onCategoryCreated: (category: Category) => void;
 }
 
 export const ProductForm = ({
   product,
   categories,
+  defaultValues,
   onSaved,
+  onCategoryCreated,
 }: ProductFormProps) => {
   const form = useForm<CreateProductInput, unknown, CreateProduct>({
     resolver: zodResolver(CreateProductSchema),
-    defaultValues: toFormValues(product),
+    defaultValues,
   });
-  const image = product.images?.[0];
+  const [name, price, priceCurrency] = useWatch({
+    control: form.control,
+    name: ['name', 'price', 'priceCurrency'],
+  });
+
+  const imageField = (
+    <FormField
+      control={form.control}
+      name='images'
+      render={({ field }) => (
+        <ImageInput
+          value={field.value?.[0]?.url}
+          onChange={(url) => field.onChange(url ? [{ url }] : [])}
+          className='size-[72px]'
+        />
+      )}
+    />
+  );
 
   const onSubmit = async (values: CreateProduct) => {
     try {
-      await createProduct(values);
-      onSaved();
+      onSaved(await createProduct(values), form.getValues());
     } catch (error) {
       form.setError('root', {
         message: error instanceof Error ? error.message : 'Failed to save',
@@ -77,162 +96,130 @@ export const ProductForm = ({
     }
   };
 
+  const submitOnModEnter = (event: KeyboardEvent<HTMLFormElement>) => {
+    if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
+      event.preventDefault();
+      form.handleSubmit(onSubmit)();
+    }
+  };
+
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className='flex flex-col gap-4 p-4 pb-6'
-      >
-        {!product.name && (
-          <p className='text-muted-foreground text-sm'>
-            Couldn&apos;t find product details on this page. Fill them in
-            below.
-          </p>
-        )}
-        <div className='flex gap-4'>
-          <div className='bg-muted size-[116px] shrink-0 rounded-md border'>
-            {image && (
-              <img
-                className='size-full rounded-md object-cover'
-                src={image.url}
-                alt=''
-              />
+    <>
+      <PopupHeader>
+        <ProductFound product={product} />
+      </PopupHeader>
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          onKeyDown={submitOnModEnter}
+          className='flex flex-col'
+        >
+          <div className='flex flex-col gap-4 p-4'>
+            {product.name ? (
+              <div className='flex items-center gap-3'>
+                {imageField}
+                <div className='flex min-w-0 flex-col gap-0.5'>
+                  {product.brand && (
+                    <span className='text-muted-foreground truncate text-xs'>
+                      {product.brand}
+                    </span>
+                  )}
+                  <span className='line-clamp-2 text-sm font-medium'>
+                    {name}
+                  </span>
+                  <span className='text-[15px] font-semibold tabular-nums'>
+                    {formatPrice(price, priceCurrency)}
+                  </span>
+                </div>
+              </div>
+            ) : (
+              <div className='flex items-center gap-3'>
+                {imageField}
+                <p className='text-muted-foreground text-sm'>
+                  Couldn&apos;t find product details on this page. Fill them in
+                  below.
+                </p>
+              </div>
             )}
-          </div>
-          <div className='flex w-full flex-col gap-2 pt-1'>
-            <FormField
-              control={form.control}
-              name='brand'
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      value={field.value ?? ''}
-                      placeholder='Brand'
-                      spellCheck={false}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
             <FormField
               control={form.control}
               name='name'
               render={({ field }) => (
                 <FormItem>
+                  <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input
-                      {...field}
-                      placeholder='Product name'
-                      spellCheck={false}
-                    />
+                    <Input {...field} spellCheck={false} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <div className='flex gap-2'>
-              <FormField
-                control={form.control}
-                name='priceCurrency'
-                render={({ field }) => (
-                  <FormItem>
-                    <Select value={field.value} onValueChange={field.onChange}>
+            <FormField
+              control={form.control}
+              name='price'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Price</FormLabel>
+                  <FormField
+                    control={form.control}
+                    name='priceCurrency'
+                    render={({ field: currency }) => (
                       <FormControl>
-                        <SelectTrigger className='w-[88px]'>
-                          <SelectValue />
-                        </SelectTrigger>
+                        <PriceInput
+                          {...field}
+                          currency={currency.value}
+                          onCurrencyChange={currency.onChange}
+                          placeholder='0.00'
+                        />
                       </FormControl>
-                      <SelectContent className='max-h-[260px]'>
-                        {currencyCodes.map((code) => (
-                          <SelectItem key={code} value={code}>
-                            {code}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='price'
-                render={({ field }) => (
-                  <FormItem className='flex-1'>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        type='number'
-                        min='0'
-                        step='any'
-                        placeholder='0.00'
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-          </div>
-        </div>
-        {categories.length > 0 && (
-          <FormField
-            control={form.control}
-            name='categoryId'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Category</FormLabel>
-                <div className='flex flex-wrap gap-2'>
-                  {categories.map(({ id, name }) => (
-                    <Button
-                      key={id}
-                      type='button'
-                      variant='outline'
-                      title={name}
-                      className={cn(
-                        'max-w-36 truncate font-normal',
-                        field.value === id && 'border-primary bg-accent'
-                      )}
-                      onClick={() =>
-                        field.onChange(field.value === id ? null : id)
-                      }
-                    >
-                      {name}
-                    </Button>
-                  ))}
-                </div>
-              </FormItem>
+                    )}
+                  />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='categoryIds'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Categories</FormLabel>
+                  <FormControl>
+                    <CategoryPicker
+                      categories={categories}
+                      value={field.value ?? []}
+                      onChange={field.onChange}
+                      onCreate={async (input) => {
+                        const category = await createCategory(input);
+                        onCategoryCreated(category);
+                        return category;
+                      }}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            {form.formState.errors.root && (
+              <p className='text-destructive text-sm'>
+                {form.formState.errors.root.message}
+              </p>
             )}
-          />
-        )}
-        <FormField
-          control={form.control}
-          name='notes'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Notes</FormLabel>
-              <FormControl>
-                <Textarea
-                  {...field}
-                  value={field.value ?? ''}
-                  className='h-20 resize-none'
-                  placeholder='Add your notes here...'
-                />
-              </FormControl>
-            </FormItem>
-          )}
-        />
-        {form.formState.errors.root && (
-          <p className='text-destructive text-sm'>
-            {form.formState.errors.root.message}
-          </p>
-        )}
-        <Button type='submit' disabled={form.formState.isSubmitting}>
-          {form.formState.isSubmitting ? 'Saving...' : 'Save to Wishify'}
-        </Button>
-      </form>
-    </Form>
+          </div>
+          <footer className='border-t px-4 pt-3 pb-4'>
+            <Button
+              type='submit'
+              size='lg'
+              className='w-full'
+              disabled={form.formState.isSubmitting}
+            >
+              {form.formState.isSubmitting ? 'Saving...' : 'Save to Wishify'}
+              <kbd className='rounded bg-white/15 px-1.5 py-px font-sans text-[11px]'>
+                {isMac ? '⌘↵' : 'Ctrl ↵'}
+              </kbd>
+            </Button>
+          </footer>
+        </form>
+      </Form>
+    </>
   );
 };
