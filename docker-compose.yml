@@ -1,0 +1,23 @@
+services:
+  db:
+    image: mongo:8.2.7
+    restart: always
+    # Prisma needs MongoDB to run as a replica set, even with a single node.
+    command: ['--replSet', 'rs0', '--bind_ip_all']
+    ports:
+      - '127.0.0.1:27017:27017'
+    healthcheck:
+      # Initiates the replica set on first start; afterwards it only checks status.
+      test: >-
+        mongosh --quiet --eval "try { rs.status().ok }
+        catch (e) { rs.initiate({ _id: 'rs0', members: [{ _id: 0, host: 'localhost:27017' }] }).ok }"
+      interval: 5s
+      timeout: 10s
+      retries: 30
+    volumes:
+      - database:/data/db
+      - database-config:/data/configdb
+
+volumes:
+  database:
+  database-config:

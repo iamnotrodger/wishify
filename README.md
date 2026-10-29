@@ -2,6 +2,21 @@
 
 This is an official starter Turborepo.
 
+## Local setup
+
+Requires [nvm](https://github.com/nvm-sh/nvm) and Docker with Compose.
+
+```sh
+nvm use
+npm install
+docker compose up -d          # MongoDB replica set on localhost:27017
+cp .env.example packages/database/.env
+npm run db:push
+npm run dev
+```
+
+`apps/web/.env.local` needs `DATABASE_URL` (same value as `.env.example`), `AUTH_SECRET`, `AUTH_GOOGLE_ID` and `AUTH_GOOGLE_SECRET`.
+
 ## Using this example
 
 Run the following command:
