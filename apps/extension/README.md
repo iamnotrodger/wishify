@@ -1,50 +1,21 @@
-# React + TypeScript + Vite
+# Wishify Extension
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Browser extension built with [WXT](https://wxt.dev) that saves products from any store to Wishify.
 
-Currently, two official plugins are available:
+- Signs in through the web app (better-auth session cookie).
+- Scrapes the active tab for product details, falling back to an empty form.
+- Lets the user edit the details, then saves them to the web app.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Setup
 
-## Expanding the ESLint configuration
+1. `WXT_API_URL` points at the web app. `.env.development` sets it to `http://localhost:3000` for `npm run dev`. Set it in the environment for production builds.
+2. Load the extension, copy its ID from `chrome://extensions`, and set `BETTER_AUTH_TRUSTED_ORIGINS=chrome-extension://<id>` in `apps/web/.env.local`.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+## Scripts
 
-- Configure the top-level `parserOptions` property like this:
+- `npm run dev` - start Chrome with the extension loaded and hot reload
+- `npm run build` - typecheck and build to `.output/chrome-mv3`
+- `npm run zip` - package the build for store upload
+- `npm test` - run scraper tests
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-});
-```
-
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react';
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-});
-```
+Firefox variants: `dev:firefox`, `build:firefox`, `zip:firefox`.

@@ -1,5 +1,5 @@
 import { uiConfig } from '@repo/vitest-config/ui';
-import { mergeConfig } from 'vitest/config';
-import viteConfig from './vite.config';
+import { defineProject, mergeConfig } from 'vitest/config';
+import { WxtVitest } from 'wxt/testing/vitest-plugin';
 
-export default mergeConfig(viteConfig, uiConfig);
+export default mergeConfig(uiConfig, defineProject({ plugins: [WxtVitest()] }));

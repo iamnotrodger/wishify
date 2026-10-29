@@ -5,8 +5,14 @@
     "build": {
       "dependsOn": ["^build", "^db:generate"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**"],
-      "env": ["API_URL", "AUTH_GOOGLE_ID", "AUTH_GOOGLE_SECRET", "DATABASE_URL"]
+      "outputs": [".next/**", "!.next/cache/**", "dist/**", ".output/**"],
+      "env": [
+        "API_URL",
+        "AUTH_GOOGLE_ID",
+        "AUTH_GOOGLE_SECRET",
+        "DATABASE_URL",
+        "WXT_API_URL"
+      ]
     },
     "lint": {
       "dependsOn": ["^lint"]
