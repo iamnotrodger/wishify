@@ -23,7 +23,7 @@ export async function getCategories(
 
   const [data, error] = await safeAsync(
     prisma.category.findMany({
-      where: { userId: id, deletedAt: undefined },
+      where: { userId: id, deletedAt: null },
       select: CATEGORY_FIELDS,
     })
   );
@@ -43,7 +43,7 @@ export async function getCategoryById(
 
   const [data, error] = await safeAsync(
     prisma.category.findUnique({
-      where: { id, userId: user.id, deletedAt: undefined },
+      where: { id, userId: user.id, deletedAt: null },
       select: CATEGORY_FIELDS,
     })
   );

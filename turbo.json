@@ -23,6 +23,16 @@
       "dependsOn": ["db:generate"],
       "env": ["DATABASE_URL"],
       "cache": false
+    },
+    "db:migrate:dev": {
+      "dependsOn": ["db:generate"],
+      "env": ["DATABASE_URL"],
+      "cache": false
+    },
+    "db:migrate:deploy": {
+      "dependsOn": ["db:generate"],
+      "env": ["DATABASE_URL"],
+      "cache": false
     }
   }
 }

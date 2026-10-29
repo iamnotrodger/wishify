@@ -9,7 +9,9 @@
   },
   "scripts": {
     "db:generate": "prisma generate",
-    "db:push": "prisma db push --skip-generate"
+    "db:push": "prisma db push --skip-generate",
+    "db:migrate:dev": "prisma migrate dev --skip-generate",
+    "db:migrate:deploy": "prisma migrate deploy"
   },
   "exports": {
     ".": "./src/index.ts"

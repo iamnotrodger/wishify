@@ -1,7 +1,7 @@
 import { AuthenticatedSession } from '@/auth';
 import { safeAsync } from '@/lib/utils';
 import { prisma } from '@/prisma';
-import { CreateProduct, Json, Product, UpdateProduct } from '@repo/api';
+import { CreateProduct, Image, Json, Product, UpdateProduct } from '@repo/api';
 import { Prisma } from '@repo/db';
 import { z } from 'zod';
 
@@ -61,7 +61,7 @@ export async function getProducts(
     prisma.product.findMany({
       where: {
         userId: user.id,
-        deletedAt: { isSet: false },
+        deletedAt: null,
         ...(query.category ? { categoryId: query.category } : {}),
       },
       orderBy: [
@@ -97,7 +97,7 @@ export async function getProductById(
 
   const [data, error] = await safeAsync(
     prisma.product.findFirst({
-      where: { id, userId: user.id, deletedAt: { isSet: false } },
+      where: { id, userId: user.id, deletedAt: null },
       select: PRODUCT_FIELDS,
     })
   );
@@ -121,6 +121,10 @@ const ownsCategory = async (
   return count > 0;
 };
 
+// Postgres separates SQL NULL from JSON null; Prisma needs DbNull to clear a Json column.
+const toJsonInput = (value: Json | null | undefined) =>
+  value === null ? Prisma.DbNull : (value as Prisma.InputJsonValue | undefined);
+
 export async function createProduct(
   product: CreateProduct,
   session: AuthenticatedSession
@@ -135,6 +139,7 @@ export async function createProduct(
     prisma.product.create({
       data: {
         ...product,
+        metadata: toJsonInput(product.metadata),
         userId: user.id,
       },
       select: PRODUCT_FIELDS,
@@ -165,6 +170,7 @@ export async function updateProduct(
       where: { id, userId: user.id },
       data: {
         ...product,
+        metadata: toJsonInput(product.metadata),
       },
       select: PRODUCT_FIELDS,
     })
@@ -198,6 +204,7 @@ export async function deleteProduct(id: string, session: AuthenticatedSession) {
 
 const transformProduct = (product: ProductDatabaseSchema): Product => ({
   ...product,
+  images: product.images as Image[],
   metadata: product.metadata as Json,
   purchaseDate: product.purchaseDate?.toISOString(),
   plannedPurchaseDate: product.plannedPurchaseDate?.toISOString(),

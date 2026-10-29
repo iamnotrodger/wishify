@@ -6,11 +6,7 @@ import { nextCookies } from 'better-auth/next-js';
 import { headers } from 'next/headers';
 
 export const auth = betterAuth({
-  database: prismaAdapter(prisma, { provider: 'mongodb' }),
-  advanced: {
-    // Let MongoDB create ObjectIds so existing user ids keep matching products and categories.
-    database: { generateId: false },
-  },
+  database: prismaAdapter(prisma, { provider: 'postgresql' }),
   socialProviders: {
     google: {
       clientId: process.env.AUTH_GOOGLE_ID!,
