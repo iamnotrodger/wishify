@@ -1,4 +1,3 @@
-import { safeAsync } from '@/lib/utils';
 import { prisma } from '@repo/db';
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
@@ -15,25 +14,6 @@ export const auth = betterAuth({
     google: {
       clientId: process.env.AUTH_GOOGLE_ID!,
       clientSecret: process.env.AUTH_GOOGLE_SECRET!,
-    },
-  },
-  databaseHooks: {
-    user: {
-      create: {
-        after: async (user) => {
-          const [, error] = await safeAsync(
-            prisma.category.createMany({
-              data: [
-                { name: 'Clothes', icon: 'shirt', userId: user.id },
-                { name: 'Electronics', icon: 'smartphone', userId: user.id },
-                { name: 'Furniture', icon: 'sofa', userId: user.id },
-              ],
-            })
-          );
-
-          if (error) console.log(error);
-        },
-      },
     },
   },
   plugins: [nextCookies()],
