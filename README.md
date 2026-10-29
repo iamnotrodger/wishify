@@ -1,6 +1,108 @@
-# Turborepo starter
+# Wishify
 
-This is an official starter Turborepo.
+**Want it? Save it. Wishify tells you when you can afford it, and when it gets cheaper.**
+
+That cart you're about to check out? Don't. Click once, and it's on your list.
+Wishify turns every "I need this right now" into a plan: what you'll buy, in
+which month, with money you actually have.
+
+> Status: in active development, heading for a public v1.
+
+---
+
+## Why
+
+Your wants are scattered across a dozen stores and forty tabs, and none of them
+know what you can spend. So you either buy on impulse or forget about it.
+
+Wishify fixes both. Saving an item **takes the place of buying it**. Then the
+plan does the hard part for you.
+
+## How it works
+
+1. **Capture.** Hit the extension on any product page. Name, price, image and
+   store land in your list.
+2. **Prioritize.** Rank each item by how much you want it.
+3. **Allocate.** Set one monthly allowance for wants. Wishify fills each month
+   in priority order and rolls the rest into later months. Every item gets a
+   planned purchase date, automatically.
+4. **Watch.** Wishify tracks prices. When something drops, you get an email,
+   and the item can jump to an earlier month.
+5. **Decide.** Mark it **bought** (it counts against this month) or
+   **dropped** (it counts as money saved).
+
+## The budget, in plain terms
+
+- **One allowance.** A single monthly amount for everything you want.
+- **Rollover works both ways.** Unspent money carries forward. So does
+  overspend. Your budget is one running balance.
+- **Big items save up.** Something pricier than a month's allowance waits
+  until the balance covers it, and earlier months show what they set aside.
+- **Smart, not rigid.** Items fill months by priority, but cheap items can
+  slip into gaps without bumping anything already planned.
+- **Pin it.** Lock an item to a month and the plan works around it.
+- **Need-by dates.** Got a birthday coming? Set a date, and Wishify flags the
+  item **At risk** if the plan can't make it.
+- **Off-plan is fine.** Buy early if you want. Later items shift back.
+- **No surprises.** Any change that moves items shows you exactly what moves
+  before you confirm: _"This moves Kindle Paperwhite to January."_
+
+### See it in action
+
+A $400 monthly allowance, starting in November:
+
+| Month | Available | You buy                         | Rolls over |
+| ----- | --------- | ------------------------------- | ---------- |
+| Nov   | $400.00   | Headphones, hand balm, notebook | $67.01     |
+| Dec   | $467.01   | Jacket, Kindle                  | $68.02     |
+| Jan   | $468.02   | Dutch oven                      | $48.07     |
+| Feb   | $448.07   | Mug                             | $318.12    |
+| Mar   | $718.12   | Switch 2                        | $268.13    |
+
+Eight wants, five months, zero overspending. And rollover means the $420
+Dutch oven and the $450 Switch 2 each land in a single month.
+
+### Every month, a scorecard
+
+On the 1st, last month closes and you get a review: spent vs allowance, items
+dropped, and how much you saved. "Saved" counts every item you walked away
+from, plus every dollar a price drop knocked off something you bought.
+
+## Price drops you can trust
+
+Stores love an inflated "was" price. Wishify ignores it. A drop is measured
+against the item's **own price history**: you get an alert when the price
+falls below both what it cost when you saved it and its lowest price in the
+last 30 days, or below your own alert price.
+
+## What's in v1
+
+- One-click save from the browser extension
+- Prioritized list, monthly allowance and a month-by-month plan
+- Buy and drop, with a running saved total
+- Price history and email drop alerts
+- Google sign-in
+
+---
+
+## Under the hood
+
+A [Turborepo](https://turbo.build/repo) monorepo, 100% TypeScript.
+
+| Path                         | What it is                                                 |
+| ---------------------------- | ---------------------------------------------------------- |
+| `apps/web`                   | Next.js web app: list, plan and budget                     |
+| `apps/extension`             | [WXT](https://wxt.dev) browser extension: one-click save   |
+| `packages/api`               | Shared API schemas (Zod)                                   |
+| `packages/scraper`           | Product scraper: site rules, JSON-LD, microdata, OpenGraph |
+| `packages/database`          | Prisma schema and client (`@repo/db`)                      |
+| `packages/ui`                | Shared React components                                    |
+| `packages/eslint-config`     | ESLint configs                                             |
+| `packages/typescript-config` | Shared `tsconfig.json`s                                    |
+| `packages/vitest-config`     | Shared Vitest config                                       |
+
+Auth is [better-auth](https://better-auth.com) with Google, plus email and
+password sign-in in development so you don't need Google credentials locally.
 
 ## Local setup
 
@@ -15,84 +117,20 @@ npm run db:migrate:deploy
 npm run dev
 ```
 
-`apps/web/.env.local` needs `DATABASE_URL` (same value as `.env.example`), `AUTH_SECRET`, `AUTH_GOOGLE_ID` and `AUTH_GOOGLE_SECRET`.
+`apps/web/.env.local` needs `DATABASE_URL` (same value as `.env.example`),
+`AUTH_SECRET`, `AUTH_GOOGLE_ID` and `AUTH_GOOGLE_SECRET`.
 
-After changing `packages/database/prisma/schema.prisma`, run `npm run db:migrate:dev` to create and apply a migration.
+For the extension, see [apps/extension/README.md](apps/extension/README.md).
 
-## Using this example
+After changing `packages/database/prisma/schema.prisma`, run
+`npm run db:migrate:dev` to create and apply a migration.
 
-Run the following command:
+## Scripts
 
-```sh
-npx create-turbo@latest
-```
-
-## What's inside?
-
-This Turborepo includes the following packages/apps:
-
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-```
-cd my-turborepo
-pnpm build
-```
-
-### Develop
-
-To develop all apps and packages, run the following command:
-
-```
-cd my-turborepo
-pnpm dev
-```
-
-### Remote Caching
-
-Turborepo can use a technique known as [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup), then enter the following commands:
-
-```
-cd my-turborepo
-npx turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```
-npx turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turbo.build/repo/docs/core-concepts/monorepos/running-tasks)
-- [Caching](https://turbo.build/repo/docs/core-concepts/caching)
-- [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching)
-- [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)
-- [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
-- [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
+| Command          | Does                      |
+| ---------------- | ------------------------- |
+| `npm run dev`    | Run every app in dev mode |
+| `npm run build`  | Build everything          |
+| `npm run lint`   | Lint everything           |
+| `npm run test`   | Run all tests             |
+| `npm run format` | Format with Prettier      |
