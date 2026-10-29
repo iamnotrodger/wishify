@@ -1,5 +1,12 @@
 import * as cheerio from 'cheerio';
-import { parseCurrency, parseJson, parseNum, parseURL } from './lib/parse';
+import {
+  parseAvailability,
+  parseCurrency,
+  parseJson,
+  parseNum,
+  parseString,
+  parseURL,
+} from './lib/parse';
 import { removeNullAndUndefined } from './lib/utils';
 import { Json, Product, Scraper } from './types';
 
@@ -30,20 +37,36 @@ export default class JsonLdScraper implements Scraper {
       }
     });
 
-    const { name, description, brand, image, url, ...metadata } = jsonLd;
+    const {
+      name,
+      description,
+      brand,
+      image,
+      url,
+      sku,
+      mpn,
+      gtin,
+      gtin8,
+      gtin12,
+      gtin13,
+      gtin14,
+      ...metadata
+    } = jsonLd;
     const imageURL = parseURL(image, this.url.hostname);
 
     const product: Product = {
+      url: parseURL(url, this.url.hostname),
       name,
       brand: brand?.name,
       description,
+      sku: parseString(sku),
+      gtin: parseString(gtin ?? gtin13 ?? gtin12 ?? gtin14 ?? gtin8),
+      mpn: parseString(mpn),
       images: imageURL ? [{ url: imageURL }] : null,
       price: getJsonLdPrice(jsonLd),
-      currency: getJsonLdCurrency(jsonLd),
-      metadata: {
-        url: parseURL(url, this.url.hostname),
-        ...metadata,
-      },
+      priceCurrency: getJsonLdCurrency(jsonLd),
+      availability: getJsonLdAvailability(jsonLd),
+      metadata,
     };
 
     return removeNullAndUndefined(product);
@@ -73,6 +96,13 @@ export const getJsonLdCurrency = (data: Json): string | undefined => {
   );
 
   return currency || undefined;
+};
+
+export const getJsonLdAvailability = (data: Json) => {
+  if (!data.offers) return undefined;
+
+  const offer = Array.isArray(data.offers) ? data.offers[0] : data.offers;
+  return parseAvailability(offer.availability);
 };
 
 export const getJsonLdPrice = (data: Json): number | undefined => {

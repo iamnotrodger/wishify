@@ -78,10 +78,10 @@ export default class OpenGraphScraper implements Scraper {
       brand,
       description,
       images: imageURL ? [{ url: imageURL }] : null,
+      url: parseURL(url, this.url.hostname),
       price: parseNum(price),
-      currency: parseCurrency(currency),
+      priceCurrency: parseCurrency(currency),
       metadata: {
-        url,
         favicon,
       },
     };

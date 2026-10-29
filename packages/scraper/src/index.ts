@@ -29,7 +29,7 @@ export const getProduct = (
       siteProduct,
     ]);
 
-    product.url = url;
+    product.url = product.url ?? url;
 
     return [product, null];
   } catch (error) {
@@ -57,7 +57,7 @@ export class SiteScraper implements Scraper {
       brand: brandSelectors,
       description: descriptionSelectors,
       price: priceSelectors,
-      currency: currencySelectors,
+      priceCurrency: priceCurrencySelectors,
       image: imageSelectors,
       ...metadataSelectors
     } = this.selectors;
@@ -66,7 +66,7 @@ export class SiteScraper implements Scraper {
     const brand = findBySelectors(this.$, brandSelectors);
     const description = findBySelectors(this.$, descriptionSelectors);
     const price = findBySelectors(this.$, priceSelectors);
-    const currency = findBySelectors(this.$, currencySelectors);
+    const priceCurrency = findBySelectors(this.$, priceCurrencySelectors);
     const image = findBySelectors(this.$, imageSelectors);
 
     const metadata: Record<string, any> = {};
@@ -81,7 +81,7 @@ export class SiteScraper implements Scraper {
       brand,
       description,
       price: parseNum(price),
-      currency,
+      priceCurrency,
       images: imageURL ? [{ url: imageURL }] : null,
       metadata: Object.keys(metadata).length ? metadata : null,
     };

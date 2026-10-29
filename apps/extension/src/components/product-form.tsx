@@ -43,8 +43,12 @@ const mapProductToFormValues = (product: ScrapedProduct | null) => ({
   name: product?.name ?? '',
   brand: product?.brand ?? '',
   url: product?.url ?? '',
-  currency: product?.currency ?? 'CAD',
+  sku: product?.sku,
+  gtin: product?.gtin,
+  mpn: product?.mpn,
+  priceCurrency: product?.priceCurrency ?? 'CAD',
   price: product?.price ?? 0,
+  availability: product?.availability,
   images: product?.images ?? undefined,
 });
 
@@ -147,7 +151,7 @@ const ProductForm = ({
               <div className='mt-2 flex flex-row items-center justify-start'>
                 <FormField
                   control={form.control}
-                  name='currency'
+                  name='priceCurrency'
                   render={({ field }) => (
                     <FormItem className='mr-3 w-24'>
                       <Select

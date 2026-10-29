@@ -38,7 +38,7 @@ describe('MicrodataScraper', () => {
 
   it('should extract product currency', () => {
     const product = scraper.getProduct();
-    expect(product.currency).toBe('USD');
+    expect(product.priceCurrency).toBe('USD');
   });
 
   it('should extract product image URL', () => {
@@ -52,7 +52,7 @@ describe('MicrodataScraper', () => {
     const product = scraper.getProduct();
     expect(product.name).toBeUndefined();
     expect(product.price).toBeUndefined();
-    expect(product.currency).toBeUndefined();
+    expect(product.priceCurrency).toBeUndefined();
     expect(product.images).toBeUndefined();
   });
 });

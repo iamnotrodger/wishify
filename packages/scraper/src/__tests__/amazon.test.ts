@@ -22,7 +22,7 @@ describe('AmazonScraper', () => {
         name: 'Tarcury WW2 F4U Corsair Fighter Bomber Building Bricks - 550 PCS Army Toy Set with 1 Toy Soldiers - Engaging WWII Toys for Kids and Adults',
         brand: 'Tarcury',
         price: 29.99,
-        currency: 'CAD',
+        priceCurrency: 'CAD',
         images: [
           {
             url: 'https://m.media-amazon.com/images/I/61rbW2eIt3L._AC_SX679_.jpg',

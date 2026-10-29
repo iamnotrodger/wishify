@@ -39,7 +39,7 @@ export function ProductForm({ children, categoryId }: ProductFormProps) {
     resolver: zodResolver(CreateProductSchema),
     defaultValues: {
       categoryId,
-      currency: 'CAD',
+      priceCurrency: 'CAD',
     },
   });
 

@@ -23,23 +23,45 @@ export const ImageSchema = z.object({
   height: z.number().int().nullish(),
 });
 
+/** https://schema.org/ItemAvailability */
+export const ItemAvailabilitySchema = z.enum([
+  'BackOrder',
+  'Discontinued',
+  'InStock',
+  'InStoreOnly',
+  'LimitedAvailability',
+  'MadeToOrder',
+  'OnlineOnly',
+  'OutOfStock',
+  'PreOrder',
+  'PreSale',
+  'Reserved',
+  'SoldOut',
+]);
+
+const NameSchema = z.string().min(1, { message: 'Name cannot be empty' });
+const PriceSchema = z.coerce
+  .number<string | number>()
+  .min(0, { message: 'Invalid price' });
+const PriceCurrencySchema = z
+  .string()
+  .length(3, { message: 'Must choose a valid currency' });
+
 export const ProductSchema = z.object({
   id: z.string(),
   url: z.url({ message: 'Invalid link' }).nullish(),
-  name: z.string().min(1, { message: 'Name cannot be empty' }).nullish(),
+  name: NameSchema,
   brand: z.string().nullish(),
-  price: z.coerce
-    .number<string | number>()
-    .min(0, { message: 'Invalid price' })
-    .nullish(),
-  currency: z
-    .string()
-    .length(3, { message: 'Must choose a valid currency' })
-    .nullish(),
   description: z
     .string()
     .max(256, 'Description cannot be more than 256 characters')
     .nullish(),
+  sku: z.string().nullish(),
+  gtin: z.string().nullish(),
+  mpn: z.string().nullish(),
+  price: PriceSchema.nullish(),
+  priceCurrency: PriceCurrencySchema.nullish(),
+  availability: ItemAvailabilitySchema.nullish(),
   images: z.array(ImageSchema).optional(),
   category: CategorySchema.nullish(),
   metadata: JsonSchema.nullish(),
@@ -58,20 +80,29 @@ export const CreateProductSchema = ProductSchema.omit({
   updatedAt: true,
 }).extend({
   categoryId: z.string().nullish(),
-  name: z.string().min(1, { message: 'Name cannot be empty' }),
-  price: z.coerce
-    .number<string | number>()
-    .min(0, { message: 'Invalid price' }),
-  currency: z.string().length(3, { message: 'Must choose a valid currency' }),
+  price: PriceSchema,
+  priceCurrency: PriceCurrencySchema,
 });
 export const UpdateProductSchema = ProductSchema.omit({
   id: true,
   category: true,
   createdAt: true,
   updatedAt: true,
-}).extend({
-  categoryId: z.string().nullish(),
-});
+})
+  .extend({
+    categoryId: z.string().nullish(),
+    name: NameSchema.optional(),
+  })
+  // Mirrors the DB CHECK: price and priceCurrency change together.
+  .refine(
+    (p) =>
+      (p.price === undefined) === (p.priceCurrency === undefined) &&
+      (p.price === null) === (p.priceCurrency === null),
+    {
+      message: 'Price and currency must be set together',
+      path: ['priceCurrency'],
+    }
+  );
 export const CreateCategorySchema = CategorySchema.omit({
   id: true,
 });

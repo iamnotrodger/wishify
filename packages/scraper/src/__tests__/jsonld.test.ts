@@ -56,7 +56,7 @@ describe('ProductScraper', () => {
         description: 'Product JSON-LD description',
         images: [{ url: 'https://example.com/image.jpg' }],
         price: 89.99,
-        currency: 'EUR',
+        priceCurrency: 'EUR',
         metadata: {
           '@context': 'https://schema.org/',
           '@type': 'Product',
@@ -142,13 +142,15 @@ describe('JsonLdScraper with SSENSE', () => {
             url: 'https://img.ssensemedia.com/images/251161M213015_1/essentials-black-jersey-crewneck-t-shirt.jpg',
           },
         ],
+        url: 'https://www.ssense.com/en-ca/men/product/essentials/black-jersey-crewneck-t-shirt/16693101',
+        sku: '251161M213015',
         price: 85,
-        currency: 'CAD',
+        priceCurrency: 'CAD',
+        availability: 'InStock',
         metadata: {
           '@context': 'https://schema.org',
           '@type': 'Product',
           productID: 16693101,
-          sku: '251161M213015',
           offers: {
             '@type': 'Offer',
             price: 85,
@@ -157,7 +159,6 @@ describe('JsonLdScraper with SSENSE', () => {
             availability: 'https://schema.org/InStock',
             url: '/en-ca/men/product/essentials/black-jersey-crewneck-t-shirt/16693101',
           },
-          url: 'https://www.ssense.com/en-ca/men/product/essentials/black-jersey-crewneck-t-shirt/16693101',
         },
       });
     });

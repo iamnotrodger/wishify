@@ -222,7 +222,7 @@ interface ProductContentProps {
 }
 
 function ProductContent({ product, className }: ProductContentProps) {
-  const { brand, name, price, currency } = product;
+  const { brand, name, price, priceCurrency } = product;
   return (
     <div className={className}>
       {brand ? (
@@ -231,10 +231,12 @@ function ProductContent({ product, className }: ProductContentProps) {
         </div>
       ) : null}
       <div className='text-sm'>{name}</div>
-      <div className='flex gap-1 text-sm font-medium'>
-        <span>{currency ?? 'USD'}</span>
-        <span>{price}</span>
-      </div>
+      {price != null ? (
+        <div className='flex gap-1 text-sm font-medium'>
+          <span>{priceCurrency}</span>
+          <span>{price}</span>
+        </div>
+      ) : null}
     </div>
   );
 }

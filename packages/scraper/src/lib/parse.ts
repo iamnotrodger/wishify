@@ -1,5 +1,5 @@
 import { jsonrepair } from 'jsonrepair';
-import { Json } from '../types';
+import { ItemAvailability, itemAvailabilities, Json } from '../types';
 import { currencies } from './currency';
 
 export const parseNum = (value?: number | string | null, decimalSep = '.') => {
@@ -16,6 +16,15 @@ export const parseNum = (value?: number | string | null, decimalSep = '.') => {
   } catch (error) {
     return NaN;
   }
+};
+
+// Accepts full IRIs (https://schema.org/InStock), prefixed (schema:InStock) or bare names.
+export const parseAvailability = (
+  value: any
+): ItemAvailability | undefined => {
+  if (typeof value !== 'string') return undefined;
+  const name = value.trim().split(/[/:]/).pop();
+  return itemAvailabilities.find((a) => a === name);
 };
 
 export const parseString = (str: any) => {

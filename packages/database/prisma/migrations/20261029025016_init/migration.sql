@@ -1,6 +1,9 @@
 -- CreateSchema
 CREATE SCHEMA IF NOT EXISTS "public";
 
+-- CreateEnum
+CREATE TYPE "item_availability" AS ENUM ('BackOrder', 'Discontinued', 'InStock', 'InStoreOnly', 'LimitedAvailability', 'MadeToOrder', 'OnlineOnly', 'OutOfStock', 'PreOrder', 'PreSale', 'Reserved', 'SoldOut');
+
 -- CreateTable
 CREATE TABLE "category" (
     "id" TEXT NOT NULL,
@@ -18,12 +21,16 @@ CREATE TABLE "category" (
 CREATE TABLE "product" (
     "id" TEXT NOT NULL,
     "url" TEXT,
+    "name" TEXT NOT NULL,
     "brand" TEXT,
-    "name" TEXT,
-    "price" DECIMAL(12,2),
-    "currency" CHAR(3),
-    "images" JSONB NOT NULL DEFAULT '[]',
     "description" TEXT,
+    "sku" TEXT,
+    "gtin" TEXT,
+    "mpn" TEXT,
+    "price" DECIMAL(12,2),
+    "priceCurrency" CHAR(3),
+    "availability" "item_availability",
+    "images" JSONB NOT NULL DEFAULT '[]',
     "metadata" JSONB,
     "categoryId" TEXT,
     "userId" TEXT NOT NULL,
@@ -137,3 +144,6 @@ ALTER TABLE "session" ADD CONSTRAINT "session_userId_fkey" FOREIGN KEY ("userId"
 -- AddForeignKey
 ALTER TABLE "account" ADD CONSTRAINT "account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
+
+-- Prisma can't express CHECK constraints; a price without a currency is meaningless.
+ALTER TABLE "product" ADD CONSTRAINT "product_price_currency_check" CHECK (("price" IS NULL) = ("priceCurrency" IS NULL));

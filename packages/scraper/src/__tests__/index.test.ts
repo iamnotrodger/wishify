@@ -59,7 +59,7 @@ describe('Scraper Module', () => {
         description: 'Product JSON-LD description',
         images: [{ url: 'https://example.com/image.jpg' }],
         price: 89.99,
-        currency: 'CAD',
+        priceCurrency: 'CAD',
         metadata: {
           '@context': 'https://schema.org/',
           '@type': 'Product',
@@ -67,7 +67,6 @@ describe('Scraper Module', () => {
             price: '89.99',
             priceCurrency: 'CAD',
           },
-          url: 'https://example.com/product',
           favicon: 'favicon.ico',
         },
       });
@@ -109,12 +108,13 @@ describe('Scrapper Module with SSENSE', () => {
         ],
         url: url,
         price: 85,
-        currency: 'CAD',
+        priceCurrency: 'CAD',
+        sku: '251161M213015',
+        availability: 'InStock',
         metadata: {
           '@context': 'https://schema.org',
           '@type': 'Product',
           productID: 16693101,
-          sku: '251161M213015',
           offers: {
             '@type': 'Offer',
             price: 85,
@@ -123,7 +123,6 @@ describe('Scrapper Module with SSENSE', () => {
             availability: 'https://schema.org/InStock',
             url: '/en-ca/men/product/essentials/black-jersey-crewneck-t-shirt/16693101',
           },
-          url: 'https://www.ssense.com/en-ca/men/product/essentials/black-jersey-crewneck-t-shirt/16693101',
           favicon:
             'https://res.cloudinary.com/ssenseweb/image/upload/v1472005257/web/favicon.ico',
         },
@@ -151,11 +150,11 @@ describe('Scrapper Module with Amazon', () => {
       expect(product).toEqual({
         name: 'Tarcury WW2 F4U Corsair Fighter Bomber Building Bricks - 550 PCS Army Toy Set with 1 Toy Soldiers - Engaging WWII Toys for Kids and Adults, Building Sets - Amazon Canada',
         brand: 'Tarcury',
-        url: url,
+        url: 'https://www.amazon.ca/Tarcury-Corsair-Fighter-Bomber-Building/dp/B0CNT488KH',
         description:
           'Tarcury WW2 F4U Corsair Fighter Bomber Building Bricks - 550 PCS Army Toy Set with 1 Toy Soldiers - Engaging WWII Toys for Kids and Adults in Building Sets.',
         price: 29.99,
-        currency: 'CAD',
+        priceCurrency: 'CAD',
         images: [
           {
             url: 'https://m.media-amazon.com/images/I/61rbW2eIt3L._AC_SX679_.jpg',
@@ -163,7 +162,6 @@ describe('Scrapper Module with Amazon', () => {
         ],
         metadata: {
           category: 'gl_toy',
-          url: 'https://www.amazon.ca/Tarcury-Corsair-Fighter-Bomber-Building/dp/B0CNT488KH',
         },
       });
       expect(error).toBeNull();

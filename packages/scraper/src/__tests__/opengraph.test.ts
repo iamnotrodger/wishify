@@ -38,9 +38,9 @@ describe('OpenGraphScraper', () => {
         description: 'Product description',
         images: [{ url: 'https://example.com/image.jpg' }],
         price: 99.99,
-        currency: 'USD',
+        priceCurrency: 'USD',
+        url: 'https://example.com/product',
         metadata: {
-          url: 'https://example.com/product',
           favicon: 'favicon.ico',
         },
       });
@@ -80,9 +80,9 @@ describe('OpenGraphScraper with SSENSE', () => {
           },
         ],
         price: 85,
-        currency: 'CAD',
+        priceCurrency: 'CAD',
+        url: 'https://www.ssense.com/en-ca/en-ca/men/product/essentials/black-jersey-crewneck-t-shirt/16693101',
         metadata: {
-          url: 'https://www.ssense.com/en-ca/en-ca/men/product/essentials/black-jersey-crewneck-t-shirt/16693101',
           favicon:
             'https://res.cloudinary.com/ssenseweb/image/upload/v1472005257/web/favicon.ico',
         },
@@ -110,9 +110,8 @@ describe('OpenGraphScraper with Amazon', () => {
         name: 'Tarcury WW2 F4U Corsair Fighter Bomber Building Bricks - 550 PCS Army Toy Set with 1 Toy Soldiers - Engaging WWII Toys for Kids and Adults, Building Sets - Amazon Canada',
         description:
           'Tarcury WW2 F4U Corsair Fighter Bomber Building Bricks - 550 PCS Army Toy Set with 1 Toy Soldiers - Engaging WWII Toys for Kids and Adults in Building Sets.',
-        metadata: {
-          url: 'https://www.amazon.ca/Tarcury-Corsair-Fighter-Bomber-Building/dp/B0CNT488KH',
-        },
+        url: 'https://www.amazon.ca/Tarcury-Corsair-Fighter-Bomber-Building/dp/B0CNT488KH',
+        metadata: {},
       });
     });
   });

@@ -23,7 +23,7 @@ export const amazonSelectors: Record<string, Selector[]> = {
     { selector: '#dp .a-price span.a-offscreen' },
     { selector: '#priceblock_ourprice' },
   ],
-  currency: [
+  priceCurrency: [
     { selector: '#currencyOfPreference', attribute: 'value' },
     {
       selector: '[name="currencyOfPreference"]',

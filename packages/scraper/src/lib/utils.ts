@@ -2,21 +2,31 @@ import { Image, Product } from '../types';
 
 export const mergeProducts = (products: Product[]): Product => {
   const product: Product = {
+    url: null,
     name: null,
     brand: null,
-    price: null,
-    currency: null,
     description: null,
+    sku: null,
+    gtin: null,
+    mpn: null,
+    price: null,
+    priceCurrency: null,
+    availability: null,
     images: null,
     metadata: {},
   };
 
   for (const p of products) {
+    product.url = product.url ?? p.url;
     product.name = product.name ?? p.name;
     product.brand = product.brand ?? p.brand;
     product.description = product.description ?? p.description;
+    product.sku = product.sku ?? p.sku;
+    product.gtin = product.gtin ?? p.gtin;
+    product.mpn = product.mpn ?? p.mpn;
     product.price = product.price ?? p.price;
-    product.currency = product.currency ?? p.currency;
+    product.priceCurrency = product.priceCurrency ?? p.priceCurrency;
+    product.availability = product.availability ?? p.availability;
 
     if (p.metadata) product.metadata = { ...p.metadata, ...product.metadata };
     if (p.images) product.images = mergeImages(product.images || [], p.images);

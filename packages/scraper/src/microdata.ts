@@ -1,5 +1,10 @@
 import * as cheerio from 'cheerio';
-import { parseCurrency, parseNum, parseURL } from './lib/parse';
+import {
+  parseAvailability,
+  parseCurrency,
+  parseNum,
+  parseURL,
+} from './lib/parse';
 import { removeNullAndUndefined } from './lib/utils';
 import { findBySelectors } from './selector';
 import { Product, Scraper } from './types';
@@ -66,6 +71,23 @@ export default class MicrodataScraper implements Scraper {
       },
     ]);
 
+    const availability = findBySelectors(this.$, [
+      {
+        selector:
+          '[itemType*=Product] [itemType*=ffer] [itemProp=availability]',
+        attribute: ['href', 'content'],
+      },
+    ]);
+
+    const productProp = (prop: string) =>
+      findBySelectors(this.$, [
+        {
+          selector: `[itemType*=Product] [itemProp=${prop}]`,
+          attribute: 'content',
+        },
+        { selector: `[itemType*=Product] [itemProp=${prop}]` },
+      ]);
+
     const image = findBySelectors(this.$, [
       {
         selector: '[itemType*=Product] [itemProp=image]',
@@ -80,8 +102,17 @@ export default class MicrodataScraper implements Scraper {
       brand,
       description,
       images: imageURL ? [{ url: imageURL }] : null,
+      sku: productProp('sku'),
+      gtin:
+        productProp('gtin') ??
+        productProp('gtin13') ??
+        productProp('gtin12') ??
+        productProp('gtin14') ??
+        productProp('gtin8'),
+      mpn: productProp('mpn'),
       price: parseNum(price),
-      currency: parseCurrency(currency),
+      priceCurrency: parseCurrency(currency),
+      availability: parseAvailability(availability),
     };
 
     return removeNullAndUndefined(product);

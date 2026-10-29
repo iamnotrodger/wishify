@@ -8,7 +8,7 @@ describe('Utils Module', () => {
         {
           name: undefined,
           price: 10,
-          currency: 'USD',
+          priceCurrency: 'USD',
           description: 'Description 1',
           images: [{ url: 'img1' }, { url: 'img2' }],
           metadata: { key1: 'value1' },
@@ -16,7 +16,7 @@ describe('Utils Module', () => {
         {
           name: 'Product 1',
           price: 20,
-          currency: null,
+          priceCurrency: null,
           description: undefined,
           images: [{ url: 'img1', width: 1, height: 1 }, { url: 'img3' }],
           metadata: { key1: 'value1-test', key2: 'value2' },
@@ -26,7 +26,7 @@ describe('Utils Module', () => {
       expect(combinedProduct).toEqual({
         name: 'Product 1',
         price: 10,
-        currency: 'USD',
+        priceCurrency: 'USD',
         description: 'Description 1',
         images: [
           { url: 'img1', width: 1, height: 1 },

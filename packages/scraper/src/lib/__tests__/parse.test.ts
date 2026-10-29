@@ -1,5 +1,6 @@
 import { Json } from '../../types';
 import {
+  parseAvailability,
   parseCurrency,
   parseJson,
   parseNum,
@@ -81,6 +82,22 @@ describe('Parse Module', () => {
     it('should return the currency itself if the input is valid', () => {
       expect(parseCurrency('USD')).toBe('USD');
       expect(parseCurrency('eur')).toBe('EUR');
+    });
+  });
+
+  describe('parseAvailability', () => {
+    it('should accept schema.org IRIs, prefixed and bare names', () => {
+      expect(parseAvailability('https://schema.org/InStock')).toBe('InStock');
+      expect(parseAvailability('http://schema.org/OutOfStock')).toBe(
+        'OutOfStock'
+      );
+      expect(parseAvailability('schema:PreOrder')).toBe('PreOrder');
+      expect(parseAvailability('SoldOut')).toBe('SoldOut');
+    });
+
+    it('should return undefined for values outside ItemAvailability', () => {
+      expect(parseAvailability('in stock')).toBeUndefined();
+      expect(parseAvailability(null)).toBeUndefined();
     });
   });
 

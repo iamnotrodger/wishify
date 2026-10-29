@@ -7,12 +7,16 @@ import { z } from 'zod';
 const PRODUCT_FIELDS = {
   id: true,
   url: true,
-  brand: true,
   name: true,
-  price: true,
-  currency: true,
-  images: true,
+  brand: true,
   description: true,
+  sku: true,
+  gtin: true,
+  mpn: true,
+  price: true,
+  priceCurrency: true,
+  availability: true,
+  images: true,
   category: {
     select: {
       id: true,
