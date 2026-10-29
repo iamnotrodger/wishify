@@ -1,21 +1,25 @@
-import authConfig from '@/auth.config';
 import { safeAsync } from '@/lib/utils';
 import { prisma } from '@/prisma';
 import { PrismaAdapter } from '@auth/prisma-adapter';
-import NextAuth, { Session } from 'next-auth';
+import NextAuth, { DefaultSession, Session } from 'next-auth';
+import Google from 'next-auth/providers/google';
+
+declare module 'next-auth' {
+  interface Session {
+    user: { id: string } & DefaultSession['user'];
+  }
+}
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
+  providers: [Google],
+  pages: {
+    signIn: '/login',
+  },
   session: { strategy: 'jwt' },
   callbacks: {
-    jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-      }
-      return token;
-    },
     session({ session, token }) {
-      session.user.id = token.id as string;
+      if (token.sub) session.user.id = token.sub;
       return session;
     },
   },
@@ -35,17 +39,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (error) console.log(error);
     },
   },
-  ...authConfig,
 });
 
-export interface AuthenticatedSession extends Session {
-  user: {
-    id: string;
-  };
-}
+export type AuthenticatedSession = Session;
 
 export const isAuthenticated = (
   session: Session | null
 ): session is AuthenticatedSession => {
-  return !!session && !!session.user && typeof session.user.id === 'string';
+  return typeof session?.user?.id === 'string';
 };
