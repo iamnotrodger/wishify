@@ -22,7 +22,7 @@ export async function getCategories(
 
   const [data, error] = await safeAsync(
     prisma.category.findMany({
-      where: { userId: id, deletedAt: null },
+      where: { userId: id },
       select: CATEGORY_FIELDS,
     })
   );
@@ -42,7 +42,7 @@ export async function getCategoryById(
 
   const [data, error] = await safeAsync(
     prisma.category.findUnique({
-      where: { id, userId: user.id, deletedAt: null },
+      where: { id, userId: user.id },
       select: CATEGORY_FIELDS,
     })
   );
@@ -106,9 +106,8 @@ export async function deleteCategory(
   const { user } = session;
 
   const [, error] = await safeAsync(
-    prisma.category.update({
+    prisma.category.delete({
       where: { id, userId: user.id },
-      data: { deletedAt: new Date() },
       select: CATEGORY_FIELDS,
     })
   );

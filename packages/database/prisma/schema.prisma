@@ -15,9 +15,8 @@ model Category {
   userId   String
   products Product[]
 
-  createdAt DateTime  @default(now()) @db.Timestamptz
-  updatedAt DateTime  @updatedAt @db.Timestamptz
-  deletedAt DateTime? @db.Timestamptz
+  createdAt DateTime @default(now()) @db.Timestamptz
+  updatedAt DateTime @updatedAt @db.Timestamptz
 
   @@index([userId])
   @@map("category")
@@ -48,9 +47,8 @@ model Product {
   purchaseDate        DateTime?         @db.Timestamptz
   notes               String?
 
-  createdAt DateTime  @default(now()) @db.Timestamptz
-  updatedAt DateTime  @updatedAt @db.Timestamptz
-  deletedAt DateTime? @db.Timestamptz
+  createdAt DateTime @default(now()) @db.Timestamptz
+  updatedAt DateTime @updatedAt @db.Timestamptz
 
   @@index([userId, createdAt])
   @@index([userId, price])

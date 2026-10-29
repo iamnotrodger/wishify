@@ -12,7 +12,6 @@ CREATE TABLE "category" (
     "userId" TEXT NOT NULL,
     "createdAt" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMPTZ NOT NULL,
-    "deletedAt" TIMESTAMPTZ,
 
     CONSTRAINT "category_pkey" PRIMARY KEY ("id")
 );
@@ -39,7 +38,6 @@ CREATE TABLE "product" (
     "notes" TEXT,
     "createdAt" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMPTZ NOT NULL,
-    "deletedAt" TIMESTAMPTZ,
 
     CONSTRAINT "product_pkey" PRIMARY KEY ("id")
 );
