@@ -1,13 +1,14 @@
 import { auth } from '@/auth';
+import { GoogleIcon } from '@/components/google-icon';
 import { Button } from '@repo/ui/components/button';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 interface SignInProps {
-  redirectTo?: string;
+  redirectTo: string;
 }
 
-export const SignIn = ({ redirectTo = '/app' }: SignInProps) => {
+export const SignIn = ({ redirectTo }: SignInProps) => {
   return (
     <form
       action={async () => {
@@ -19,7 +20,14 @@ export const SignIn = ({ redirectTo = '/app' }: SignInProps) => {
         if (url) redirect(url);
       }}
     >
-      <Button type='submit'>Sign In</Button>
+      <Button
+        type='submit'
+        variant='outline'
+        className='h-11 w-full gap-2.5 rounded-[10px] [&_svg]:size-[18px]'
+      >
+        <GoogleIcon />
+        Continue with Google
+      </Button>
     </form>
   );
 };

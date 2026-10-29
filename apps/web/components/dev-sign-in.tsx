@@ -1,44 +1,80 @@
 import { auth } from '@/auth';
 import { Button } from '@repo/ui/components/button';
 import { Input } from '@repo/ui/components/input';
+import { Label } from '@repo/ui/components/label';
 import { APIError } from 'better-auth/api';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 
+/** Signs in, creating the account on first use so there is no sign-up step. */
+const signInOrSignUp = async (email: string, password: string) => {
+  const requestHeaders = await headers();
+
+  try {
+    await auth.api.signInEmail({
+      body: { email, password },
+      headers: requestHeaders,
+    });
+    return null;
+  } catch (signInError) {
+    if (!(signInError instanceof APIError)) throw signInError;
+
+    try {
+      await auth.api.signUpEmail({
+        body: { email, password, name: email.split('@')[0] ?? email },
+        headers: requestHeaders,
+      });
+      return null;
+    } catch (signUpError) {
+      if (!(signUpError instanceof APIError)) throw signUpError;
+      // Sign-up only fails here when the account exists, so the password was wrong.
+      return signInError.message;
+    }
+  }
+};
+
 interface DevSignInProps {
-  redirectTo?: string;
+  redirectTo: string;
 }
 
-export const DevSignIn = ({ redirectTo = '/app' }: DevSignInProps) => {
+export const DevSignIn = ({ redirectTo }: DevSignInProps) => {
   return (
     <form
-      className='flex w-full flex-col gap-2'
+      className='flex flex-col gap-3'
       action={async (formData: FormData) => {
         'use server';
-        const email = String(formData.get('email'));
-        const password = String(formData.get('password'));
-        const requestHeaders = await headers();
+        const error = await signInOrSignUp(
+          String(formData.get('email')),
+          String(formData.get('password'))
+        );
 
-        try {
-          await auth.api.signInEmail({
-            body: { email, password },
-            headers: requestHeaders,
-          });
-        } catch (error) {
-          if (!(error instanceof APIError)) throw error;
-          // Creates the account on first use so there is no sign-up step.
-          await auth.api.signUpEmail({
-            body: { email, password, name: email.split('@')[0] ?? email },
-            headers: requestHeaders,
-          });
+        if (error) {
+          redirect(`/login?${new URLSearchParams({ error, redirectTo })}`);
         }
-
         redirect(redirectTo);
       }}
     >
-      <Input name='email' type='email' defaultValue='dev@wishify.local' />
-      <Input name='password' type='password' defaultValue='password' />
-      <Button type='submit' variant='outline'>
+      <div className='flex flex-col gap-1.5'>
+        <Label htmlFor='dev-email'>Email</Label>
+        <Input
+          id='dev-email'
+          name='email'
+          type='email'
+          required
+          defaultValue='dev@wishify.local'
+        />
+      </div>
+      <div className='flex flex-col gap-1.5'>
+        <Label htmlFor='dev-password'>Password</Label>
+        <Input
+          id='dev-password'
+          name='password'
+          type='password'
+          required
+          defaultValue='password'
+        />
+      </div>
+      <Button type='submit' variant='secondary' className='h-10'>
         Dev sign in
       </Button>
     </form>

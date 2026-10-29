@@ -9,3 +9,7 @@ export async function safeAsync<T>(
     return [null, error];
   }
 }
+
+// Only same-origin paths: "//host" and "/\host" are treated by browsers as other origins.
+export const toSafeRedirect = (path: unknown, fallback = '/app') =>
+  typeof path === 'string' && /^\/(?![/\\])/.test(path) ? path : fallback;
