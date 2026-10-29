@@ -38,10 +38,7 @@ export const mergeProducts = (products: Product[]): Product => {
 const mergeImages = (baseImages: Image[], newImages: Image[]): Image[] => {
   const imageMap = new Map<string, Image>();
 
-  baseImages.reduce((map, img) => {
-    map.set(img.url, img);
-    return map;
-  }, imageMap);
+  for (const image of baseImages) imageMap.set(image.url, image);
 
   for (const image of newImages) {
     const existingImage = imageMap.get(image.url);
@@ -65,21 +62,28 @@ const mergeImages = (baseImages: Image[], newImages: Image[]): Image[] => {
 
 export const normalizeText = (text?: string | null) => {
   if (!text) return text;
-  return text.trim().replace(/\s+/g, ' ').trim();
+  return text.replace(/\s+/g, ' ').trim();
 };
 
-export const removeNullAndUndefined = (obj: any): Object => {
-  const isValidValue = (value: any) =>
+export const toImages = (urls: (string | null)[]): Image[] | null => {
+  const images = urls.filter((url) => url != null).map((url) => ({ url }));
+  return images.length ? images : null;
+};
+
+export const removeNullAndUndefined = <T>(obj: T): T => {
+  const isValidValue = (value: unknown) =>
     value !== null && value !== undefined && !Number.isNaN(value);
 
   if (Array.isArray(obj)) {
-    return obj.map((item) => removeNullAndUndefined(item)).filter(isValidValue);
+    return obj
+      .map((item) => removeNullAndUndefined(item))
+      .filter(isValidValue) as T;
   } else if (obj !== null && typeof obj === 'object') {
     return Object.fromEntries(
       Object.entries(obj)
         .map(([k, v]) => [k, removeNullAndUndefined(v)])
-        .filter(([_, v]) => isValidValue(v))
-    );
+        .filter(([, v]) => isValidValue(v))
+    ) as T;
   }
   return obj;
 };

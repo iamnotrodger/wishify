@@ -1,7 +1,3 @@
-export interface Scraper {
-  getProduct(): Product;
-}
-
 /** https://schema.org/ItemAvailability */
 export const itemAvailabilities = [
   'BackOrder',
@@ -41,4 +37,13 @@ export type Image = {
   height?: number;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Json = Record<string, any>;
+
+export type Extractor = (doc: Document, pageUrl: URL) => Product;
+
+/** Site-specific rules for pages whose structured data is missing or wrong. */
+export type Site = {
+  match: (pageUrl: URL) => boolean;
+  extract: Extractor;
+};

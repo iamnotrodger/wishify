@@ -6,7 +6,7 @@ import {
   CreateProductInput,
   CreateProductSchema,
 } from '@repo/api';
-import { Product as ScrapedProduct } from '@repo/scraper/types';
+import { Product as ScrapedProduct } from '@/scraper';
 import { Button } from '@repo/ui/components/button';
 import {
   Form,

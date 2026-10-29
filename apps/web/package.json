@@ -12,7 +12,6 @@
     "@hookform/resolvers": "^6.0.2",
     "@repo/api": "*",
     "@repo/db": "*",
-    "@repo/scraper": "*",
     "@repo/ui": "*",
     "@tanstack/react-query": "^5.105.0",
     "better-auth": "^1.7.14",
