@@ -5,8 +5,12 @@ import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { nextCookies } from 'better-auth/next-js';
 import { headers } from 'next/headers';
 
+// Lets local development sign in without Google credentials.
+export const isEmailPasswordEnabled = process.env.NODE_ENV !== 'production';
+
 export const auth = betterAuth({
   database: prismaAdapter(prisma, { provider: 'postgresql' }),
+  emailAndPassword: { enabled: isEmailPasswordEnabled },
   socialProviders: {
     google: {
       clientId: process.env.AUTH_GOOGLE_ID!,

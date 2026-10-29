@@ -1,3 +1,5 @@
+import { isEmailPasswordEnabled } from '@/auth';
+import { DevSignIn } from '@/components/dev-sign-in';
 import { SignIn } from '@/components/sign-in';
 
 export default async function Login({
@@ -14,6 +16,7 @@ export default async function Login({
           <h2 className='text-xl font-semibold'>Login</h2>
         </div>
         <SignIn redirectTo={redirectTo} />
+        {isEmailPasswordEnabled && <DevSignIn redirectTo={redirectTo} />}
       </section>
     </main>
   );
