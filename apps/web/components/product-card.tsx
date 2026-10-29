@@ -5,43 +5,58 @@ import {
   updateProductAction,
   UpdateProductProps,
 } from '@/app/actions';
-import { Product } from '@repo/api';
+import { CategoryInput } from '@/components/category-input';
+import {
+  type Action,
+  getStatus,
+  primaryActions,
+  secondaryActions,
+  type Status,
+} from '@/lib/product-status';
+import { Product, UpdateProductInput } from '@repo/api';
 import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
+  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from '@repo/ui/components/alert-dialog';
 import { Button } from '@repo/ui/components/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@repo/ui/components/dropdown-menu';
+import { formatPrice } from '@repo/ui/lib/format-price';
 import { cn } from '@repo/ui/lib/utils';
 import { useMutation } from '@tanstack/react-query';
 import {
+  Check,
   ExternalLink,
+  type LucideIcon,
+  MoreHorizontal,
   PartyPopper,
+  ShoppingBag,
   ShoppingCart,
-  Tag,
   Trash,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
-import { CategoryIcon } from './category-icon';
-
-const PLACEHOLDER_IMAGE =
-  'https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png';
 
 interface ProductCardProps {
   product: Product;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const { id, plannedPurchaseDate, purchaseDate } = product;
-  const [isPlanning, setIsPlanning] = useState(plannedPurchaseDate != null);
-  const [isBought, setIsBought] = useState(purchaseDate != null);
+  const { id } = product;
+  const status = getStatus(product);
 
+  // Optimistic (see query-client), so the status reads straight from props.
   const updateProduct = useMutation({
     mutationKey: ['updateProduct'],
     mutationFn: async (updateProduct: UpdateProductProps) => {
@@ -50,55 +65,27 @@ export function ProductCard({ product }: ProductCardProps) {
       return updatedProduct;
     },
   });
-
-  const handlePrimaryClick = () => {
-    if (isBought) {
-      updateProduct.mutate({ id, product: { purchaseDate: null } });
-      setIsBought(false);
-    } else if (isPlanning) {
-      updateProduct.mutate({
-        id,
-        product: { purchaseDate: new Date().toISOString() },
-      });
-      setIsBought(true);
-    } else {
-      updateProduct.mutate({
-        id,
-        product: { plannedPurchaseDate: new Date().toISOString() },
-      });
-      setIsPlanning(true);
-    }
-  };
-
-  const handleSecondaryClick = () => {
-    if (!isBought && !isPlanning) {
-      updateProduct.mutate({
-        id,
-        product: { purchaseDate: new Date().toISOString() },
-      });
-      setIsBought(true);
-    } else if (isPlanning && !isBought) {
-      updateProduct.mutate({ id, product: { plannedPurchaseDate: null } });
-      setIsPlanning(false);
-    }
-  };
+  const update = (product: UpdateProductInput) =>
+    updateProduct.mutate({ id, product });
+  const run = (action: Action) => update(action.update());
 
   return (
-    <div className='group flex h-[450px] flex-col gap-3 overflow-hidden'>
+    // cqw is the card's width: the image starts square and gives half its
+    // height to the actions on hover, so the card height never changes.
+    <div className='group @container flex flex-col gap-3 overflow-hidden'>
       <ProductMedia
         product={product}
-        isPlanning={isPlanning}
-        isBought={isBought}
-        className='flex-[1_1_100%] transition-all duration-300 group-hover:flex-[0_0_50%]'
+        status={status}
+        onAction={run}
+        className='h-[100cqw] shrink-0 transition-[height] duration-300 group-hover:h-[50cqw] group-has-aria-expanded:h-[50cqw]'
       />
       <ProductContent product={product} className='flex flex-col gap-1' />
       <ProductActions
         product={product}
-        isPlanning={isPlanning}
-        isBought={isBought}
-        onPrimaryClick={handlePrimaryClick}
-        onSecondaryClick={handleSecondaryClick}
-        className='h-0 opacity-0 transition-opacity duration-300 group-hover:flex-1 group-hover:opacity-100'
+        status={status}
+        onAction={run}
+        onCategoriesChange={(categoryIds) => update({ categoryIds })}
+        className='h-0 overflow-hidden opacity-0 transition-[height,opacity] duration-300 group-hover:h-[50cqw] group-hover:opacity-100 group-has-aria-expanded:h-[50cqw] group-has-aria-expanded:opacity-100'
       />
     </div>
   );
@@ -106,113 +93,65 @@ export function ProductCard({ product }: ProductCardProps) {
 
 interface ProductMediaProps {
   product: Product;
-  isPlanning: boolean;
-  isBought: boolean;
+  status: Status;
+  onAction: (action: Action) => void;
   className?: string;
 }
 
 function ProductMedia({
   product,
-  isPlanning,
-  isBought,
+  status,
+  onAction,
   className,
 }: ProductMediaProps) {
-  const { id, images, brand, name, url } = product;
   return (
     <div
       className={cn(
-        'group/media relative overflow-hidden rounded-lg',
+        'group/media bg-muted relative overflow-hidden rounded-lg',
         className
       )}
     >
-      <Link href={`?product_id=${id}`} scroll={false}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          className='h-full w-full object-cover transition-all duration-300'
-          src={images && images[0] ? images[0]?.url : PLACEHOLDER_IMAGE}
-          alt={`${brand} - ${name}`}
-          loading='lazy'
-          onError={(e) => {
-            e.currentTarget.src = PLACEHOLDER_IMAGE;
-          }}
-        />
+      <Link
+        href={`?product_id=${product.id}`}
+        scroll={false}
+        className='block size-full'
+      >
+        <ProductImage product={product} />
       </Link>
-      <ProductTag isPlanning={isPlanning} isBought={isBought} />
-      <ProductMediaActions url={url} product={product} />
+      <StatusBadge status={status} />
+      <div className='invisible absolute top-3 right-3 opacity-0 transition-opacity duration-300 group-hover:visible group-hover/media:opacity-100 has-data-[state=open]:visible has-data-[state=open]:opacity-100 pointer-coarse:visible pointer-coarse:opacity-100'>
+        <ProductMenu product={product} status={status} onAction={onAction} />
+      </div>
     </div>
   );
 }
 
-interface ProductTagProps {
-  isPlanning: boolean;
-  isBought: boolean;
-}
+function ProductImage({ product }: { product: Product }) {
+  const { images, brand, name } = product;
+  const url = images?.[0]?.url;
+  const [failed, setFailed] = useState(false);
 
-function ProductTag({ isPlanning, isBought }: ProductTagProps) {
-  if (!isPlanning && !isBought) {
-    return null;
+  if (!url || failed) {
+    return (
+      <div className='flex size-full items-center justify-center'>
+        <ShoppingBag
+          className='text-muted-foreground/60 size-16'
+          strokeWidth={1}
+          aria-hidden
+        />
+      </div>
+    );
   }
 
   return (
-    <div
-      dir='rtl'
-      className='bg-muted absolute left-0 top-3 flex items-center gap-2 rounded-s-lg p-3 shadow-sm'
-    >
-      <span className='text-sm'>{isBought ? 'Bought' : 'Plan to buy'}</span>
-      {isBought ? (
-        <Tag className='h-4 w-4' />
-      ) : (
-        <ShoppingCart className='h-4 w-4' />
-      )}
-    </div>
-  );
-}
-
-interface ProductMediaActionsProps {
-  url?: string | null;
-  product: Product;
-}
-
-function ProductMediaActions({ url, product }: ProductMediaActionsProps) {
-  const deleteProduct = useMutation({
-    mutationKey: ['deleteProduct'],
-    mutationFn: async (id: string) => {
-      const error = await deleteProductAction(id);
-      if (error) throw new Error(error);
-    },
-  });
-
-  return (
-    <div className='invisible absolute right-3 top-3 flex flex-col gap-2 opacity-0 transition-opacity duration-300 group-hover:visible group-hover/media:opacity-100'>
-      <a href={url ?? ''} className={url ? '' : 'hidden'}>
-        <Button size='icon' variant='outline' className='rounded-full'>
-          <ExternalLink />
-        </Button>
-      </a>
-      <AlertDialog>
-        <AlertDialogTrigger asChild>
-          <Button size='icon' variant='destructive' className='rounded-full'>
-            <Trash />
-          </Button>
-        </AlertDialogTrigger>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction asChild>
-              <Button
-                variant='destructive'
-                onClick={() => deleteProduct.mutate(product.id)}
-              >
-                Continue
-              </Button>
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      className='size-full object-contain'
+      src={url}
+      alt={[brand, name].filter(Boolean).join(' - ')}
+      loading='lazy'
+      onError={() => setFailed(true)}
+    />
   );
 }
 
@@ -223,6 +162,7 @@ interface ProductContentProps {
 
 function ProductContent({ product, className }: ProductContentProps) {
   const { brand, name, price, priceCurrency } = product;
+  const formattedPrice = formatPrice(price, priceCurrency);
   return (
     <div className={className}>
       {brand ? (
@@ -231,11 +171,8 @@ function ProductContent({ product, className }: ProductContentProps) {
         </div>
       ) : null}
       <div className='text-sm'>{name}</div>
-      {price != null ? (
-        <div className='flex gap-1 text-sm font-medium'>
-          <span>{priceCurrency}</span>
-          <span>{price}</span>
-        </div>
+      {formattedPrice ? (
+        <div className='text-sm font-medium'>{formattedPrice}</div>
       ) : null}
     </div>
   );
@@ -243,60 +180,159 @@ function ProductContent({ product, className }: ProductContentProps) {
 
 interface ProductActionsProps {
   product: Product;
-  isPlanning: boolean;
-  isBought: boolean;
-  onPrimaryClick: () => void;
-  onSecondaryClick: () => void;
+  status: Status;
+  onAction: (action: Action) => void;
+  onCategoriesChange: (categoryIds: string[]) => void;
   className?: string;
 }
 
 function ProductActions({
   product,
-  isPlanning,
-  isBought,
-  onPrimaryClick,
-  onSecondaryClick,
+  status,
+  onAction,
+  onCategoriesChange,
   className,
 }: ProductActionsProps) {
-  const { category } = product;
-  const primaryButtonClass = isBought ? '' : '';
-  const secondaryButtonClass = isBought ? 'hidden' : '';
+  const { categories } = product;
+  const primary = primaryActions[status];
+  const secondary = secondaryActions[status];
 
   return (
     <div className={cn('flex flex-col gap-2', className)}>
-      {category ? (
-        <div className='border-foreground flex h-9 w-fit items-center gap-2 rounded-md border px-3 text-sm'>
-          <CategoryIcon icon={category.icon} />
-          <span>{category.name}</span>
-        </div>
-      ) : null}
+      <CategoryInput
+        value={categories?.map(({ id }) => id) ?? []}
+        onChange={onCategoriesChange}
+      />
 
       <Button
-        className={cn('w-full', primaryButtonClass)}
-        variant={isBought ? 'ghost' : 'default'}
-        onClick={onPrimaryClick}
+        className='w-full'
+        variant={status === 'bought' ? 'ghost' : 'default'}
+        onClick={() => onAction(primary)}
       >
-        {isBought ? (
-          'Undo purchase'
-        ) : isPlanning ? (
-          <>
-            <span>Bought it!</span>
-            <PartyPopper />
-          </>
-        ) : (
-          'Want to Buy'
-        )}
+        <span>{primary.label}</span>
+        {status === 'planned' && <PartyPopper />}
       </Button>
 
-      <Button
-        variant='ghost'
-        className={cn('text-primary w-full', secondaryButtonClass)}
-        onClick={onSecondaryClick}
-      >
-        {isPlanning
-          ? 'Remove from planned purchases'
-          : 'I bought this item already'}
-      </Button>
+      {secondary && (
+        <Button
+          variant='ghost'
+          className='text-primary w-full'
+          onClick={() => onAction(secondary)}
+        >
+          {secondary.label}
+        </Button>
+      )}
     </div>
+  );
+}
+
+const statusBadges: Partial<
+  Record<Status, { label: string; icon: LucideIcon; className?: string }>
+> = {
+  planned: { label: 'Planned', icon: ShoppingCart },
+  bought: { label: 'Bought', icon: Check, className: 'text-green-700' },
+};
+
+function StatusBadge({ status }: { status: Status }) {
+  const badge = statusBadges[status];
+  if (!badge) return null;
+
+  return (
+    <span
+      className={cn(
+        'bg-background absolute top-3 left-3 inline-flex h-6 items-center gap-1 rounded-full px-2.5 text-xs font-medium shadow-sm',
+        badge.className
+      )}
+    >
+      <badge.icon className='size-3' strokeWidth={2.5} aria-hidden />
+      {badge.label}
+    </span>
+  );
+}
+
+interface ProductMenuProps {
+  product: Product;
+  status: Status;
+  onAction: (action: Action) => void;
+}
+
+function ProductMenu({ product, status, onAction }: ProductMenuProps) {
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const primary = primaryActions[status];
+  const secondary = secondaryActions[status];
+
+  const deleteProduct = useMutation({
+    mutationKey: ['deleteProduct'],
+    mutationFn: async (id: string) => {
+      const error = await deleteProductAction(id);
+      if (error) throw new Error(error);
+    },
+  });
+
+  return (
+    <>
+      {/* Non-modal so opening the dialog from an item doesn't leave the page inert. */}
+      <DropdownMenu modal={false}>
+        <DropdownMenuTrigger asChild>
+          <Button
+            size='icon'
+            variant='outline'
+            aria-label={`Actions for ${product.name}`}
+            className='size-8 rounded-full shadow-sm'
+          >
+            <MoreHorizontal />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align='end' className='w-48'>
+          {product.url && (
+            <DropdownMenuItem asChild>
+              <a href={product.url} target='_blank' rel='noopener noreferrer'>
+                <ExternalLink />
+                Open in store
+              </a>
+            </DropdownMenuItem>
+          )}
+          <DropdownMenuItem onSelect={() => onAction(primary)}>
+            <primary.icon />
+            {primary.label}
+          </DropdownMenuItem>
+          {secondary && (
+            <DropdownMenuItem onSelect={() => onAction(secondary)}>
+              <secondary.icon />
+              {secondary.label}
+            </DropdownMenuItem>
+          )}
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            variant='destructive'
+            onSelect={() => setConfirmOpen(true)}
+          >
+            <Trash />
+            Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this item?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {product.name} will be removed from your wishlist.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction asChild>
+              <Button
+                variant='destructive'
+                onClick={() => deleteProduct.mutate(product.id)}
+              >
+                Delete
+              </Button>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }

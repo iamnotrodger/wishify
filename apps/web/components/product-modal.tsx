@@ -1,45 +1,53 @@
 'use client';
 
 import { updateProductAction, UpdateProductProps } from '@/app/actions';
+import { CategoryInput } from '@/components/category-input';
 import { fetchJson } from '@/lib/fetch-json';
-import { zodResolver } from '@hookform/resolvers/zod';
 import {
-  Product,
-  UpdateProduct,
-  UpdateProductInput,
-  UpdateProductSchema,
-} from '@repo/api';
+  getStatus,
+  primaryActions,
+  secondaryActions,
+} from '@/lib/product-status';
+import { Image, Product, UpdateProductInput } from '@repo/api';
 import { Button } from '@repo/ui/components/button';
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
-  DialogFooter,
-  DialogHeader,
   DialogTitle,
 } from '@repo/ui/components/dialog';
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@repo/ui/components/form';
-import { Input } from '@repo/ui/components/input';
+import { ImageInput } from '@repo/ui/components/image-input';
+import { PriceInput } from '@repo/ui/components/price-input';
 import { cn } from '@repo/ui/lib/utils';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { Loader2 } from 'lucide-react';
+import { ArrowUpRight, X } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useCallback, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useRef, useState } from 'react';
 
-const PLACEHOLDER_IMAGE =
-  'https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png';
+// Marks fields where Escape should revert the edit instead of closing the dialog.
+const INLINE_EDIT = 'data-inline-edit';
 
-const classes = {
-  formItem: 'grid grid-cols-8 items-center gap-4',
-  formInput: 'col-span-6',
-  formLabel: 'col-span-2 text-right text-sm text-nowrap',
+const inlineEditClass =
+  'hover:bg-accent/60 focus-visible:ring-ring/50 -mx-1.5 rounded-md bg-transparent px-1.5 outline-none focus-visible:bg-transparent focus-visible:ring-2';
+
+const savedDate = new Intl.DateTimeFormat(undefined, {
+  month: 'short',
+  day: 'numeric',
+});
+
+const getHostname = (url?: string | null) => {
+  try {
+    return url ? new URL(url).hostname.replace(/^www\./, '') : null;
+  } catch {
+    return null;
+  }
+};
+
+// "InStock" -> "In stock"
+const formatAvailability = (availability: string) => {
+  const words = availability.replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase();
+  return words.charAt(0).toUpperCase() + words.slice(1);
 };
 
 export function ProductModal() {
@@ -58,10 +66,6 @@ export function ProductModal() {
     enabled: !!id,
   });
 
-  const form = useForm<UpdateProductInput, unknown, UpdateProduct>({
-    resolver: zodResolver(UpdateProductSchema),
-  });
-
   const updateProduct = useMutation({
     mutationKey: ['updateProduct'],
     mutationFn: async (updateProduct: UpdateProductProps) => {
@@ -71,27 +75,7 @@ export function ProductModal() {
     },
   });
 
-  useEffect(() => {
-    if (product) {
-      form.reset(product);
-    }
-  }, [product]);
-
-  const onSubmit = useCallback(
-    async (values: UpdateProduct) => {
-      if (!id || !form.formState.isDirty) {
-        console.log('No changes to save');
-        return;
-      }
-
-      await updateProduct.mutateAsync({ id, product: values });
-    },
-    [id, form.formState.isDirty]
-  );
-
   const handleClose = () => {
-    form.reset();
-
     const params = new URLSearchParams(Array.from(searchParams.entries()));
     params.delete('product_id');
     router.push(`${pathname}?${params.toString()}`, { scroll: false });
@@ -99,152 +83,322 @@ export function ProductModal() {
 
   return (
     <Dialog open={!!id && product != null} onOpenChange={handleClose}>
-      <DialogContent className='overflow-hidden p-0 sm:max-w-[900px]'>
-        <DialogHeader className='hidden'>
-          <DialogTitle>Edit Product</DialogTitle>
-          <DialogDescription>
-            Make changes to your product here. Click save when you're done.
-          </DialogDescription>
-        </DialogHeader>
-        <div className='flex h-[500px]'>
-          <div className='flex-1'>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              className='h-full w-full object-cover transition-all duration-300'
-              src={
-                product && product.images && product.images[0]
-                  ? product.images[0]?.url
-                  : PLACEHOLDER_IMAGE
-              }
-              alt={`${product?.brand} - ${product?.name}`}
-              loading='lazy'
-              onError={(e) => {
-                e.currentTarget.src = PLACEHOLDER_IMAGE;
-              }}
-            />
-          </div>
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className='mx-10 my-14 flex-1 flex flex-col gap-2'
-            >
-              <FormField
-                control={form.control}
-                name='name'
-                render={({ field }) => (
-                  <FormItem className={classes.formItem}>
-                    <FormLabel className={classes.formLabel}>
-                      Product Name<span className='text-red-500'>*</span>
-                    </FormLabel>
-                    <Input
-                      className={classes.formInput}
-                      onChange={field.onChange}
-                      value={field.value ?? ''}
-                      placeholder='e.g. Wide Jeans'
-                      spellCheck={false}
-                    />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name='brand'
-                render={({ field }) => (
-                  <FormItem className={classes.formItem}>
-                    <FormLabel className={classes.formLabel}>Brand</FormLabel>
-                    <Input
-                      className={classes.formInput}
-                      onChange={field.onChange}
-                      value={field.value ?? ''}
-                      placeholder='e.g. Biggie & Co.'
-                      spellCheck={false}
-                    />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name='price'
-                render={({ field }) => (
-                  <FormItem className={classes.formItem}>
-                    <FormLabel className={classes.formLabel}>Price</FormLabel>
-                    <Input
-                      type='number'
-                      step='0.01'
-                      onChange={field.onChange}
-                      className={classes.formInput}
-                      value={field.value ?? ''}
-                      placeholder='e.g. 100.00'
-                    />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name='images'
-                render={({ field }) => (
-                  <FormItem className={classes.formItem}>
-                    <FormLabel className={classes.formLabel}>
-                      Image URL
-                    </FormLabel>
-                    <Input
-                      className={classes.formInput}
-                      onChange={(e) =>
-                        field.onChange([{ url: e.target.value }])
-                      }
-                      value={field.value?.[0]?.url ?? ''}
-                      placeholder='Insert image url here'
-                      spellCheck={false}
-                    />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name='url'
-                render={({ field }) => (
-                  <FormItem className={classes.formItem}>
-                    <FormLabel className={classes.formLabel}>
-                      Product URL
-                    </FormLabel>
-                    <Input
-                      className={classes.formInput}
-                      onChange={field.onChange}
-                      value={field.value ?? ''}
-                      placeholder='Insert product url here'
-                      spellCheck={false}
-                    />
-                  </FormItem>
-                )}
-              />
-
-              <DialogFooter className='mt-auto'>
-                <Button
-                  type='submit'
-                  disabled={
-                    !product ||
-                    updateProduct.isPending ||
-                    !form.formState.isValid
-                  }
-                >
-                  <Loader2
-                    className={cn(
-                      'animate-spin',
-                      updateProduct.isPending ? '' : 'hidden'
-                    )}
-                  />
-                  Save
-                </Button>
-              </DialogFooter>
-            </form>
-          </Form>
-        </div>
+      <DialogContent
+        showCloseButton={false}
+        className='max-h-[calc(100svh-6rem)] gap-0 overflow-y-auto rounded-2xl p-0 sm:max-w-[1000px]'
+        onEscapeKeyDown={(event) => {
+          if (document.activeElement?.hasAttribute(INLINE_EDIT)) {
+            event.preventDefault();
+          }
+        }}
+      >
+        {product && (
+          <ProductDetail
+            product={product}
+            onUpdate={(changes) =>
+              updateProduct.mutate({ id: product.id, product: changes })
+            }
+          />
+        )}
       </DialogContent>
     </Dialog>
+  );
+}
+
+interface ProductDetailProps {
+  product: Product;
+  onUpdate: (changes: UpdateProductInput) => void;
+}
+
+function ProductDetail({ product, onUpdate }: ProductDetailProps) {
+  const { url, name, brand, images, categories, availability, createdAt } =
+    product;
+  const hostname = getHostname(url);
+  const status = getStatus(product);
+  const primary = primaryActions[status];
+  const secondary = secondaryActions[status];
+  const meta = [
+    availability && formatAvailability(availability),
+    `Saved ${savedDate.format(new Date(createdAt))}`,
+  ]
+    .filter(Boolean)
+    .join(' · ');
+
+  return (
+    <>
+      <DialogTitle className='sr-only'>{name}</DialogTitle>
+      <DialogDescription className='sr-only'>Product details</DialogDescription>
+
+      <header className='bg-background/90 sticky top-0 z-10 flex items-center justify-between gap-3 border-b py-3 pr-4 pl-6 backdrop-blur'>
+        {url ? (
+          <a
+            href={url}
+            target='_blank'
+            rel='noopener noreferrer'
+            className='text-muted-foreground hover:text-foreground inline-flex min-w-0 items-center gap-1.5 text-[13px]'
+          >
+            <span className='truncate'>{hostname ?? 'Store'}</span>
+            <ArrowUpRight className='size-3 shrink-0' />
+          </a>
+        ) : (
+          <span />
+        )}
+        <DialogClose asChild>
+          <Button variant='ghost' size='icon-sm' aria-label='Close'>
+            <X />
+          </Button>
+        </DialogClose>
+      </header>
+
+      <div className='flex flex-wrap gap-8 p-6'>
+        <ProductGallery
+          images={images ?? []}
+          onChange={(images) => onUpdate({ images })}
+        />
+
+        <div className='flex min-w-0 flex-[1_1_360px] flex-col gap-5'>
+          <div className='flex flex-col gap-1.5'>
+            <EditableText
+              key={`brand:${brand}`}
+              aria-label='Brand'
+              value={brand ?? ''}
+              placeholder='Add brand'
+              className='text-muted-foreground text-[13px]'
+              onSave={(value) => onUpdate({ brand: value || null })}
+            />
+            <EditableText
+              key={`name:${name}`}
+              aria-label='Name'
+              value={name}
+              required
+              className='text-[26px] leading-tight font-semibold tracking-tight'
+              onSave={(value) => onUpdate({ name: value })}
+            />
+            <EditablePrice
+              key={`price:${product.price}:${product.priceCurrency}`}
+              product={product}
+              onUpdate={onUpdate}
+            />
+            <span className='text-muted-foreground text-[13px]'>{meta}</span>
+          </div>
+
+          <div className='grid grid-cols-2 gap-2'>
+            <Button
+              size='lg'
+              variant={status === 'bought' ? 'outline' : 'default'}
+              className='h-[42px] rounded-[10px]'
+              onClick={() => onUpdate(primary.update())}
+            >
+              <primary.icon />
+              {primary.label}
+            </Button>
+            {url && (
+              <Button
+                asChild
+                size='lg'
+                variant='outline'
+                className='h-[42px] rounded-[10px]'
+              >
+                <a href={url} target='_blank' rel='noopener noreferrer'>
+                  Open in store
+                  <ArrowUpRight />
+                </a>
+              </Button>
+            )}
+          </div>
+
+          <dl className='flex flex-col border-t text-[13px]'>
+            <div className='flex min-h-11 items-center justify-between gap-4 border-b py-1.5'>
+              <dt className='text-muted-foreground'>Categories</dt>
+              <dd className='flex min-w-0 flex-1 justify-end'>
+                <CategoryInput
+                  value={categories?.map(({ id }) => id) ?? []}
+                  onChange={(categoryIds) => onUpdate({ categoryIds })}
+                  className='justify-end'
+                />
+              </dd>
+            </div>
+          </dl>
+
+          {secondary && (
+            <button
+              type='button'
+              onClick={() => onUpdate(secondary.update())}
+              className='text-muted-foreground hover:text-foreground self-start text-[13px] underline underline-offset-3'
+            >
+              {secondary.label}
+            </button>
+          )}
+        </div>
+      </div>
+    </>
+  );
+}
+
+interface ProductGalleryProps {
+  images: Image[];
+  onChange: (images: Image[]) => void;
+}
+
+function ProductGallery({ images, onChange }: ProductGalleryProps) {
+  const [selected, setSelected] = useState(0);
+  // Clamped so removing the last image never points past the end.
+  const index = Math.min(selected, Math.max(images.length - 1, 0));
+
+  return (
+    <div className='flex min-w-0 flex-[1_1_360px] flex-col gap-2.5'>
+      <ImageInput
+        value={images[index]?.url}
+        onChange={(url) =>
+          onChange(
+            url
+              ? images.length
+                ? images.map((image, i) => (i === index ? { url } : image))
+                : [{ url }]
+              : images.filter((_, i) => i !== index)
+          )
+        }
+        className='aspect-square w-full rounded-[14px] [&_img]:p-6'
+      />
+      {images.length > 1 && (
+        <div className='grid grid-cols-4 gap-2.5'>
+          {images.map((image, i) => (
+            <button
+              key={image.url}
+              type='button'
+              aria-label={`Image ${i + 1}`}
+              aria-pressed={i === index}
+              onClick={() => setSelected(i)}
+              className={cn(
+                'bg-muted aspect-square overflow-hidden rounded-[10px] border-2',
+                i === index ? 'border-primary' : 'border-transparent'
+              )}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                className='size-full object-contain p-1 mix-blend-multiply dark:mix-blend-normal'
+                src={image.url}
+                alt=''
+                loading='lazy'
+              />
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+interface EditableTextProps {
+  value: string;
+  onSave: (value: string) => void;
+  required?: boolean;
+  placeholder?: string;
+  className?: string;
+  'aria-label': string;
+}
+
+// Uncontrolled and keyed by value, so a saved or refetched value remounts it.
+function EditableText({
+  value,
+  onSave,
+  required,
+  placeholder,
+  className,
+  'aria-label': ariaLabel,
+}: EditableTextProps) {
+  return (
+    <textarea
+      {...{ [INLINE_EDIT]: '' }}
+      aria-label={ariaLabel}
+      rows={1}
+      defaultValue={value}
+      placeholder={placeholder}
+      spellCheck={false}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' && !event.shiftKey) {
+          event.preventDefault();
+          event.currentTarget.blur();
+        } else if (event.key === 'Escape') {
+          event.currentTarget.value = value;
+          event.currentTarget.blur();
+        }
+      }}
+      onBlur={(event) => {
+        const next = event.currentTarget.value.trim();
+        if (required && !next) {
+          event.currentTarget.value = value;
+        } else if (next !== value) {
+          onSave(next);
+        }
+      }}
+      className={cn(
+        'placeholder:text-muted-foreground field-sizing-content resize-none',
+        inlineEditClass,
+        className
+      )}
+    />
+  );
+}
+
+interface EditablePriceProps {
+  product: Product;
+  onUpdate: (changes: UpdateProductInput) => void;
+}
+
+function EditablePrice({ product, onUpdate }: EditablePriceProps) {
+  const savedPrice = product.price != null ? String(product.price) : '';
+  const [price, setPrice] = useState(savedPrice);
+  const [currency, setCurrency] = useState(product.priceCurrency ?? '');
+  const cancelled = useRef(false);
+
+  // The DB keeps price and currency together, so a currency alone isn't saved.
+  const save = (nextPrice: string, nextCurrency: string) => {
+    if (nextPrice === '') {
+      if (product.price != null) onUpdate({ price: null, priceCurrency: null });
+      return;
+    }
+    const amount = Number(nextPrice);
+    if (!Number.isFinite(amount) || amount < 0) {
+      setPrice(savedPrice);
+      return;
+    }
+    if (amount !== product.price || nextCurrency !== product.priceCurrency) {
+      onUpdate({ price: amount, priceCurrency: nextCurrency });
+    }
+  };
+
+  return (
+    <PriceInput
+      {...{ [INLINE_EDIT]: '' }}
+      aria-label='Price'
+      placeholder='Add price'
+      value={price}
+      currency={currency}
+      onChange={(event) => setPrice(event.target.value)}
+      onCurrencyChange={(next) => {
+        setCurrency(next);
+        if (product.priceCurrency && next !== product.priceCurrency) {
+          save(price, next);
+        }
+      }}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter') {
+          event.currentTarget.blur();
+        } else if (event.key === 'Escape') {
+          cancelled.current = true;
+          setPrice(savedPrice);
+          event.currentTarget.blur();
+        }
+      }}
+      onBlur={(event) => {
+        if (cancelled.current) {
+          cancelled.current = false;
+          return;
+        }
+        save(event.currentTarget.value, currency);
+      }}
+      className='hover:border-input -ml-2.5 h-11 w-56 border-transparent shadow-none [&_input]:text-2xl [&_input]:font-semibold [&_input]:tracking-tight'
+    />
   );
 }
