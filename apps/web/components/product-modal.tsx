@@ -1,12 +1,10 @@
 'use client';
 
-import {
-  getProductByIdAction,
-  updateProductAction,
-  UpdateProductProps,
-} from '@/app/actions';
+import { updateProductAction, UpdateProductProps } from '@/app/actions';
+import { fetchJson } from '@/lib/fetch-json';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
+  Product,
   UpdateProduct,
   UpdateProductInput,
   UpdateProductSchema,
@@ -55,9 +53,7 @@ export function ProductModal() {
     queryKey: ['products', id],
     queryFn: async () => {
       if (!id) return null;
-      const [product, error] = await getProductByIdAction(id);
-      if (error) throw new Error(error);
-      return product;
+      return fetchJson<Product>(`/api/products/${id}`);
     },
     enabled: !!id,
   });

@@ -1,7 +1,7 @@
-import { getProductsActions } from '@/app/actions';
 import { getSession, isAuthenticated } from '@/auth';
 import { ProductForm } from '@/components/product-form';
 import ProductList from '@/components/product-list';
+import { getProducts } from '@/services/product-service';
 import { Button } from '@repo/ui/components/button';
 import { SidebarTrigger } from '@repo/ui/components/sidebar';
 import {
@@ -23,12 +23,11 @@ export default async function App() {
     queryKey: ['products'],
     initialPageParam: undefined,
     queryFn: async () => {
-      const [products, error] = await getProductsActions({
-        sortBy: 'createdAt',
-        sortDir: 'desc',
-        limit: 50,
-      });
-      if (error) throw new Error(error);
+      const [products, error] = await getProducts(
+        { sortBy: 'createdAt', sortDir: 'desc', limit: 50 },
+        session
+      );
+      if (error) throw error;
       return products;
     },
   });

@@ -1,6 +1,7 @@
 'use client';
 
-import { getCategoriesAction } from '@/app/actions';
+import { fetchJson } from '@/lib/fetch-json';
+import { Category } from '@repo/api';
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -18,11 +19,7 @@ import { CategoryIcon } from './category-icon';
 export function NavCategories() {
   const { data: categories } = useQuery({
     queryKey: ['categories'],
-    queryFn: async () => {
-      const [categories, error] = await getCategoriesAction();
-      if (error) throw new Error(error);
-      return categories;
-    },
+    queryFn: () => fetchJson<Category[]>('/api/categories'),
   });
 
   return (

@@ -1,26 +1,30 @@
 'use client';
 
 import { ProductCard } from '@/components/product-card';
+import { fetchJson } from '@/lib/fetch-json';
+import { Product } from '@repo/api';
 import InfiniteScroll from '@repo/ui/components/infinite-scroll';
 import { cn } from '@repo/ui/lib/utils';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { Loader2 } from 'lucide-react';
 import { Fragment } from 'react';
-import { getProductsActions } from '../app/actions';
 
 const FETCH_LIMIT = 50;
 
 const fetchProducts =
   (category?: string) =>
   async ({ pageParam }: { pageParam?: string }) => {
-    const [products, error] = await getProductsActions({
+    const params = new URLSearchParams({
       sortBy: 'createdAt',
       sortDir: 'desc',
-      category: category,
-      cursor: pageParam,
-      limit: FETCH_LIMIT,
+      limit: String(FETCH_LIMIT),
     });
-    if (error) throw new Error(error);
+    if (category) params.set('category', category);
+    if (pageParam) params.set('cursor', pageParam);
+
+    const { products } = await fetchJson<{ products: Product[] }>(
+      `/api/products?${params}`
+    );
     return products;
   };
 

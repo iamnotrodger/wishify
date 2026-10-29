@@ -1,14 +1,10 @@
 'use server';
 
 import { getSession, isAuthenticated } from '@/auth';
-import { createCategory, getCategories } from '@/services/category-service';
+import { createCategory } from '@/services/category-service';
 import {
-  GetProductQueryInput,
-  GetProductQuerySchema,
   createProduct,
   deleteProduct,
-  getProductById,
-  getProducts,
   updateProduct,
 } from '@/services/product-service';
 import {
@@ -31,19 +27,6 @@ const UNAUTHORIZED = 'Unauthorized';
 const IdSchema = z.string().min(1);
 
 const invalid = (error: z.ZodError) => fromZodError(error).message;
-
-export async function getProductsActions(
-  query: GetProductQueryInput
-): Promise<ActionResult<Product[]>> {
-  const session = await getSession();
-  if (!isAuthenticated(session)) return [null, UNAUTHORIZED];
-
-  const parsed = GetProductQuerySchema.safeParse(query);
-  if (!parsed.success) return [null, invalid(parsed.error)];
-
-  const [products, error] = await getProducts(parsed.data, session);
-  return error ? [null, 'Unable to load products'] : [products, null];
-}
 
 export type UpdateProductProps = { id: string; product: UpdateProductInput };
 export async function updateProductAction({
@@ -79,19 +62,6 @@ export async function createProductAction(
   return error ? [null, 'Failed to save product'] : [created, null];
 }
 
-export async function getProductByIdAction(
-  id: string
-): Promise<ActionResult<Product>> {
-  const session = await getSession();
-  if (!isAuthenticated(session)) return [null, UNAUTHORIZED];
-
-  const parsedId = IdSchema.safeParse(id);
-  if (!parsedId.success) return [null, invalid(parsedId.error)];
-
-  const [product, error] = await getProductById(parsedId.data, session);
-  return error ? [null, 'Product not found'] : [product, null];
-}
-
 export async function deleteProductAction(id: string): Promise<string | null> {
   const session = await getSession();
   if (!isAuthenticated(session)) return UNAUTHORIZED;
@@ -101,14 +71,6 @@ export async function deleteProductAction(id: string): Promise<string | null> {
 
   const error = await deleteProduct(parsedId.data, session);
   return error ? 'Failed to delete product' : null;
-}
-
-export async function getCategoriesAction(): Promise<ActionResult<Category[]>> {
-  const session = await getSession();
-  if (!isAuthenticated(session)) return [null, UNAUTHORIZED];
-
-  const [categories, error] = await getCategories(session);
-  return error ? [null, 'Unable to load categories'] : [categories, null];
 }
 
 export async function createCategoriesAction(

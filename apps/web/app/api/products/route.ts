@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
     return unknownErrorResponse(new Error('unable to process request'));
   }
 
-  const cursor = products && products[0] ? products[0].id : null;
+  const cursor = products?.at(-1)?.id ?? null;
   return NextResponse.json({ products, cursor });
 }
 

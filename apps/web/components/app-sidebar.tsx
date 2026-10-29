@@ -1,5 +1,5 @@
-import { getCategoriesAction } from '@/app/actions';
 import { getSession, isAuthenticated } from '@/auth';
+import { getCategories } from '@/services/category-service';
 import {
   Sidebar,
   SidebarContent,
@@ -31,9 +31,9 @@ export async function AppSidebar() {
   await queryClient.prefetchQuery({
     queryKey: ['categories'],
     queryFn: async () => {
-      const [products, error] = await getCategoriesAction();
-      if (error) throw new Error(error);
-      return products;
+      const [categories, error] = await getCategories(session);
+      if (error) throw error;
+      return categories;
     },
   });
 
