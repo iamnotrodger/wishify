@@ -64,12 +64,17 @@ export async function getProducts(
       where: {
         userId: user.id,
         ...(query.category ? { categoryId: query.category } : {}),
+        ...(query.search
+          ? {
+              OR: [
+                { name: { contains: query.search, mode: 'insensitive' } },
+                { brand: { contains: query.search, mode: 'insensitive' } },
+              ],
+            }
+          : {}),
       },
-      orderBy: [
-        {
-          [query.sortBy]: query.sortDir,
-        },
-      ],
+      // id breaks ties so the cursor stays stable across equal sort values.
+      orderBy: [{ [query.sortBy]: query.sortDir }, { id: query.sortDir }],
       select: PRODUCT_FIELDS,
       take: query.limit,
       skip: query.cursor ? 1 : 0,
