@@ -1,8 +1,7 @@
 import { AuthenticatedSession } from '@/auth';
 import { safeAsync } from '@/lib/utils';
-import { prisma } from '@/prisma';
 import { CreateProduct, Image, Json, Product, UpdateProduct } from '@repo/api';
-import { Prisma } from '@repo/db';
+import { Prisma, prisma } from '@repo/db';
 import { z } from 'zod';
 
 const PRODUCT_FIELDS = {

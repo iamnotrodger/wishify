@@ -1,8 +1,7 @@
 import { AuthenticatedSession } from '@/auth';
 import { safeAsync } from '@/lib/utils';
-import { prisma } from '@/prisma';
 import { Category, CreateCategory } from '@repo/api';
-import { Prisma } from '@repo/db';
+import { Prisma, prisma } from '@repo/db';
 
 const CATEGORY_FIELDS = {
   id: true,

@@ -1,5 +1,5 @@
 import { safeAsync } from '@/lib/utils';
-import { prisma } from '@/prisma';
+import { prisma } from '@repo/db';
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { nextCookies } from 'better-auth/next-js';
