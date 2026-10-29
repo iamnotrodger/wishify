@@ -1,4 +1,4 @@
-import { Product, UpdateProduct } from '@repo/api';
+import { Category, Product, UpdateProduct } from '@repo/api';
 import { QueryClient, environmentManager } from '@tanstack/react-query';
 
 type InfiniteProductsQueryData = {
@@ -42,6 +42,17 @@ function makeQueryClient() {
       await queryClient.cancelQueries(productsFilter);
       const previousData = queryClient.getQueriesData(productsFilter);
 
+      // Products render `categories`, so resolve the ids the update sends.
+      const { categoryIds, ...fields } = product;
+      const allCategories =
+        queryClient.getQueryData<Category[]>(['categories']) ?? [];
+      const changes: Partial<Product> = categoryIds
+        ? {
+            ...fields,
+            categories: allCategories.filter((c) => categoryIds.includes(c.id)),
+          }
+        : fields;
+
       queryClient.setQueriesData(productsFilter, (old?: ProductsQueryData) => {
         if (!old) return old;
 
@@ -49,12 +60,12 @@ function makeQueryClient() {
           return {
             ...old,
             pages: old.pages.map((page) =>
-              page.map((p) => (p.id === id ? { ...p, ...product } : p))
+              page.map((p) => (p.id === id ? { ...p, ...changes } : p))
             ),
           };
         }
 
-        return old.id === id ? { ...old, ...product } : old;
+        return old.id === id ? { ...old, ...changes } : old;
       });
 
       return { previousData };
