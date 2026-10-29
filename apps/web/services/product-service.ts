@@ -41,19 +41,15 @@ export const GetProductQuerySchema = z.object({
   sortDir: z.enum(['asc', 'desc']).optional().default('desc'),
   category: z.string().optional(),
   cursor: z.string().optional(),
-  limit: z
-    .string()
-    .optional()
-    .pipe(
-      z.coerce
-        .number<string | undefined>()
-        .int()
-        .min(1)
-        .transform((x) => Math.min(x, 100))
-        .default(50)
-    ),
+  limit: z.coerce
+    .number<string | number>()
+    .int()
+    .min(1)
+    .transform((x) => Math.min(x, 100))
+    .default(50),
 });
 export type GetProductQuery = z.infer<typeof GetProductQuerySchema>;
+export type GetProductQueryInput = z.input<typeof GetProductQuerySchema>;
 
 export async function getProducts(
   query: GetProductQuery,
@@ -114,11 +110,26 @@ export async function getProductById(
   return [transformProduct(data), null];
 }
 
+const ownsCategory = async (
+  categoryId: string | null | undefined,
+  userId: string
+) => {
+  if (!categoryId) return true;
+  const count = await prisma.category.count({
+    where: { id: categoryId, userId },
+  });
+  return count > 0;
+};
+
 export async function createProduct(
   product: CreateProduct,
   session: AuthenticatedSession
 ): Promise<ProductResult> {
   const { user } = session;
+
+  if (!(await ownsCategory(product.categoryId, user.id))) {
+    return [null, new Error('Category not found')];
+  }
 
   const [data, error] = await safeAsync(
     prisma.product.create({
@@ -144,6 +155,10 @@ export async function updateProduct(
   session: AuthenticatedSession
 ): Promise<ProductResult> {
   const { user } = session;
+
+  if (!(await ownsCategory(product.categoryId, user.id))) {
+    return [null, new Error('Category not found')];
+  }
 
   const [data, error] = await safeAsync(
     prisma.product.update({

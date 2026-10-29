@@ -28,7 +28,7 @@ export default async function App() {
         sortDir: 'desc',
         limit: 50,
       });
-      if (error) throw error;
+      if (error) throw new Error(error);
       return products;
     },
   });

@@ -56,7 +56,7 @@ export function ProductModal() {
     queryFn: async () => {
       if (!id) return null;
       const [product, error] = await getProductByIdAction(id);
-      if (error) throw error;
+      if (error) throw new Error(error);
       return product;
     },
     enabled: !!id,
@@ -70,7 +70,7 @@ export function ProductModal() {
     mutationKey: ['updateProduct'],
     mutationFn: async (updateProduct: UpdateProductProps) => {
       const [updatedProduct, error] = await updateProductAction(updateProduct);
-      if (error) throw error;
+      if (error) throw new Error(error);
       return updatedProduct;
     },
   });

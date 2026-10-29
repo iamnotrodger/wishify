@@ -47,7 +47,7 @@ export function ProductForm({ children, categoryId }: ProductFormProps) {
     mutationKey: ['addProduct'],
     mutationFn: async (product: CreateProduct) => {
       const [newProduct, error] = await createProductAction(product);
-      if (error) throw error;
+      if (error) throw new Error(error);
       return newProduct;
     },
   });

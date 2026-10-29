@@ -27,7 +27,7 @@ export function CategoryForm({ children }: { children: React.ReactNode }) {
     mutationKey: ['addCategory'],
     mutationFn: async (category: CreateCategory) => {
       const [newCategory, error] = await createCategoriesAction(category);
-      if (error) throw error;
+      if (error) throw new Error(error);
       return newCategory;
     },
   });

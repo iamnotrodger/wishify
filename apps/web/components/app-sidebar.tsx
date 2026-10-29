@@ -32,7 +32,7 @@ export async function AppSidebar() {
     queryKey: ['categories'],
     queryFn: async () => {
       const [products, error] = await getCategoriesAction();
-      if (error) throw error;
+      if (error) throw new Error(error);
       return products;
     },
   });

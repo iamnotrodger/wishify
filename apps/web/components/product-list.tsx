@@ -20,7 +20,7 @@ const fetchProducts =
       cursor: pageParam,
       limit: FETCH_LIMIT,
     });
-    if (error) throw error;
+    if (error) throw new Error(error);
     return products;
   };
 

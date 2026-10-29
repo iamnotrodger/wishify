@@ -20,7 +20,7 @@ export function NavCategories() {
     queryKey: ['categories'],
     queryFn: async () => {
       const [categories, error] = await getCategoriesAction();
-      if (error) throw error;
+      if (error) throw new Error(error);
       return categories;
     },
   });

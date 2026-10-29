@@ -46,7 +46,7 @@ export function ProductCard({ product }: ProductCardProps) {
     mutationKey: ['updateProduct'],
     mutationFn: async (updateProduct: UpdateProductProps) => {
       const [updatedProduct, error] = await updateProductAction(updateProduct);
-      if (error) throw error;
+      if (error) throw new Error(error);
       return updatedProduct;
     },
   });
@@ -178,7 +178,7 @@ function ProductMediaActions({ url, product }: ProductMediaActionsProps) {
     mutationKey: ['deleteProduct'],
     mutationFn: async (id: string) => {
       const error = await deleteProductAction(id);
-      if (error) throw error;
+      if (error) throw new Error(error);
     },
   });
 

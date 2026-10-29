@@ -34,7 +34,7 @@ export default async function Category({
         category: id,
         limit: 50,
       });
-      if (error) throw error;
+      if (error) throw new Error(error);
       return products;
     },
   });
