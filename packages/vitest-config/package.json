@@ -1,0 +1,27 @@
+{
+  "name": "@repo/vitest-config",
+  "type": "module",
+  "exports": {
+    "./base": {
+      "types": "./src/configs/base-config.ts",
+      "default": "./dist/configs/base-config.js"
+    },
+    "./ui": {
+      "types": "./src/configs/ui-config.ts",
+      "default": "./dist/configs/ui-config.js"
+    }
+  },
+  "scripts": {
+    "dev": "tsc --watch",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "*",
+    "typescript": "5.9.3"
+  },
+  "dependencies": {
+    "@vitest/coverage-istanbul": "^5.0.5",
+    "jsdom": "^30.1.3",
+    "vitest": "^5.0.5"
+  }
+}
