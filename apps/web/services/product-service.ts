@@ -17,7 +17,7 @@ const PRODUCT_FIELDS = {
   priceCurrency: true,
   availability: true,
   images: true,
-  category: {
+  categories: {
     select: {
       id: true,
       name: true,
@@ -63,7 +63,9 @@ export async function getProducts(
     prisma.product.findMany({
       where: {
         userId: user.id,
-        ...(query.category ? { categoryId: query.category } : {}),
+        ...(query.category
+          ? { categories: { some: { id: query.category } } }
+          : {}),
         ...(query.search
           ? {
               OR: [
@@ -116,16 +118,19 @@ export async function getProductById(
   return [transformProduct(data), null];
 }
 
-const ownsCategory = async (
-  categoryId: string | null | undefined,
+const ownsCategories = async (
+  categoryIds: string[] | undefined,
   userId: string
 ) => {
-  if (!categoryId) return true;
+  const ids = [...new Set(categoryIds)];
+  if (ids.length === 0) return true;
   const count = await prisma.category.count({
-    where: { id: categoryId, userId },
+    where: { id: { in: ids }, userId },
   });
-  return count > 0;
+  return count === ids.length;
 };
+
+const toCategoryIds = (ids: string[]) => ids.map((id) => ({ id }));
 
 // Postgres separates SQL NULL from JSON null; Prisma needs DbNull to clear a Json column.
 const toJsonInput = (value: Json | null | undefined) =>
@@ -137,15 +142,17 @@ export async function createProduct(
 ): Promise<ProductResult> {
   const { user } = session;
 
-  if (!(await ownsCategory(product.categoryId, user.id))) {
+  const { categoryIds, ...fields } = product;
+  if (!(await ownsCategories(categoryIds, user.id))) {
     return [null, new Error('Category not found')];
   }
 
   const [data, error] = await safeAsync(
     prisma.product.create({
       data: {
-        ...product,
-        metadata: toJsonInput(product.metadata),
+        ...fields,
+        metadata: toJsonInput(fields.metadata),
+        categories: categoryIds && { connect: toCategoryIds(categoryIds) },
         userId: user.id,
       },
       select: PRODUCT_FIELDS,
@@ -167,7 +174,8 @@ export async function updateProduct(
 ): Promise<ProductResult> {
   const { user } = session;
 
-  if (!(await ownsCategory(product.categoryId, user.id))) {
+  const { categoryIds, ...fields } = product;
+  if (!(await ownsCategories(categoryIds, user.id))) {
     return [null, new Error('Category not found')];
   }
 
@@ -175,8 +183,9 @@ export async function updateProduct(
     prisma.product.update({
       where: { id, userId: user.id },
       data: {
-        ...product,
-        metadata: toJsonInput(product.metadata),
+        ...fields,
+        metadata: toJsonInput(fields.metadata),
+        categories: categoryIds && { set: toCategoryIds(categoryIds) },
       },
       select: PRODUCT_FIELDS,
     })

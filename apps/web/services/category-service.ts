@@ -15,6 +15,19 @@ export type CategoryDatabaseSchema = Prisma.CategoryGetPayload<{
 
 type CategoryResult<T = Category> = [T | null, Error | null];
 
+export class CategoryExistsError extends Error {
+  constructor() {
+    super('A category with this name already exists');
+  }
+}
+
+// P2002: the (userId, name) unique constraint rejected a duplicate name.
+const toCategoryError = (error: Error) =>
+  error instanceof Prisma.PrismaClientKnownRequestError &&
+  error.code === 'P2002'
+    ? new CategoryExistsError()
+    : error;
+
 export async function getCategories(
   session: AuthenticatedSession
 ): Promise<CategoryResult<Category[]>> {
@@ -74,7 +87,7 @@ export async function createCategory(
     console.log(error);
   }
 
-  return [data, error];
+  return [data, error && toCategoryError(error)];
 }
 
 export async function updateCategory(
@@ -96,7 +109,7 @@ export async function updateCategory(
     console.log(error);
   }
 
-  return [data, error];
+  return [data, error && toCategoryError(error)];
 }
 
 export async function deleteCategory(

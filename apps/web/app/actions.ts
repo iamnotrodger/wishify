@@ -1,7 +1,10 @@
 'use server';
 
-import { getSession, isAuthenticated } from '@/auth';
-import { createCategory } from '@/services/category-service';
+import { auth, getSession, isAuthenticated } from '@/auth';
+import {
+  CategoryExistsError,
+  createCategory,
+} from '@/services/category-service';
 import {
   createProduct,
   deleteProduct,
@@ -17,6 +20,8 @@ import {
   UpdateProductInput,
   UpdateProductSchema,
 } from '@repo/api';
+import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { fromZodError } from 'zod-validation-error';
 
@@ -83,5 +88,11 @@ export async function createCategoriesAction(
   if (!parsed.success) return [null, invalid(parsed.error)];
 
   const [created, error] = await createCategory(parsed.data, session);
+  if (error instanceof CategoryExistsError) return [null, error.message];
   return error ? [null, 'Failed to add category'] : [created, null];
+}
+
+export async function signOutAction() {
+  await auth.api.signOut({ headers: await headers() });
+  redirect('/');
 }

@@ -1,10 +1,15 @@
 import { getSession, isAuthenticated } from '@/auth';
 import {
+  conflictResponse,
   invalidRequestResponse,
   unauthorizedResponse,
   unknownErrorResponse,
 } from '@/lib/responses';
-import { createCategory, getCategories } from '@/services/category-service';
+import {
+  CategoryExistsError,
+  createCategory,
+  getCategories,
+} from '@/services/category-service';
 import { CreateCategorySchema } from '@repo/api';
 import { NextRequest, NextResponse } from 'next/server';
 import { fromZodError } from 'zod-validation-error';
@@ -38,8 +43,9 @@ export async function POST(req: NextRequest) {
     session
   );
 
+  if (error instanceof CategoryExistsError) return conflictResponse(error);
   if (error) {
-    return unknownErrorResponse(new Error('failed to add folder'));
+    return unknownErrorResponse(new Error('failed to add category'));
   }
 
   return NextResponse.json(category);

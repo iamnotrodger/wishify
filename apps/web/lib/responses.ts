@@ -34,3 +34,9 @@ export const productNotFoundResponse = (error: Error) =>
     },
     { status: 404 }
   );
+
+export const conflictResponse = (error: Error) =>
+  NextResponse.json(
+    { message: error.message, error: error.message, success: false },
+    { status: 409 }
+  );

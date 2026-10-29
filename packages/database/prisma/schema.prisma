@@ -18,7 +18,7 @@ model Category {
   createdAt DateTime @default(now()) @db.Timestamptz
   updatedAt DateTime @updatedAt @db.Timestamptz
 
-  @@index([userId])
+  @@unique([userId, name])
   @@map("category")
 }
 
@@ -39,8 +39,7 @@ model Product {
   /// [{ url, width?, height? }]
   images              Json              @default("[]")
   metadata            Json?
-  categoryId          String?
-  category            Category?         @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  categories          Category[]
   user                User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId              String
   plannedPurchaseDate DateTime?         @db.Timestamptz
@@ -52,7 +51,6 @@ model Product {
 
   @@index([userId, createdAt])
   @@index([userId, price])
-  @@index([categoryId])
   @@map("product")
 }
 

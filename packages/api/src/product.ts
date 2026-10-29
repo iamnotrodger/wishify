@@ -11,9 +11,37 @@ export const JsonSchema: z.ZodType<Json> = z.lazy(() =>
   ])
 );
 
+export const CATEGORY_ICONS = [
+  'shirt',
+  'footprints',
+  'gem',
+  'watch',
+  'smartphone',
+  'laptop',
+  'headphones',
+  'camera',
+  'gamepad-2',
+  'sofa',
+  'lamp',
+  'utensils',
+  'coffee',
+  'sparkles',
+  'dumbbell',
+  'bike',
+  'book',
+  'music',
+  'palette',
+  'baby',
+  'dog',
+  'plane',
+  'gift',
+  'heart',
+] as const;
+export type CategoryIconName = (typeof CATEGORY_ICONS)[number];
+
 export const CategorySchema = z.object({
   id: z.string(),
-  name: z.string(),
+  name: z.string().trim().min(1, { message: 'Name cannot be empty' }),
   icon: z.string().nullish(),
 });
 
@@ -63,7 +91,7 @@ export const ProductSchema = z.object({
   priceCurrency: PriceCurrencySchema.nullish(),
   availability: ItemAvailabilitySchema.nullish(),
   images: z.array(ImageSchema).optional(),
-  category: CategorySchema.nullish(),
+  categories: z.array(CategorySchema).optional(),
   metadata: JsonSchema.nullish(),
   plannedPurchaseDate: z.iso.datetime({ offset: true }).nullish(),
   purchaseDate: z.iso.datetime({ offset: true }).nullish(),
@@ -75,22 +103,22 @@ export const ProductSchema = z.object({
 
 export const CreateProductSchema = ProductSchema.omit({
   id: true,
-  category: true,
+  categories: true,
   createdAt: true,
   updatedAt: true,
 }).extend({
-  categoryId: z.string().nullish(),
+  categoryIds: z.array(z.string()).optional(),
   price: PriceSchema,
   priceCurrency: PriceCurrencySchema,
 });
 export const UpdateProductSchema = ProductSchema.omit({
   id: true,
-  category: true,
+  categories: true,
   createdAt: true,
   updatedAt: true,
 })
   .extend({
-    categoryId: z.string().nullish(),
+    categoryIds: z.array(z.string()).optional(),
     name: NameSchema.optional(),
   })
   // Mirrors the DB CHECK: price and priceCurrency change together.
@@ -103,12 +131,12 @@ export const UpdateProductSchema = ProductSchema.omit({
       path: ['priceCurrency'],
     }
   );
-export const CreateCategorySchema = CategorySchema.omit({
-  id: true,
+// Output keeps icon as a plain string so older stored values still load.
+const CategoryInputSchema = CategorySchema.omit({ id: true }).extend({
+  icon: z.enum(CATEGORY_ICONS).nullish(),
 });
-export const UpdateCategorySchema = CategorySchema.omit({
-  id: true,
-});
+export const CreateCategorySchema = CategoryInputSchema;
+export const UpdateCategorySchema = CategoryInputSchema;
 
 export type Category = z.infer<typeof CategorySchema>;
 export type Image = z.infer<typeof ImageSchema>;
