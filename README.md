@@ -117,6 +117,10 @@ npm run db:migrate:deploy
 npm run dev
 ```
 
+`packages/database/.env` needs `DATABASE_URL` (runtime) and `DIRECT_URL`
+(Prisma CLI, e.g. migrations). On Supabase, `DIRECT_URL` is the session-mode
+pooler on port 5432.
+
 `apps/web/.env.local` needs `DATABASE_URL` (same value as `.env.example`),
 `AUTH_SECRET`, `AUTH_GOOGLE_ID` and `AUTH_GOOGLE_SECRET`.
 

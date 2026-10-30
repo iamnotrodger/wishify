@@ -33,22 +33,22 @@
       "dependsOn": ["^transit"]
     },
     "db:generate": {
-      "env": ["DATABASE_URL"],
+      "env": ["DATABASE_URL", "DIRECT_URL"],
       "cache": false
     },
     "db:push": {
       "dependsOn": ["db:generate"],
-      "env": ["DATABASE_URL"],
+      "env": ["DATABASE_URL", "DIRECT_URL"],
       "cache": false
     },
     "db:migrate:dev": {
       "dependsOn": ["db:generate"],
-      "env": ["DATABASE_URL"],
+      "env": ["DATABASE_URL", "DIRECT_URL"],
       "cache": false
     },
     "db:migrate:deploy": {
       "dependsOn": ["db:generate"],
-      "env": ["DATABASE_URL"],
+      "env": ["DATABASE_URL", "DIRECT_URL"],
       "cache": false
     }
   }
