@@ -209,13 +209,14 @@ function ProductDetail({ product, onUpdate }: ProductDetailProps) {
           </div>
 
           <dl className='flex flex-col border-t text-[13px]'>
-            <div className='flex min-h-11 items-center justify-between gap-4 border-b py-1.5'>
-              <dt className='text-muted-foreground'>Categories</dt>
-              <dd className='flex min-w-0 flex-1 justify-end'>
+            <div className='flex items-start gap-4 border-b py-2'>
+              <dt className='text-muted-foreground w-24 shrink-0 leading-7'>
+                Categories
+              </dt>
+              <dd className='min-w-0 flex-1'>
                 <CategoryInput
                   value={categories?.map(({ id }) => id) ?? []}
                   onChange={(categoryIds) => onUpdate({ categoryIds })}
-                  className='justify-end'
                 />
               </dd>
             </div>

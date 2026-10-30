@@ -67,12 +67,12 @@ function LabelIcon({
 }
 
 const labelBadgeVariants = cva(
-  'inline-flex w-fit max-w-full items-center rounded-md border',
+  'inline-flex w-fit max-w-full items-center rounded-2xl border',
   {
     variants: {
       size: {
         default: 'border-foreground h-9 gap-2 px-3 text-sm',
-        sm: 'bg-background h-6 gap-1.5 px-2 text-xs [&>svg]:size-3.5',
+        sm: 'bg-background h-7 gap-1.5 px-2.5 text-[13px] [&>svg]:size-4',
       },
     },
     defaultVariants: { size: 'default' },
@@ -197,7 +197,7 @@ function LabelPicker<T extends LabelOption, TIcon extends string>({
                 type='button'
                 variant='ghost'
                 size='icon-xs'
-                className='rounded-full'
+                className='size-7 rounded-full'
                 role='combobox'
                 aria-expanded={open}
                 aria-label={`Add ${noun.one}`}
@@ -217,7 +217,7 @@ function LabelPicker<T extends LabelOption, TIcon extends string>({
               onValueChange={setSearch}
             />
             <CommandList className='max-h-[min(240px,var(--radix-popover-content-available-height))]'>
-              <CommandGroup>
+                <CommandGroup>
                 {labels.map((label) => (
                   <CommandItem
                     key={label.id}
