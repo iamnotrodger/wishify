@@ -3,7 +3,8 @@
 import { createCategoriesAction } from '@/app/actions';
 import { fetchJson } from '@/lib/fetch-json';
 import { Category, CreateCategory } from '@repo/api';
-import { CategoryPicker } from '@repo/ui/components/category';
+import { categoryIconSet, categoryNoun } from '@repo/ui/custom/category-icons';
+import { LabelPicker } from '@repo/ui/custom/label';
 import { useMutation, useQuery } from '@tanstack/react-query';
 
 interface CategoryInputProps {
@@ -25,8 +26,10 @@ export function CategoryInput({
   const addCategory = useCreateCategory();
 
   return (
-    <CategoryPicker
-      categories={categories}
+    <LabelPicker
+      labels={categories}
+      iconSet={categoryIconSet}
+      noun={categoryNoun}
       value={value}
       onChange={onChange}
       onCreate={addCategory.mutateAsync}

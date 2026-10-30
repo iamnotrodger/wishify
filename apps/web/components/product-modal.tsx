@@ -17,8 +17,8 @@ import {
   DialogDescription,
   DialogTitle,
 } from '@repo/ui/components/dialog';
-import { ImageInput } from '@repo/ui/components/image-input';
-import { PriceInput } from '@repo/ui/components/price-input';
+import { ImageInput } from '@repo/ui/custom/image-input';
+import { PriceInput } from '@repo/ui/custom/price-input';
 import { LOCALE } from '@repo/ui/lib/format-price';
 import { cn } from '@repo/ui/lib/utils';
 import { useMutation, useQuery } from '@tanstack/react-query';

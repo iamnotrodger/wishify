@@ -3,7 +3,8 @@
 import { useCreateCategory } from '@/components/category-input';
 import { fetchJson } from '@/lib/fetch-json';
 import { Category } from '@repo/api';
-import { CategoryIcon, CreateCategory } from '@repo/ui/components/category';
+import { categoryIconSet, categoryNoun } from '@repo/ui/custom/category-icons';
+import { CreateLabel, LabelIcon } from '@repo/ui/custom/label';
 import { cn } from '@repo/ui/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
@@ -27,7 +28,7 @@ export function CategoryFilter() {
     ...(categories ?? []).map((category) => ({
       href: `/app/categories/${category.id}`,
       label: category.name,
-      icon: <CategoryIcon icon={category.icon} />,
+      icon: <LabelIcon icon={category.icon} iconSet={categoryIconSet} />,
     })),
   ];
 
@@ -47,8 +48,10 @@ export function CategoryFilter() {
           </Link>
         );
       })}
-      <CreateCategory
+      <CreateLabel
         onCreate={addCategory.mutateAsync}
+        iconSet={categoryIconSet}
+        noun={categoryNoun}
         className={cn(chip, chipOff, 'border-dashed')}
       />
     </nav>

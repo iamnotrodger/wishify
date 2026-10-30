@@ -11,7 +11,6 @@ import {
 } from '@repo/api';
 import { type Product as ScrapedProduct } from '@repo/scraper';
 import { Button } from '@repo/ui/components/button';
-import { CategoryPicker } from '@repo/ui/components/category';
 import {
   Form,
   FormControl,
@@ -20,9 +19,11 @@ import {
   FormLabel,
   FormMessage,
 } from '@repo/ui/components/form';
-import { ImageInput } from '@repo/ui/components/image-input';
 import { Input } from '@repo/ui/components/input';
-import { PriceInput } from '@repo/ui/components/price-input';
+import { categoryIconSet, categoryNoun } from '@repo/ui/custom/category-icons';
+import { ImageInput } from '@repo/ui/custom/image-input';
+import { LabelPicker } from '@repo/ui/custom/label';
+import { PriceInput } from '@repo/ui/custom/price-input';
 import { formatPrice } from '@repo/ui/lib/format-price';
 import { type KeyboardEvent } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
@@ -185,8 +186,10 @@ export const ProductForm = ({
                 <FormItem>
                   <FormLabel>Categories</FormLabel>
                   <FormControl>
-                    <CategoryPicker
-                      categories={categories}
+                    <LabelPicker
+                      labels={categories}
+                      iconSet={categoryIconSet}
+                      noun={categoryNoun}
                       value={field.value ?? []}
                       onChange={field.onChange}
                       onCreate={async (input) => {

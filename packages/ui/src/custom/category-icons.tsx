@@ -1,0 +1,62 @@
+import { type CategoryIconName } from '@repo/api';
+import {
+  Baby,
+  Bike,
+  Book,
+  Box,
+  Camera,
+  Coffee,
+  Dog,
+  Dumbbell,
+  Footprints,
+  Gamepad2,
+  Gem,
+  Gift,
+  Headphones,
+  Heart,
+  Lamp,
+  Laptop,
+  Music,
+  Palette,
+  Plane,
+  Shirt,
+  Smartphone,
+  Sofa,
+  Sparkles,
+  Utensils,
+  Watch,
+} from 'lucide-react';
+import { type LabelIconSet, type LabelNoun } from './label';
+
+// Static imports keep the bundle to this set instead of every lucide icon.
+export const categoryIconSet: LabelIconSet<CategoryIconName> = {
+  icons: {
+    shirt: Shirt,
+    footprints: Footprints,
+    gem: Gem,
+    watch: Watch,
+    smartphone: Smartphone,
+    laptop: Laptop,
+    headphones: Headphones,
+    camera: Camera,
+    'gamepad-2': Gamepad2,
+    sofa: Sofa,
+    lamp: Lamp,
+    utensils: Utensils,
+    coffee: Coffee,
+    sparkles: Sparkles,
+    dumbbell: Dumbbell,
+    bike: Bike,
+    book: Book,
+    music: Music,
+    palette: Palette,
+    baby: Baby,
+    dog: Dog,
+    plane: Plane,
+    gift: Gift,
+    heart: Heart,
+  },
+  fallback: Box,
+};
+
+export const categoryNoun: LabelNoun = { one: 'category', other: 'categories' };
