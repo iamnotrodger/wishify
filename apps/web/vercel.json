@@ -1,0 +1,4 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "if [ \"$VERCEL_ENV\" = \"production\" ]; then npx turbo run db:migrate:deploy --filter=@repo/db; fi && npx turbo run build"
+}
