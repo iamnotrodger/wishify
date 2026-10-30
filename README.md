@@ -93,7 +93,7 @@ A [Turborepo](https://turbo.build/repo) monorepo, 100% TypeScript.
 | ---------------------------- | ---------------------------------------------------------- |
 | `apps/web`                   | Next.js web app: list, plan and budget                     |
 | `apps/extension`             | [WXT](https://wxt.dev) browser extension: one-click save   |
-| `packages/api`               | Shared API schemas (Zod)                                   |
+| `packages/schema`            | Shared Zod schemas and types (`@repo/schema`)              |
 | `packages/scraper`           | Product scraper: site rules, JSON-LD, microdata, OpenGraph |
 | `packages/database`          | Prisma schema and client (`@repo/db`)                      |
 | `packages/ui`                | Shared React components                                    |

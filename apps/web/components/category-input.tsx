@@ -2,7 +2,7 @@
 
 import { createCategoriesAction } from '@/app/actions';
 import { fetchJson } from '@/lib/fetch-json';
-import { Category, CreateCategory } from '@repo/api';
+import { Category, CreateCategory } from '@repo/schema';
 import { categoryIconSet, categoryNoun } from '@repo/ui/custom/category-icons';
 import { LabelPicker } from '@repo/ui/custom/label';
 import { useMutation, useQuery } from '@tanstack/react-query';

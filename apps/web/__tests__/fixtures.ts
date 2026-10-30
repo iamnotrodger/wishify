@@ -1,5 +1,5 @@
 import { type AuthenticatedSession } from '@/auth';
-import { type Product } from '@repo/api';
+import { type Product } from '@repo/schema';
 import { Prisma } from '@repo/db';
 
 export const session = {

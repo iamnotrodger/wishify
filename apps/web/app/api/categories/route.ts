@@ -10,7 +10,7 @@ import {
   createCategory,
   getCategories,
 } from '@/services/category-service';
-import { CreateCategorySchema } from '@repo/api';
+import { CreateCategorySchema } from '@repo/schema';
 import { NextRequest, NextResponse } from 'next/server';
 import { fromZodError } from 'zod-validation-error';
 

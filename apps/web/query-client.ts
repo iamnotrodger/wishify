@@ -1,4 +1,4 @@
-import { Category, Product, UpdateProduct } from '@repo/api';
+import { Category, Product, UpdateProduct } from '@repo/schema';
 import { QueryClient, environmentManager } from '@tanstack/react-query';
 
 type InfiniteProductsQueryData = {

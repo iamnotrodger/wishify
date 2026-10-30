@@ -1,4 +1,4 @@
-import { type CategoryIconName } from '@repo/api';
+import { type CategoryIconName } from '@repo/schema';
 import {
   Baby,
   Bike,

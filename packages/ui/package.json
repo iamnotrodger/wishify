@@ -33,7 +33,7 @@
     "vitest": "^5.0.5"
   },
   "dependencies": {
-    "@repo/api": "*",
+    "@repo/schema": "*",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",

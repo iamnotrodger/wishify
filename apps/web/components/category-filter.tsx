@@ -2,7 +2,7 @@
 
 import { useCreateCategory } from '@/components/category-input';
 import { fetchJson } from '@/lib/fetch-json';
-import { Category } from '@repo/api';
+import { Category } from '@repo/schema';
 import { categoryIconSet, categoryNoun } from '@repo/ui/custom/category-icons';
 import { CreateLabel, LabelIcon } from '@repo/ui/custom/label';
 import { cn } from '@repo/ui/lib/utils';

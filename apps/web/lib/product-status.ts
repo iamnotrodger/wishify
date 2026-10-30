@@ -1,4 +1,4 @@
-import { Product, UpdateProductInput } from '@repo/api';
+import { Product, UpdateProductInput } from '@repo/schema';
 import {
   Check,
   type LucideIcon,

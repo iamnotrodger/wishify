@@ -2,7 +2,7 @@
 
 import { ProductCard } from '@/components/product-card';
 import { fetchJson } from '@/lib/fetch-json';
-import { Product } from '@repo/api';
+import { Product } from '@repo/schema';
 import InfiniteScroll from '@repo/ui/components/infinite-scroll';
 import { cn } from '@repo/ui/lib/utils';
 import { useInfiniteQuery } from '@tanstack/react-query';

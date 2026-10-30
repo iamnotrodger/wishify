@@ -9,7 +9,7 @@ import {
   createProduct,
   getProducts,
 } from '@/services/product-service';
-import { CreateProductSchema } from '@repo/api';
+import { CreateProductSchema } from '@repo/schema';
 import { NextRequest, NextResponse } from 'next/server';
 import { fromZodError } from 'zod-validation-error';
 

@@ -1,7 +1,7 @@
 import { PopupHeader } from '@/components/popup-header';
 import { ProductImage } from '@/components/product-image';
 import { deleteProduct, openWishify } from '@/utils/api';
-import { type Product } from '@repo/api';
+import { type Product } from '@repo/schema';
 import { Button } from '@repo/ui/components/button';
 import { formatPrice } from '@repo/ui/lib/format-price';
 import { Check } from 'lucide-react';

@@ -1,4 +1,4 @@
-import { type Category, type Product } from '@repo/api';
+import { type Category, type Product } from '@repo/schema';
 
 export const categories: Category[] = [
   { id: 'c1', name: 'Clothes', icon: 'shirt' },

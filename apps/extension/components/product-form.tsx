@@ -8,7 +8,7 @@ import {
   type CreateProductInput,
   CreateProductSchema,
   type Product,
-} from '@repo/api';
+} from '@repo/schema';
 import { type Product as ScrapedProduct } from '@repo/scraper';
 import { Button } from '@repo/ui/components/button';
 import {

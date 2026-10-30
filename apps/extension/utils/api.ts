@@ -3,7 +3,7 @@ import type {
   CreateCategory,
   CreateProduct,
   Product,
-} from '@repo/api';
+} from '@repo/schema';
 import { browser } from 'wxt/browser';
 
 export const apiUrl: string = import.meta.env.WXT_API_URL;

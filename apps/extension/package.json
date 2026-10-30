@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^6.0.2",
-    "@repo/api": "*",
+    "@repo/schema": "*",
     "@repo/scraper": "*",
     "@repo/ui": "*",
     "better-auth": "^1.7.14",

@@ -8,7 +8,7 @@ import {
   type Category,
   type CreateProductInput,
   type Product,
-} from '@repo/api';
+} from '@repo/schema';
 import { type Product as ScrapedProduct } from '@repo/scraper';
 import { useEffect, useState } from 'react';
 

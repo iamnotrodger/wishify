@@ -1,6 +1,6 @@
 import { AuthenticatedSession } from '@/auth';
 import { safeAsync } from '@/lib/utils';
-import { CreateProduct, Image, Json, Product, UpdateProduct } from '@repo/api';
+import { CreateProduct, Image, Json, Product, UpdateProduct } from '@repo/schema';
 import { Prisma, prisma } from '@repo/db';
 import { z } from 'zod';
 

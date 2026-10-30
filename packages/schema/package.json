@@ -1,5 +1,5 @@
 {
-  "name": "@repo/api",
+  "name": "@repo/schema",
   "version": "0.0.0",
   "private": true,
   "exports": {

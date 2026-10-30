@@ -8,7 +8,7 @@ import {
   primaryActions,
   secondaryActions,
 } from '@/lib/product-status';
-import { Image, Product, UpdateProductInput } from '@repo/api';
+import { Image, Product, UpdateProductInput } from '@repo/schema';
 import { Button } from '@repo/ui/components/button';
 import {
   Dialog,
