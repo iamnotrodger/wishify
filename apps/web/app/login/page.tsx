@@ -75,8 +75,11 @@ export default async function Login({
             )}
 
             <p className='text-muted-foreground border-t pt-5 text-xs'>
-              By continuing, you agree to the Terms and Privacy Policy. The
-              extension only reads the product page you choose to save.
+              By continuing, you agree to the Terms and{' '}
+              <Link href='/privacy' className='underline underline-offset-4'>
+                Privacy Policy
+              </Link>
+              . The extension only reads the product page you choose to save.
             </p>
           </div>
         </div>
