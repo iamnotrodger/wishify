@@ -16,7 +16,8 @@
         "DATABASE_URL",
         "NODE_ENV",
         "WXT_API_URL"
-      ]
+      ],
+      "passThroughEnv": ["DIRECT_URL"]
     },
     "lint": {
       "dependsOn": ["^lint"]
