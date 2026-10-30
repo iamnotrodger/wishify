@@ -11,7 +11,8 @@
     "build:firefox": "tsc --noEmit && wxt build -b firefox",
     "zip": "wxt zip",
     "zip:firefox": "wxt zip -b firefox",
-    "postinstall": "wxt prepare"
+    "postinstall": "wxt prepare",
+    "test": "vitest run"
   },
   "dependencies": {
     "@hookform/resolvers": "^6.0.2",
@@ -27,12 +28,17 @@
   },
   "devDependencies": {
     "@repo/eslint-config": "*",
+    "@repo/vitest-config": "*",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.8",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@wxt-dev/module-react": "^1.2.2",
     "eslint": "^10.13.0",
     "typescript": "~5.9.3",
     "vite": "^8.3.5",
+    "vitest": "^5.0.5",
     "web-ext": "^10.8.0",
     "wxt": "^0.21.5"
   },
