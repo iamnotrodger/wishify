@@ -11,6 +11,7 @@
         "AUTH_GOOGLE_ID",
         "AUTH_GOOGLE_SECRET",
         "DATABASE_URL",
+        "NODE_ENV",
         "WXT_API_URL"
       ]
     },
