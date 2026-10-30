@@ -187,6 +187,7 @@ function LabelPicker<T extends LabelOption, TIcon extends string>({
                 variant='outline'
                 role='combobox'
                 aria-expanded={open}
+                aria-label={`Add ${noun.other}`}
                 className='w-full justify-start font-normal'
               >
                 <Tag />
@@ -217,7 +218,8 @@ function LabelPicker<T extends LabelOption, TIcon extends string>({
               onValueChange={setSearch}
             />
             <CommandList className='max-h-[min(240px,var(--radix-popover-content-available-height))]'>
-                <CommandGroup>
+              {/* forceMount: cmdk hides a group with no matches, which would hide Create. */}
+                <CommandGroup forceMount>
                 {labels.map((label) => (
                   <CommandItem
                     key={label.id}
