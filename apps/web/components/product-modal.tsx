@@ -19,6 +19,7 @@ import {
 } from '@repo/ui/components/dialog';
 import { ImageInput } from '@repo/ui/components/image-input';
 import { PriceInput } from '@repo/ui/components/price-input';
+import { LOCALE } from '@repo/ui/lib/format-price';
 import { cn } from '@repo/ui/lib/utils';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { ArrowUpRight, X } from 'lucide-react';
@@ -31,7 +32,7 @@ const INLINE_EDIT = 'data-inline-edit';
 const inlineEditClass =
   'hover:bg-accent/60 focus-visible:ring-ring/50 -mx-1.5 rounded-md bg-transparent px-1.5 outline-none focus-visible:bg-transparent focus-visible:ring-2';
 
-const savedDate = new Intl.DateTimeFormat(undefined, {
+const savedDate = new Intl.DateTimeFormat(LOCALE, {
   month: 'short',
   day: 'numeric',
 });
