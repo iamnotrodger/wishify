@@ -21,7 +21,7 @@ import { ImageInput } from '@repo/ui/custom/image-input';
 import { PriceInput } from '@repo/ui/custom/price-input';
 import { LOCALE } from '@repo/ui/lib/format-price';
 import { cn } from '@repo/ui/lib/utils';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query';
 import { ArrowUpRight, X } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useRef, useState } from 'react';
@@ -58,13 +58,15 @@ export function ProductModal() {
 
   const id = searchParams.get('product_id');
 
-  const { data: product } = useQuery({
+  // Keeps the last product while closing so the exit animation has content.
+  const { data: product, isPlaceholderData } = useQuery({
     queryKey: ['products', id],
     queryFn: async () => {
       if (!id) return null;
       return fetchJson<Product>(`/api/products/${id}`);
     },
     enabled: !!id,
+    placeholderData: keepPreviousData,
   });
 
   const updateProduct = useMutation({
@@ -83,7 +85,10 @@ export function ProductModal() {
   };
 
   return (
-    <Dialog open={!!id && product != null} onOpenChange={handleClose}>
+    <Dialog
+      open={!!id && product != null && !isPlaceholderData}
+      onOpenChange={handleClose}
+    >
       <DialogContent
         showCloseButton={false}
         className='max-h-[calc(100svh-6rem)] gap-0 overflow-y-auto rounded-2xl p-0 sm:max-w-[1000px]'
