@@ -10,6 +10,8 @@ const setup = (
   render(
     <PriceInput
       aria-label='Price'
+      value=''
+      onChange={vi.fn()}
       currency='CAD'
       onCurrencyChange={onCurrencyChange}
       {...props}
