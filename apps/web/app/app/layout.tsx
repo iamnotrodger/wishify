@@ -7,7 +7,12 @@ import {
   QueryClient,
   dehydrate,
 } from '@tanstack/react-query';
+import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 type Props = { children: React.ReactNode };
 

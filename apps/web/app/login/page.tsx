@@ -4,8 +4,14 @@ import { LoginShowcase } from '@/components/login-showcase';
 import { SignIn } from '@/components/sign-in';
 import { toSafeRedirect } from '@/lib/utils';
 import { Heart } from 'lucide-react';
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
+
+export const metadata: Metadata = {
+  title: 'Sign in',
+  description: 'Sign in to Wishify to save and plan what you want to buy.',
+};
 
 export default async function Login({
   searchParams,

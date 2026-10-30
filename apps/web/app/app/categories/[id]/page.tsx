@@ -8,13 +8,26 @@ import {
   QueryClient,
   dehydrate,
 } from '@tanstack/react-query';
+import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
+import { cache } from 'react';
 
-export default async function Category({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+type Props = { params: Promise<{ id: string }> };
+
+// Shared by the title and the page so the category is read once per request.
+const getCategory = cache(async (id: string) => {
+  const session = await getSession();
+  if (!isAuthenticated(session)) return null;
+  const [category] = await getCategoryById(id, session);
+  return category;
+});
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const category = await getCategory((await params).id);
+  return { title: category?.name ?? 'Category' };
+}
+
+export default async function Category({ params }: Props) {
   const { id } = await params;
 
   const session = await getSession();
@@ -22,7 +35,7 @@ export default async function Category({
     return redirect(`/login?redirectTo=/app/categories/${id}`);
   }
 
-  const [category] = await getCategoryById(id, session);
+  const category = await getCategory(id);
 
   const queryClient = new QueryClient();
   await queryClient.prefetchInfiniteQuery({

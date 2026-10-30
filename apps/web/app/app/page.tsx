@@ -7,7 +7,10 @@ import {
   QueryClient,
   dehydrate,
 } from '@tanstack/react-query';
+import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
+
+export const metadata: Metadata = { title: 'Wishlist' };
 
 export default async function App() {
   const session = await getSession();
